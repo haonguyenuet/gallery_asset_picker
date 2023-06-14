@@ -8,34 +8,35 @@ class GalleryEntity {
   const GalleryEntity({
     this.selectedAssets = const <AssetEntityPlus>[],
     this.isAlbumVisible = false,
-    this.enableMultiSelection = false,
+    this.allowMultiple = false,
   });
 
   final List<AssetEntityPlus> selectedAssets;
   final bool isAlbumVisible;
-  final bool enableMultiSelection;
+  final bool allowMultiple;
 
   GalleryEntity copyWith({
     List<AssetEntityPlus>? selectedAssets,
     bool? isAlbumVisible,
-    bool? enableMultiSelection,
+    bool? allowMultiple,
   }) {
     return GalleryEntity(
       selectedAssets: selectedAssets ?? this.selectedAssets,
       isAlbumVisible: isAlbumVisible ?? this.isAlbumVisible,
-      enableMultiSelection: enableMultiSelection ?? this.enableMultiSelection,
+      allowMultiple: allowMultiple ?? this.allowMultiple,
     );
   }
 
   @override
   bool operator ==(covariant GalleryEntity other) {
     if (identical(this, other)) return true;
-
     return listEquals(other.selectedAssets, selectedAssets) &&
         other.isAlbumVisible == isAlbumVisible &&
-        other.enableMultiSelection == enableMultiSelection;
+        other.allowMultiple == allowMultiple;
   }
 
   @override
-  int get hashCode => selectedAssets.hashCode ^ isAlbumVisible.hashCode ^ enableMultiSelection.hashCode;
+  int get hashCode => selectedAssets.hashCode ^ isAlbumVisible.hashCode ^ allowMultiple.hashCode;
+
+  factory GalleryEntity.none() => const GalleryEntity();
 }

@@ -17,15 +17,29 @@ class AlbumEntity {
 
   AlbumEntity copyWith({
     AssetPathEntity? assetPathEntity,
-    List<AssetEntity>? entities,
+    List<AssetEntity>? assets,
     String? error,
     AssetFetchingState? state,
   }) {
     return AlbumEntity(
       assetPathEntity: assetPathEntity ?? this.assetPathEntity,
-      assets: entities ?? this.assets,
+      assets: assets ?? this.assets,
       error: error ?? this.error,
       state: state ?? this.state,
     );
   }
+
+  factory AlbumEntity.none() => const AlbumEntity();
+
+  factory AlbumEntity.unauthorised() => const AlbumEntity(state: AssetFetchingState.unauthorised);
+
+  factory AlbumEntity.completed(List<AssetEntity> assets) => AlbumEntity(
+        state: AssetFetchingState.completed,
+        assets: assets,
+      );
+
+  factory AlbumEntity.error(String? error) => AlbumEntity(
+        state: AssetFetchingState.error,
+        error: error,
+      );
 }

@@ -4,16 +4,12 @@ import 'package:photo_manager/photo_manager.dart';
 import '../../../entities/asset_entity_plus.dart';
 import '../entities/album_entity.dart';
 import '../entities/albums_entity.dart';
-import '../enums/fetching_state.dart';
 import 'album_controller.dart';
 
 class AlbumsController extends ValueNotifier<AlbumsEntity> {
-  AlbumsController()
-      : currentAlbumController = ValueNotifier(AlbumController()),
-        super(const AlbumsEntity());
+  AlbumsController() : super(AlbumsEntity.none());
 
-  ///
-  final ValueNotifier<AlbumController> currentAlbumController;
+  final currentAlbumController = ValueNotifier(AlbumController());
 
   /// Fetch recent entities
   Future<List<AssetEntityPlus>> recentAssets({
@@ -47,28 +43,23 @@ class AlbumsController extends ValueNotifier<AlbumsEntity> {
         final albums = await PhotoManager.getAssetPathList(type: requestType);
         // Update album list
         final albumControllers = List.generate(albums.length, (index) {
-          final albumController = AlbumController(albumValue: AlbumEntity(assetPathEntity: albums[index]));
+          final albumController = AlbumController(album: AlbumEntity(assetPathEntity: albums[index]));
           if (index == 0) {
             currentAlbumController.value = albumController;
             albumController.fetchAssets();
           }
           return albumController;
         });
-        value = value.copyWith(
-          state: AssetFetchingState.completed,
-          albumControllers: albumControllers,
-        );
+        value = AlbumsEntity.completed(albumControllers);
         return albumControllers;
       } catch (e) {
         debugPrint('Exception fetching albums => $e');
-        value = value.copyWith(error: e.toString(), state: AssetFetchingState.error);
+        value = AlbumsEntity.error(e.toString());
         return [];
       }
     } else {
-      value = value.copyWith(error: 'Permission', state: AssetFetchingState.unauthorised);
-      currentAlbumController.value = AlbumController(
-        albumValue: const AlbumEntity(state: AssetFetchingState.unauthorised),
-      );
+      value = AlbumsEntity.unauthorised();
+      currentAlbumController.value = AlbumController(album: AlbumEntity.unauthorised());
       return [];
     }
   }

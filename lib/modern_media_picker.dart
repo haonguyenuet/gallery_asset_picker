@@ -20,9 +20,8 @@ export 'package:modern_media_picker/features/gallery/widgets/gallery_controller_
 export 'package:modern_media_picker/features/gallery/widgets/gallery_grid_view.dart';
 export 'package:modern_media_picker/features/gallery/widgets/gallery_header.dart';
 export 'package:modern_media_picker/features/gallery/widgets/gallery_permission_view.dart';
-export 'package:modern_media_picker/features/gallery/widgets/gallery_view_field.dart';
-export 'package:modern_media_picker/features/gallery/widgets/panel_setting_builder.dart';
-export 'package:modern_media_picker/features/gallery/widgets/slidable_gallery.dart';
+export 'package:modern_media_picker/widgets/slidable_panel/panel_setting_builder.dart';
+export 'package:modern_media_picker/features/gallery/widgets/slidable_gallery_overlay.dart';
 export 'package:modern_media_picker/utils/keyboard_visibility.dart';
 export 'package:modern_media_picker/utils/ui_handler.dart';
 export 'package:modern_media_picker/widgets/animations/page_route.dart';

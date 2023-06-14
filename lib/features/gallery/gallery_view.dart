@@ -11,24 +11,10 @@ import 'package:modern_media_picker/features/gallery/widgets/albums_page.dart';
 import 'package:modern_media_picker/features/gallery/widgets/gallery_asset_selector.dart';
 import 'package:modern_media_picker/features/gallery/widgets/gallery_grid_view.dart';
 import 'package:modern_media_picker/features/gallery/widgets/gallery_header.dart';
-import 'package:modern_media_picker/features/gallery/widgets/panel_setting_builder.dart';
+import 'package:modern_media_picker/widgets/slidable_panel/panel_setting_builder.dart';
 import 'package:modern_media_picker/utils/ui_handler.dart';
 import 'package:modern_media_picker/widgets/animations/page_route.dart';
 import 'package:modern_media_picker/widgets/slidable_panel/slidable_panel.dart';
-
-Future<List<AssetEntityPlus>?> pickAssets(
-  BuildContext context, {
-  GalleryController? controller,
-  GallerySetting? setting,
-  SlidingRouteSettings? routeSetting,
-}) {
-  return Navigator.of(context).push<List<AssetEntityPlus>>(
-    SlidingPageRoute(
-      builder: GalleryView(controller: controller, setting: setting),
-      setting: routeSetting ?? const SlidingRouteSettings(settings: RouteSettings(name: GalleryView.name)),
-    ),
-  );
-}
 
 class GalleryView extends StatefulWidget {
   const GalleryView({Key? key, this.controller, this.setting}) : super(key: key);
@@ -62,17 +48,17 @@ class _GalleryViewState extends State<GalleryView> {
   @override
   Widget build(BuildContext context) {
     // If [SlidableGallery] is used no need to build panel setting again
-    if (!_controller.fullScreenMode) {
+    if (!_controller.isFullScreenMode) {
       return _View(controller: _controller, setting: widget.setting ?? _controller.setting);
     }
 
     // Full screen mode
-    return PanelSettingBuilder(
-      setting: widget.setting?.panelSetting,
+    return SlidablePanelSettingBuilder(
+      setting: widget.setting?.slidablePanelSetting,
       builder: (panelSetting) {
         return _View(
           controller: _controller,
-          setting: (widget.setting ?? _controller.setting).copyWith(panelSetting: panelSetting),
+          setting: (widget.setting ?? _controller.setting).copyWith(slidablePanelSetting: panelSetting),
         );
       },
     );
@@ -91,7 +77,7 @@ class _View extends StatefulWidget {
 
 class _ViewState extends State<_View> with SingleTickerProviderStateMixin {
   late final GalleryController _controller;
-  late final PanelController _panelController;
+  late final SlidablePanelController _panelController;
 
   late final AnimationController _animationController;
   late final Animation<double> _animation;
@@ -102,10 +88,10 @@ class _ViewState extends State<_View> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _controller = widget.controller..initSettings(setting: widget.setting);
+    _controller = widget.controller..updateSettings(setting: widget.setting);
     _albumsController = AlbumsController()..fetchAlbums(_controller.setting.requestType);
 
-    _panelController = _controller.panelController;
+    _panelController = _controller.slidablePanelController;
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
@@ -132,7 +118,7 @@ class _ViewState extends State<_View> with SingleTickerProviderStateMixin {
   void _toogleAlbumList(bool isVisible) {
     if (_animationController.isAnimating) return;
     _controller.setAlbumVisibility(visible: !isVisible);
-    _panelController.isGestureEnabled = _animationController.value == 1.0;
+    _panelController.gestureEnabled = _animationController.value == 1.0;
     if (_animationController.value == 1.0) {
       _animationController.reverse();
     } else {
@@ -202,13 +188,13 @@ class _ViewState extends State<_View> with SingleTickerProviderStateMixin {
       return false;
     }
 
-    if (_controller.fullScreenMode) {
+    if (_controller.isFullScreenMode) {
       UIHandler.of(context).pop();
       return true;
     }
 
     if (_panelController.isVisible) {
-      if (_panelController.value.status == PanelStatus.max) {
+      if (_panelController.value.status == SlidablePanelStatus.expanded) {
         _panelController.collapse();
       } else {
         _panelController.close();
@@ -231,7 +217,7 @@ class _ViewState extends State<_View> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final panelSetting = widget.setting.panelSetting;
+    final panelSetting = widget.setting.slidablePanelSetting;
     final actionMode = _controller.setting.selectionMode == SelectionMode.actionBased;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -261,17 +247,17 @@ class _ViewState extends State<_View> with SingleTickerProviderStateMixin {
                   Builder(
                     builder: (context) {
                       // Header space for full screen mode
-                      if (_controller.fullScreenMode) {
-                        return SizedBox(height: panelSetting.headerMaxHeight);
+                      if (_controller.isFullScreenMode) {
+                        return SizedBox(height: panelSetting.headerHeight);
                       }
 
                       // Toogling size for header hiding animation
-                      return ValueListenableBuilder<PanelValue>(
+                      return ValueListenableBuilder<SlidablePanelValue>(
                         valueListenable: _panelController,
                         builder: (context, value, child) {
-                          final height = (panelSetting.headerMaxHeight * value.factor * 1.2).clamp(
+                          final height = (panelSetting.headerHeight * value.factor * 1.2).clamp(
                             panelSetting.handleBarHeight,
-                            panelSetting.headerMaxHeight,
+                            panelSetting.headerHeight,
                           );
                           return SizedBox(height: height);
                         },
@@ -318,8 +304,8 @@ class _ViewState extends State<_View> with SingleTickerProviderStateMixin {
               AnimatedBuilder(
                 animation: _animation,
                 builder: (context, child) {
-                  final offsetY = panelSetting.headerMaxHeight +
-                      (panelSetting.maxHeight! - panelSetting.headerMaxHeight) * (1 - _animation.value);
+                  final offsetY = panelSetting.headerHeight +
+                      (panelSetting.maxHeight! - panelSetting.headerHeight) * (1 - _animation.value);
                   return Visibility(
                     visible: _animation.value > 0.0,
                     child: Transform.translate(

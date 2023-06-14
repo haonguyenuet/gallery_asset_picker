@@ -31,7 +31,7 @@ class GalleryGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: controller.panelSetting.foregroundColor,
+      color: controller.slidablePanelSetting.foregroundColor,
       child: CurrentAlbumBuilder(
         albumsController: albumsController,
         builder: (context, albumController) {
@@ -89,7 +89,7 @@ class GalleryGridView extends StatelessWidget {
                 onEndOfPage: albumController.fetchAssets,
                 scrollOffset: MediaQuery.of(context).size.height * 0.4,
                 child: GridView.builder(
-                  controller: controller.panelController.scrollController,
+                  controller: controller.slidablePanelController.scrollController,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: controller.setting.crossAxisCount,
                     crossAxisSpacing: 1.5,
@@ -150,7 +150,7 @@ class AssetTile extends StatelessWidget {
       child: InkWell(
         onTap: () {
           final entity = asset.toPlus.copyWith(pickedThumbData: bytes);
-          controller.select(context, entity);
+          controller.select(entity);
         },
         child: Stack(
           fit: StackFit.expand,
@@ -183,7 +183,7 @@ class SelectionCount extends StatelessWidget {
       controller: controller,
       builder: (value) {
         final actionBased = controller.setting.selectionMode == SelectionMode.actionBased;
-        final singleSelection = actionBased ? !value.enableMultiSelection : controller.singleSelection;
+        final singleSelection = actionBased ? !value.allowMultiple : controller.singleSelection;
 
         final isSelected = value.selectedAssets.contains(entity);
         final index = value.selectedAssets.indexOf(entity.toPlus);

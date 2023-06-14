@@ -24,7 +24,7 @@ class GallerySetting {
     this.albumSubtitle = 'Select Media',
     this.enableCamera = true,
     this.crossAxisCount = 3,
-    this.panelSetting = const PanelSetting(),
+    this.slidablePanelSetting = const SlidablePanelSetting(),
     this.onChanged,
     this.onReachMaximum,
   });
@@ -64,7 +64,7 @@ class GallerySetting {
 
   ///
   /// Gallery slidable panel setting
-  final PanelSetting panelSetting;
+  final SlidablePanelSetting slidablePanelSetting;
 
   ///
   /// Camera setting
@@ -89,7 +89,7 @@ class GallerySetting {
     String? albumSubtitle,
     bool? enableCamera,
     int? crossAxisCount,
-    PanelSetting? panelSetting,
+    SlidablePanelSetting? slidablePanelSetting,
     // CameraSetting? cameraSetting,
     Function(AssetEntityPlus asset, bool removed)? onChanged,
     Function()? onReachMaximum,
@@ -103,7 +103,7 @@ class GallerySetting {
       albumSubtitle: albumSubtitle ?? this.albumSubtitle,
       enableCamera: enableCamera ?? this.enableCamera,
       crossAxisCount: crossAxisCount ?? this.crossAxisCount,
-      panelSetting: panelSetting ?? this.panelSetting,
+      slidablePanelSetting: slidablePanelSetting ?? this.slidablePanelSetting,
       // cameraSetting: cameraSetting ?? this.cameraSetting,
       onChanged: onChanged ?? this.onChanged,
       onReachMaximum: onReachMaximum ?? this.onReachMaximum,

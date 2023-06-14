@@ -3,158 +3,160 @@ import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/services.dart';
 
-part 'panel_controller.dart';
-part 'panel_setting.dart';
-part 'panel_status.dart';
-part 'panel_value.dart';
+part 'slidable_panel_controller.dart';
+part 'slidable_panel_setting.dart';
+part 'slidable_panel_status.dart';
+part 'slidable_panel_value.dart';
 
 class SlidablePanel extends StatefulWidget {
-  const SlidablePanel({Key? key, this.controller, this.setting, this.child}) : super(key: key);
+  const SlidablePanel({
+    Key? key,
+    this.controller,
+    this.setting,
+    required this.child,
+  }) : super(key: key);
 
-  final PanelSetting? setting;
-  final PanelController? controller;
-  final Widget? child;
+  final SlidablePanelSetting? setting;
+  final SlidablePanelController? controller;
+  final Widget child;
 
   @override
-  State<SlidablePanel> createState() => SlidablePanelState();
+  SlidablePanelState createState() => SlidablePanelState();
 }
 
 class SlidablePanelState extends State<SlidablePanel> with TickerProviderStateMixin {
-  late double _panelMinHeight;
-  late double _panelMaxHeight;
-  late double _remainingSpace;
   late Size _size;
-  late PanelSetting _setting;
-
-  late PanelController _panelController;
+  late double _minHeight;
+  late double _maxHeight;
+  late double _remainingHeight;
+  late SlidablePanelSetting _setting;
+  late SlidablePanelController _controller;
   late ScrollController _scrollController;
   late AnimationController _animationController;
 
   // Tracking pointer velocity for snaping panel
   VelocityTracker? _velocityTracker;
 
+  // Initial position of pointer before scrolling panel to min height.
+  Offset _pointerPositionBeforeScrollToMin = Offset.zero;
+
   // Initial position of pointer
-  var _pointerInitialPosition = Offset.zero;
+  Offset _pointerPositionInitial = Offset.zero;
 
   // true, if panel can be scrolled to bottom
-  var _scrollToBottom = false;
+  bool _scrollToBottom = false;
 
   // true, if panel can be scrolled to top
-  var _scrollToTop = false;
-
-  // Initial position of pointer before scrolling panel to min height.
-  var _pointerPositionBeforeScroll = Offset.zero;
+  bool _scrollToTop = false;
 
   // true, if pointer is above halfway of the screen, false otherwise.
-  bool get _aboveHalfWay => _panelController.value.factor > (_setting.snapingPoint);
+  bool get _aboveHalfWay => _controller.value.factor > (_setting.snapingPoint);
 
   @override
   void initState() {
     super.initState();
-    _setting = widget.setting ?? const PanelSetting();
-    // Initialization of panel controller
-    _panelController = (widget.controller ?? PanelController()).._init(this);
-    _scrollController = _panelController.scrollController
-      ..addListener(() {
-        if ((_scrollToTop || _scrollToBottom) && _scrollController.hasClients) {}
-      });
+    _setting = widget.setting ?? const SlidablePanelSetting();
+    _controller = (widget.controller ?? SlidablePanelController())..init(this);
+    _scrollController = _controller.scrollController;
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
-    )..addListener(() {
-        _panelController.attach(
-          PanelValue(
-            factor: _animationController.value,
-            status: _aboveHalfWay ? PanelStatus.max : PanelStatus.min,
-          ),
-        );
-      });
+    );
+
+    _animationController.addListener(_animationListener);
   }
 
   @override
   void dispose() {
+    _animationController.removeListener(_animationListener);
     _animationController.dispose();
     if (widget.controller == null) {
-      _panelController.dispose();
+      _controller.dispose();
     }
     super.dispose();
   }
 
+  void _animationListener() {
+    _controller.updateValue(
+      SlidablePanelValue(
+        factor: _animationController.value,
+        status: _aboveHalfWay ? SlidablePanelStatus.expanded : SlidablePanelStatus.collapsed,
+      ),
+    );
+  }
+
   void _onPointerDown(PointerDownEvent event) {
-    _pointerInitialPosition = event.position;
+    _pointerPositionInitial = event.position;
     _velocityTracker ??= VelocityTracker.withKind(event.kind);
   }
 
   void _onPointerMove(PointerMoveEvent event) {
-    if (!_panelController.isGestureEnabled) return;
-
-    if (_animationController.isAnimating) return;
-
-    if (!_shouldScroll(event.position.dy)) return;
+    if (!_controller.gestureEnabled || _animationController.isAnimating || !_shouldScroll(event.position.dy)) return;
 
     _velocityTracker!.addPosition(event.timeStamp, event.position);
 
-    final status = _pointerInitialPosition.dy - event.position.dy < 0.0 ? PanelStatus.reverse : PanelStatus.forward;
-    final panelState = _panelController.value.status;
+    final currStatus = _pointerPositionInitial.dy - event.position.dy < 0.0
+        ? SlidablePanelStatus.reverse
+        : SlidablePanelStatus.forward;
+    final preStatus = _controller.value.status;
     final mediaQuery = MediaQuery.of(context);
 
-    if (!_scrollToTop && panelState == PanelStatus.min && status == PanelStatus.forward) {
-      _scrollToTop = (mediaQuery.size.height - event.position.dy) < _panelMinHeight + _setting.handleBarHeight;
+    if (!_scrollToTop && preStatus == SlidablePanelStatus.collapsed && currStatus == SlidablePanelStatus.forward) {
+      _scrollToTop = (mediaQuery.size.height - event.position.dy) < _minHeight + _setting.handleBarHeight;
     }
 
-    if (!_scrollToBottom && panelState == PanelStatus.max && status == PanelStatus.reverse) {
-      final atTopEdge = _scrollController.hasClients && _scrollController.offset <= 0 && _scrollController.offset > -10;
+    if (!_scrollToBottom && preStatus == SlidablePanelStatus.expanded && currStatus == SlidablePanelStatus.reverse) {
+      final atTopEdge = _scrollController.hasClients && _scrollController.offset == 0;
 
-      final headerStartPosition = _size.height - _panelMaxHeight;
-      final headerEndPosition = headerStartPosition + _setting.headerMaxHeight;
+      final headerStartPosition = _size.height - _maxHeight;
+      final headerEndPosition = headerStartPosition + _setting.headerHeight;
       final isHandler = event.position.dy >= headerStartPosition && event.position.dy <= headerEndPosition;
       _scrollToBottom = isHandler || atTopEdge;
       if (_scrollToBottom) {
-        _pointerPositionBeforeScroll = event.position;
+        _pointerPositionBeforeScrollToMin = event.position;
       }
     }
 
-    if (_scrollToTop || _scrollToBottom) {
-      final startingPX =
-          event.position.dy - (_scrollToTop ? _setting.handleBarHeight : _pointerPositionBeforeScroll.dy);
-      final num remainingPX = (_remainingSpace - startingPX).clamp(0.0, _remainingSpace);
+    if (!_scrollToBottom && preStatus == SlidablePanelStatus.collapsed && currStatus == SlidablePanelStatus.reverse) {
+      return _controller.close();
+    }
 
-      final num factor = (remainingPX / _remainingSpace).clamp(0.0, 1.0);
-      _slidePanelWithPosition(factor as double, status);
+    if (_scrollToTop || _scrollToBottom) {
+      final startingPixel =
+          event.position.dy - (_scrollToTop ? _setting.handleBarHeight : _pointerPositionBeforeScrollToMin.dy);
+      final num remainingPX = (_remainingHeight - startingPixel).clamp(0.0, _remainingHeight);
+
+      final num factor = (remainingPX / _remainingHeight).clamp(0.0, 1.0);
+      _slideWithPosition(factor as double, currStatus);
     }
   }
 
   void _onPointerUp(PointerUpEvent event) {
-    if (!_panelController.isGestureEnabled) return;
+    if (!_controller.gestureEnabled || _animationController.isAnimating || !_shouldScroll(event.position.dy)) return;
 
-    if (_animationController.isAnimating) return;
-
-    if (!_shouldScroll(event.position.dy)) return;
-
-    final velocity = _velocityTracker!.getVelocity();
-
-    if (_scrollToTop || _scrollToBottom) {
+    final velocity = _velocityTracker?.getVelocity();
+    if (velocity != null && (_scrollToTop || _scrollToBottom)) {
       final dyVelocity = velocity.pixelsPerSecond.dy;
-      final flingPanel = dyVelocity.abs() > 800.0;
-      final endValue = flingPanel ? (dyVelocity.isNegative ? 1.0 : 0.0) : (_aboveHalfWay ? 1.0 : 0.0);
+      final isFling = dyVelocity.abs() > 400.0;
+      final endValue = isFling ? (dyVelocity.isNegative ? 1.0 : 0.0) : (_aboveHalfWay ? 1.0 : 0.0);
       _snapToPosition(endValue);
     }
 
     _scrollToTop = false;
     _scrollToBottom = false;
-    _pointerInitialPosition = Offset.zero;
-    _pointerPositionBeforeScroll = Offset.zero;
+    _pointerPositionInitial = Offset.zero;
+    _pointerPositionBeforeScrollToMin = Offset.zero;
     _velocityTracker = null;
   }
 
   // If pointer is moved by more than 2 px then only begain
-  bool _shouldScroll(double currentDY) {
-    return (currentDY.abs() - _pointerInitialPosition.dy.abs()).abs() > 2.0;
+  bool _shouldScroll(double dyCurrent) {
+    return (dyCurrent.abs() - _pointerPositionInitial.dy.abs()).abs() > 2.0;
   }
 
-  void _slidePanelWithPosition(double factor, PanelStatus state) {
-    _panelController.attach(
-      PanelValue(
+  void _slideWithPosition(double factor, SlidablePanelStatus state) {
+    _controller.updateValue(
+      SlidablePanelValue(
         factor: factor,
         status: state,
       ),
@@ -164,7 +166,7 @@ class SlidablePanelState extends State<SlidablePanel> with TickerProviderStateMi
   void _snapToPosition(double endValue, {double? startValue}) {
     final Simulation simulation = SpringSimulation(
       SpringDescription.withDampingRatio(mass: 1, stiffness: 600, ratio: 1.1),
-      startValue ?? _panelController.value.factor,
+      startValue ?? _controller.value.factor,
       endValue,
       0,
     );
@@ -178,43 +180,38 @@ class SlidablePanelState extends State<SlidablePanel> with TickerProviderStateMi
         final mediaQuery = MediaQuery.of(context);
 
         _size = constraints.biggest;
-        _panelMaxHeight = _setting.maxHeight ?? _size.height - mediaQuery.padding.top;
-        _panelMinHeight = _setting.minHeight ?? _panelMaxHeight * 0.4;
-        _remainingSpace = _panelMaxHeight - _panelMinHeight;
+        _maxHeight = _setting.maxHeight ?? _size.height - mediaQuery.padding.top;
+        _minHeight = _setting.minHeight ?? _maxHeight * 0.4;
+        _remainingHeight = _maxHeight - _minHeight;
 
         return ValueListenableBuilder<bool>(
-          valueListenable: _panelController._panelVisibility,
+          valueListenable: _controller._visibility,
           builder: (context, bool isVisible, child) {
-            return isVisible ? child ?? const SizedBox() : const SizedBox();
+            if (isVisible == false) return const SizedBox();
+            return Column(
+              children: [
+                const Spacer(), // Space between sliding panel and status bar
+                ValueListenableBuilder<SlidablePanelValue>(
+                  valueListenable: _controller,
+                  builder: (context, value, child) {
+                    final height = (_minHeight + (_remainingHeight * value.factor)).clamp(
+                      _minHeight,
+                      _maxHeight,
+                    );
+                    return SizedBox(
+                      height: height,
+                      child: Listener(
+                        onPointerDown: _onPointerDown,
+                        onPointerMove: _onPointerMove,
+                        onPointerUp: _onPointerUp,
+                        child: widget.child,
+                      ),
+                    );
+                  },
+                ),
+              ],
+            );
           },
-          child: Builder(
-            builder: (context) {
-              return Column(
-                children: [
-                  // Space between sliding panel and status bar
-                  const Spacer(),
-
-                  // Sliding panel
-                  ValueListenableBuilder(
-                    valueListenable: _panelController,
-                    builder: (context, PanelValue value, child) {
-                      final height = (_panelMinHeight + (_remainingSpace * value.factor)).clamp(
-                        _panelMinHeight,
-                        _panelMaxHeight,
-                      );
-                      return SizedBox(height: height, child: child);
-                    },
-                    child: Listener(
-                      onPointerDown: _onPointerDown,
-                      onPointerMove: _onPointerMove,
-                      onPointerUp: _onPointerUp,
-                      child: widget.child ?? const SizedBox(),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
         );
       },
     );

@@ -23,4 +23,18 @@ class AlbumsEntity {
       state: state ?? this.state,
     );
   }
+
+  factory AlbumsEntity.none() => const AlbumsEntity();
+
+  factory AlbumsEntity.unauthorised() => const AlbumsEntity(state: AssetFetchingState.unauthorised);
+
+  factory AlbumsEntity.completed(List<AlbumController> albumControllers) => AlbumsEntity(
+        state: AssetFetchingState.completed,
+        albumControllers: albumControllers,
+      );
+
+  factory AlbumsEntity.error(String? error) => AlbumsEntity(
+        state: AssetFetchingState.error,
+        error: error,
+      );
 }

@@ -1,10 +1,10 @@
 part of 'slidable_panel.dart';
 
-class PanelSetting {
-  const PanelSetting({
+class SlidablePanelSetting {
+  const SlidablePanelSetting({
     this.maxHeight,
     this.minHeight,
-    this.headerHeight = kToolbarHeight,
+    this.toolbarHeight = kToolbarHeight,
     this.handleBarHeight = 25.0,
     this.snapingPoint = 0.4,
     this.headerBackground = Colors.black,
@@ -16,10 +16,6 @@ class PanelSetting {
           '[snapingPoint] value must be between 1.0 and 0.0',
         );
 
-  /// Margin for panel top. Which can be used to show status bar if you need
-  /// to show panel above scaffold.
-  // final double? topMargin;
-
   /// Panel maximum height
   ///
   /// mediaQuery = MediaQuery.of(context)
@@ -30,10 +26,10 @@ class PanelSetting {
   /// Default: 40% of [maxHeight]
   final double? minHeight;
 
-  /// Panel header height
+  /// Panel toolbar height
   ///
   /// Default:  [kToolbarHeight]
-  final double headerHeight;
+  final double toolbarHeight;
 
   /// Panel thumb handler height, which will be used to drag the panel
   ///
@@ -62,14 +58,13 @@ class PanelSetting {
 
   final SystemUiOverlayStyle overlayStyle;
 
-  /// Header max height
-  double get headerMaxHeight => handleBarHeight + headerHeight;
+  /// Header  height
+  double get headerHeight => handleBarHeight + toolbarHeight;
 
-  /// Helper function
-  PanelSetting copyWith({
+  SlidablePanelSetting copyWith({
     double? maxHeight,
     double? minHeight,
-    double? headerHeight,
+    double? toolbarHeight,
     double? handleBarHeight,
     double? snapingPoint,
     Color? headerBackground,
@@ -77,10 +72,10 @@ class PanelSetting {
     Color? backgroundColor,
     SystemUiOverlayStyle? overlayStyle,
   }) {
-    return PanelSetting(
+    return SlidablePanelSetting(
       maxHeight: maxHeight ?? this.maxHeight,
       minHeight: minHeight ?? this.minHeight,
-      headerHeight: headerHeight ?? this.headerHeight,
+      toolbarHeight: toolbarHeight ?? this.toolbarHeight,
       handleBarHeight: handleBarHeight ?? this.handleBarHeight,
       snapingPoint: snapingPoint ?? this.snapingPoint,
       headerBackground: headerBackground ?? this.headerBackground,

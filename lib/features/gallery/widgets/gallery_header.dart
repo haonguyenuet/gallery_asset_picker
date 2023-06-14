@@ -29,10 +29,10 @@ class GalleryHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       constraints: BoxConstraints(
-        minHeight: controller.panelSetting.handleBarHeight,
-        maxHeight: controller.panelSetting.headerHeight + controller.panelSetting.handleBarHeight,
+        minHeight: controller.slidablePanelSetting.handleBarHeight,
+        maxHeight: controller.slidablePanelSetting.toolbarHeight + controller.slidablePanelSetting.handleBarHeight,
       ),
-      color: controller.panelSetting.headerBackground,
+      color: controller.slidablePanelSetting.headerBackground,
       child: Column(
         children: [
           _Handler(controller: controller),
@@ -90,7 +90,7 @@ class GalleryHeader extends StatelessWidget {
                 },
                 child: Icon(
                   CupertinoIcons.rectangle_stack,
-                  color: value.enableMultiSelection ? Colors.white : Colors.white38,
+                  color: value.allowMultiple ? Colors.white : Colors.white38,
                 ),
               );
             },
@@ -232,12 +232,12 @@ class _Handler extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (controller.fullScreenMode) {
+    if (controller.isFullScreenMode) {
       return SizedBox(height: MediaQuery.of(context).padding.top);
     }
 
     return SizedBox(
-      height: controller.panelSetting.handleBarHeight,
+      height: controller.slidablePanelSetting.handleBarHeight,
       child: Center(
         child: ClipRRect(
           borderRadius: BorderRadius.circular(4),
