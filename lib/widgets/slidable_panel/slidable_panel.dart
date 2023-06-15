@@ -122,11 +122,10 @@ class SlidablePanelState extends State<SlidablePanel> with TickerProviderStateMi
     }
 
     if (_scrollToTop || _scrollToBottom) {
-      final startingPixel =
-          event.position.dy - (_scrollToTop ? _setting.handleBarHeight : _pointerPositionBeforeScrollToMin.dy);
-      final num remainingPX = (_remainingHeight - startingPixel).clamp(0.0, _remainingHeight);
+      final startingPixel = event.position.dy - (_scrollToTop ? _setting.handleBarHeight : _pointerPositionBeforeScrollToMin.dy);
+      final num remainingPixel = (_remainingHeight - startingPixel).clamp(0.0, _remainingHeight);
 
-      final num factor = (remainingPX / _remainingHeight).clamp(0.0, 1.0);
+      final num factor = (remainingPixel / _remainingHeight).clamp(0.0, 1.0);
       _slideWithPosition(factor as double, currStatus);
     }
   }
@@ -137,7 +136,7 @@ class SlidablePanelState extends State<SlidablePanel> with TickerProviderStateMi
     final velocity = _velocityTracker?.getVelocity();
     if (velocity != null && (_scrollToTop || _scrollToBottom)) {
       final dyVelocity = velocity.pixelsPerSecond.dy;
-      final isFling = dyVelocity.abs() > 400.0;
+      final isFling = dyVelocity.abs() > 200.0;
       final endValue = isFling ? (dyVelocity.isNegative ? 1.0 : 0.0) : (_aboveHalfWay ? 1.0 : 0.0);
       _snapToPosition(endValue);
     }

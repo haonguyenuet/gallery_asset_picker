@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../../widgets/gallery_permission_view.dart';
-import '../controllers/album_controller.dart';
-import '../controllers/albums_controller.dart';
-import '../controllers/gallery_controller.dart';
-import '../entities/album_entity.dart';
-import '../entities/albums_entity.dart';
-import '../enums/fetching_state.dart';
+import '../../../../widgets/gallery_permission_view.dart';
+import '../../controllers/albums_controller.dart';
+import '../../controllers/gallery_controller.dart';
+import '../../entities/albums_entity.dart';
+import '../../enums/fetching_state.dart';
 
 typedef AlbumsWidgetBuilder = Widget Function(BuildContext context, AlbumsEntity albums);
-typedef AlbumWidgetBuilder = Widget Function(BuildContext context, AlbumEntity album);
-typedef CurrentAlbumWidgetBuilder = Widget Function(BuildContext context, AlbumController albumController);
 
 class AlbumsBuilder extends StatelessWidget {
   const AlbumsBuilder({
@@ -66,44 +62,6 @@ class AlbumsBuilder extends StatelessWidget {
 
         return builder?.call(context, value) ?? const SizedBox();
       },
-    );
-  }
-}
-
-class AlbumBuilder extends StatelessWidget {
-  const AlbumBuilder({
-    Key? key,
-    required this.albumController,
-    this.builder,
-  }) : super(key: key);
-
-  final AlbumController albumController;
-  final AlbumWidgetBuilder? builder;
-
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<AlbumEntity>(
-      valueListenable: albumController,
-      builder: (context, value, child) => builder?.call(context, value) ?? const SizedBox(),
-    );
-  }
-}
-
-class CurrentAlbumBuilder extends StatelessWidget {
-  const CurrentAlbumBuilder({
-    Key? key,
-    required this.albumsController,
-    this.builder,
-  }) : super(key: key);
-
-  final AlbumsController albumsController;
-  final CurrentAlbumWidgetBuilder? builder;
-
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<AlbumController>(
-      valueListenable: albumsController.currentAlbumController,
-      builder: (context, value, child) => builder?.call(context, value) ?? const SizedBox(),
     );
   }
 }

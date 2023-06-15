@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:modern_media_picker/utils/const.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../../../entities/asset_entity_plus.dart';
@@ -6,8 +7,8 @@ import '../controllers/album_controller.dart';
 import '../controllers/albums_controller.dart';
 import '../controllers/gallery_controller.dart';
 import '../entities/album_entity.dart';
-import 'albums_builder.dart';
-import 'entity_thumbnail.dart';
+import 'builder/albums_builder.dart';
+import 'gallery_asset_thumbnail.dart';
 
 const _imageSize = 48;
 
@@ -20,8 +21,8 @@ class AlbumsPage extends StatelessWidget {
   }) : super(key: key);
 
   final GalleryController controller;
-  final ValueSetter<AlbumController> onAlbumChange;
   final AlbumsController albumsController;
+  final ValueSetter<AlbumController> onAlbumChange;
 
   @override
   Widget build(BuildContext context) {
@@ -35,16 +36,11 @@ class AlbumsPage extends StatelessWidget {
             alignment: Alignment.center,
             color: Colors.black,
             child: const Text(
-              'No albums',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
+              StringConst.NO_ALBUM_AVAILABLE,
+              style: TextStyle(color: Colors.white),
             ),
           );
         }
-
-        // Album list
         return ColoredBox(
           color: Colors.black,
           child: ListView.builder(
@@ -123,16 +119,14 @@ class AlbumTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Album name
                   Text(
-                    isAll ? 'All Photos' : album.assetPathEntity?.name ?? '',
+                    isAll ? StringConst.ALL_PHOTOS : album.assetPathEntity?.name ?? '',
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  // Total photos
                   Text(
                     album.assetPathEntity?.assetCountAsync.toString() ?? '',
                     style: TextStyle(

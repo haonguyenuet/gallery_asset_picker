@@ -22,16 +22,10 @@ class AssetThumbnail extends StatelessWidget {
     Widget child = const SizedBox();
     if (asset.type == AssetType.image || asset.type == AssetType.video) {
       if (asset.pickedThumbData != null) {
-        child = Image.memory(
-          asset.pickedThumbData!,
-          fit: BoxFit.cover,
-        );
+        child = Image.memory(asset.pickedThumbData!, fit: BoxFit.cover);
       } else {
         child = Image(
-          image: _MediaThumbnailProvider(
-            asset: asset,
-            onBytesLoaded: onBytesGenerated,
-          ),
+          image: _MediaThumbnailProvider(asset: asset, onBytesLoaded: onBytesGenerated),
           fit: BoxFit.cover,
         );
       }

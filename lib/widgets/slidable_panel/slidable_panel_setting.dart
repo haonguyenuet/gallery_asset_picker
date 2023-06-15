@@ -61,6 +61,9 @@ class SlidablePanelSetting {
   /// Header  height
   double get headerHeight => handleBarHeight + toolbarHeight;
 
+  /// Album  height
+  double get albumHeight => maxHeight! - headerHeight;
+
   SlidablePanelSetting copyWith({
     double? maxHeight,
     double? minHeight,

@@ -1,38 +1,66 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modern_media_picker/modern_media_picker.dart';
 
 ///
-class GridViewWidget extends StatelessWidget {
+class GridViewWidget extends StatefulWidget {
   ///
-  const GridViewWidget({
-    Key? key,
-    required this.controller,
-    required this.setting,
-  }) : super(key: key);
+  const GridViewWidget({Key? key}) : super(key: key);
 
-  final GalleryController controller;
-  final GallerySetting setting;
+  @override
+  State<GridViewWidget> createState() => _GridViewWidgetState();
+}
+
+class _GridViewWidgetState extends State<GridViewWidget> {
+  final galleryController = GalleryController(
+    settings: const GallerySetting(
+      enableCamera: true,
+      selectionMode: SelectionMode.countBased,
+      maxCount: 5,
+      requestType: RequestType.image,
+    ),
+  );
+
+  @override
+  void dispose() {
+    galleryController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: InkWell(
-          onTap: () async {
-            final entities = await controller.pick(
-              context,
-              setting: setting.copyWith(
-                maximumCount: 10,
-                albumSubtitle: 'All',
-                requestType: RequestType.image,
-              ),
-            );
-          },
-          child: const CircleAvatar(
-            child: Icon(Icons.add),
-          ),
-        ),
+    return SlidableGalleryWrapper(
+      controller: galleryController,
+      child: Scaffold(
+        appBar: AppBar(),
+        body: ValueListenableBuilder<bool>(
+            valueListenable: galleryController.slidablePanelController.visibility,
+            builder: (context, isVisible, child) {
+              return Padding(
+                padding: EdgeInsets.only(bottom: isVisible ? 10 : MediaQuery.of(context).padding.bottom),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: const SizedBox(),
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(width: 16),
+                        InkWell(
+                          onTap: () async {
+                            final entities = await galleryController.pick(context);
+                          },
+                          child: Icon(Icons.image),
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(child: CupertinoTextField()),
+                        SizedBox(width: 16),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            }),
       ),
     );
   }

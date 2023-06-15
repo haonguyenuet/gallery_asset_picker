@@ -10,13 +10,6 @@ void main() async {
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
-  final galleryController = GalleryController();
-  final gallerySetting = GallerySetting(
-    enableCamera: true,
-    maxCount: 10,
-    requestType: RequestType.all,
-  );
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -38,15 +31,9 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
-      home: SlidableGalleryOverlay(
-        controller: galleryController,
-        child: GridViewWidget(
-          controller: galleryController,
-          setting: gallerySetting,
-        ),
-      ),
+      home: const GridViewWidget(),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:modern_media_picker/utils/const.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../../../entities/asset_entity_plus.dart';
@@ -9,24 +10,22 @@ import '../../../widgets/gallery_permission_view.dart';
 import '../../../widgets/lazy_load_scroll_view.dart';
 import '../controllers/albums_controller.dart';
 import '../controllers/gallery_controller.dart';
-import '../entities/gallery_settings.dart';
 import '../enums/fetching_state.dart';
-import 'albums_builder.dart';
-import 'entity_thumbnail.dart';
-import 'gallery_builder.dart';
+import 'builder/album_builder.dart';
+import 'builder/gallery_builder.dart';
+import 'gallery_asset_thumbnail.dart';
 
-///
-class GalleryGridView extends StatelessWidget {
-  const GalleryGridView({
+class GalleryAssetsGridView extends StatelessWidget {
+  const GalleryAssetsGridView({
     Key? key,
     required this.controller,
     required this.albumsController,
-    required this.onClosePressed,
+    required this.onClose,
   }) : super(key: key);
 
   final GalleryController controller;
   final AlbumsController albumsController;
-  final VoidCallback? onClosePressed;
+  final VoidCallback? onClose;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +37,6 @@ class GalleryGridView extends StatelessWidget {
           return AlbumBuilder(
             albumController: albumController,
             builder: (context, album) {
-              // Error
               if (album.state == AssetFetchingState.unauthorised && album.assets.isEmpty) {
                 return GalleryPermissionView(
                   onRefresh: () {
@@ -51,28 +49,15 @@ class GalleryGridView extends StatelessWidget {
                 );
               }
 
-              // No data
               if (album.state == AssetFetchingState.completed && album.assets.isEmpty) {
                 return const Center(
-                  child: Text(
-                    'No media available',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  child: Text(StringConst.NO_MEDIA_AVAILABLE, style: TextStyle(color: Colors.white)),
                 );
               }
 
               if (album.state == AssetFetchingState.error) {
                 return const Center(
-                  child: Text(
-                    'Something went wrong. Please try again!',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  child: Text(StringConst.SOMETHING_WRONG, style: TextStyle(color: Colors.white)),
                 );
               }
 
@@ -89,6 +74,7 @@ class GalleryGridView extends StatelessWidget {
                 onEndOfPage: albumController.fetchAssets,
                 scrollOffset: MediaQuery.of(context).size.height * 0.4,
                 child: GridView.builder(
+                  physics: const ClampingScrollPhysics(),
                   controller: controller.slidablePanelController.scrollController,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: controller.setting.crossAxisCount,
@@ -99,24 +85,12 @@ class GalleryGridView extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   itemBuilder: (context, index) {
                     if (enableCamera && index == 0) {
-                      return InkWell(
-                        onTap: () {
-                          // controller.openCamera(context).then((value) {
-                          //   if (value != null) {
-                          //     albumController.insert(value);
-                          //   }
-                          // });
-                        },
-                        child: Icon(
-                          CupertinoIcons.camera,
-                          color: Colors.lightBlue.shade300,
-                          size: 26,
-                        ),
-                      );
+                      return const CameraTile();
                     }
 
-                    final ind = enableCamera ? index - 1 : index;
-                    final entity = albumsController.value.state == AssetFetchingState.fetching ? null : assets[ind];
+                    final assetIndex = enableCamera ? index - 1 : index;
+                    final entity =
+                        albumsController.value.state == AssetFetchingState.fetching ? null : assets[assetIndex];
 
                     if (entity == null) return const SizedBox();
                     return AssetTile(controller: controller, asset: entity);
@@ -131,13 +105,31 @@ class GalleryGridView extends StatelessWidget {
   }
 }
 
+class CameraTile extends StatelessWidget {
+  const CameraTile({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        // controller.openCamera(context).then((value) {
+        //   if (value != null) {
+        //     albumController.insert(value);
+        //   }
+        // });
+      },
+      child: Icon(
+        CupertinoIcons.camera,
+        color: Colors.grey.shade300,
+        size: 26,
+      ),
+    );
+  }
+}
+
 ///
 class AssetTile extends StatelessWidget {
-  const AssetTile({
-    Key? key,
-    required this.asset,
-    required this.controller,
-  }) : super(key: key);
+  const AssetTile({Key? key, required this.asset, required this.controller}) : super(key: key);
 
   final GalleryController controller;
   final AssetEntity asset;
@@ -155,11 +147,8 @@ class AssetTile extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            AssetThumbnail(
-              asset: asset.toPlus,
-              onBytesGenerated: (_bytes) => bytes = _bytes,
-            ),
-            SelectionCount(controller: controller, entity: asset),
+            AssetThumbnail(asset: asset.toPlus, onBytesGenerated: (_bytes) => bytes = _bytes),
+            SelectionCount(controller: controller, asset: asset),
           ],
         ),
       ),
@@ -168,48 +157,38 @@ class AssetTile extends StatelessWidget {
 }
 
 class SelectionCount extends StatelessWidget {
-  const SelectionCount({
-    Key? key,
-    required this.controller,
-    required this.entity,
-  }) : super(key: key);
+  const SelectionCount({Key? key, required this.controller, required this.asset}) : super(key: key);
 
   final GalleryController controller;
-  final AssetEntity entity;
+  final AssetEntity asset;
 
   @override
   Widget build(BuildContext context) {
     return GalleryBuilder(
       controller: controller,
-      builder: (value) {
-        final actionBased = controller.setting.selectionMode == SelectionMode.actionBased;
-        final singleSelection = actionBased ? !value.allowMultiple : controller.singleSelection;
+      builder: (context, gallery) {
+        final singleSelection = controller.singleSelection;
 
-        final isSelected = value.selectedAssets.contains(entity);
-        final index = value.selectedAssets.indexOf(entity.toPlus);
+        final isSelected = gallery.selectedAssets.contains(asset);
+        final index = gallery.selectedAssets.indexOf(asset.toPlus);
 
         Widget counter = const SizedBox();
-
         if (isSelected) {
           counter = CircleAvatar(
-            backgroundColor: Theme.of(context).primaryColor,
+            backgroundColor: controller.setting.theme?.primaryColor,
             radius: 14,
-            child: Text(
-              '${index + 1}',
-              style: Theme.of(context).textTheme.button?.copyWith(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),
-            ),
+            child: singleSelection
+                ? const Icon(Icons.check, color: Colors.white)
+                : Text('${index + 1}', style: const TextStyle(color: Colors.white)),
           );
         }
-
-        if (actionBased && !singleSelection) {
+        if (!singleSelection) {
           counter = Container(
             height: 30,
             width: 30,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 2),
+              border: Border.all(color: Colors.grey.shade200, width: 2),
             ),
             child: isSelected ? counter : const SizedBox(),
           );
@@ -218,10 +197,7 @@ class SelectionCount extends StatelessWidget {
         return Container(
           color: isSelected ? Colors.white38 : Colors.transparent,
           padding: const EdgeInsets.all(6),
-          child: Align(
-            alignment: actionBased ? Alignment.topRight : Alignment.center,
-            child: counter,
-          ),
+          child: Align(alignment: Alignment.topRight, child: counter),
         );
       },
     );

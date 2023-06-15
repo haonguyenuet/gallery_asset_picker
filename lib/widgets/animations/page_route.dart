@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 /// Built a slide page transition for the picker.
 class SlidingPageRoute<T> extends PageRoute<T> {
   SlidingPageRoute({
-    required this.builder,
+    required this.child,
     this.setting = const SlidingRouteSettings(),
   })  : transitionDuration = setting.transitionDuration,
         reverseTransitionDuration = setting.reverseTransitionDuration,
         super(settings: setting.settings);
 
-  final Widget builder;
+  final Widget child;
 
   final SlidingRouteSettings setting;
 
@@ -35,7 +35,7 @@ class SlidingPageRoute<T> extends PageRoute<T> {
   String? get barrierLabel => null;
 
   @override
-  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) => builder;
+  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) => child;
 
   @override
   Widget buildTransitions(

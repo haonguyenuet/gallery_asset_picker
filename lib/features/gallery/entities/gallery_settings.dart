@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:modern_media_picker/utils/const.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../../../entities/asset_entity_plus.dart';
@@ -20,13 +22,15 @@ class GallerySetting {
     this.requestType = RequestType.all,
     this.maxCount = 50,
     this.selectionMode = SelectionMode.countBased,
-    this.albumTitle = 'All Photos',
+    this.albumTitle = StringConst.ALL_ALBUMS,
     this.albumSubtitle = 'Select Media',
     this.enableCamera = true,
     this.crossAxisCount = 3,
     this.slidablePanelSetting = const SlidablePanelSetting(),
     this.onChanged,
     this.onReachMaximum,
+    this.closingDialogBuilder,
+    this.theme,
   });
 
   ///
@@ -79,9 +83,17 @@ class GallerySetting {
   final Function()? onReachMaximum;
 
   ///
+  /// Alert dialog when closing with selected assets
+  final Widget Function()? closingDialogBuilder;
+
+  ///
+  /// Button Style
+  final ThemeData? theme;
+
+  ///
   /// Helper function to copy its properties
   GallerySetting copyWith({
-    List<AssetEntityPlus>? selectedEntities,
+    List<AssetEntityPlus>? selectedAssets,
     RequestType? requestType,
     int? maximumCount,
     SelectionMode? selectionMode,
@@ -93,9 +105,11 @@ class GallerySetting {
     // CameraSetting? cameraSetting,
     Function(AssetEntityPlus asset, bool removed)? onChanged,
     Function()? onReachMaximum,
+    Widget Function()? closingDialogBuilder,
+    ThemeData? theme,
   }) {
     return GallerySetting(
-      selectedAssets: selectedEntities ?? this.selectedAssets,
+      selectedAssets: selectedAssets ?? this.selectedAssets,
       requestType: requestType ?? this.requestType,
       maxCount: maximumCount ?? this.maxCount,
       selectionMode: selectionMode ?? this.selectionMode,
@@ -107,6 +121,8 @@ class GallerySetting {
       // cameraSetting: cameraSetting ?? this.cameraSetting,
       onChanged: onChanged ?? this.onChanged,
       onReachMaximum: onReachMaximum ?? this.onReachMaximum,
+      closingDialogBuilder: closingDialogBuilder ?? this.closingDialogBuilder,
+      theme: theme ?? this.theme,
     );
   }
 }

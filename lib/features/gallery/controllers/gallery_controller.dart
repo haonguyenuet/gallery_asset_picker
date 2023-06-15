@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:modern_media_picker/features/gallery/gallery_view.dart';
+import 'package:modern_media_picker/features/gallery/gallery.dart';
 
 import '../../../entities/asset_entity_plus.dart';
 import '../../../widgets/widgets.dart';
@@ -42,12 +42,16 @@ class GalleryController extends ValueNotifier<GalleryEntity> {
     value = value.copyWith(isAlbumVisible: visible);
   }
 
-  void toogleMultiSelection() {
+  void toggleMultiSelection() {
     value = value.copyWith(allowMultiple: !value.allowMultiple);
   }
 
   void select(AssetEntityPlus asset) {
+    final assets = List.of(value.selectedAssets);
+
     if (reachedMaximumLimit) {
+      assets.remove(asset);
+      value = value.copyWith(selectedAssets: assets);
       return setting.onReachMaximum?.call();
     }
 
@@ -57,9 +61,7 @@ class GalleryController extends ValueNotifier<GalleryEntity> {
       return;
     }
 
-    final assets = List.of(value.selectedAssets);
     final isSelected = assets.contains(asset);
-
     if (isSelected) {
       assets.remove(asset);
     } else {
@@ -75,7 +77,6 @@ class GalleryController extends ValueNotifier<GalleryEntity> {
 
   Future<List<AssetEntityPlus>> pick(
     BuildContext context, {
-    GallerySetting? setting,
     SlidingRouteSettings? routeSetting,
   }) async {
     _selectionTask = Completer<List<AssetEntityPlus>>();
@@ -84,12 +85,10 @@ class GalleryController extends ValueNotifier<GalleryEntity> {
       updateSettings(setting);
     }
     if (isFullScreenMode) {
-      Navigator.of(context).push(
-        SlidingPageRoute(
-          builder: GalleryView(controller: this, setting: setting),
-          setting: routeSetting ?? const SlidingRouteSettings(settings: RouteSettings(name: GalleryView.name)),
-        ),
-      );
+      Navigator.of(context).push(SlidingPageRoute(
+        child: GalleryPage(controller: this),
+        setting: routeSetting ?? const SlidingRouteSettings(settings: RouteSettings(name: 'GalleryView')),
+      ));
     } else {
       FocusScope.of(context).unfocus();
       slidablePanelController.open();

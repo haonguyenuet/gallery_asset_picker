@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:modern_media_picker/utils/const.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-///
 class GalleryPermissionView extends StatefulWidget {
-  ///
-  const GalleryPermissionView({
-    Key? key,
-    this.onRefresh,
-    this.isCamera = false,
-  }) : super(key: key);
+  const GalleryPermissionView({Key? key, this.onRefresh, this.theme, this.isCamera = false}) : super(key: key);
 
-  ///
   final VoidCallback? onRefresh;
-
-  ///
   final bool isCamera;
+  final ThemeData? theme;
 
   @override
   State<GalleryPermissionView> createState() => _GalleryPermissionViewState();
@@ -47,7 +40,7 @@ class _GalleryPermissionViewState extends State<GalleryPermissionView> with Widg
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final scheme = widget.theme?.colorScheme ?? Theme.of(context).colorScheme;
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -60,59 +53,54 @@ class _GalleryPermissionViewState extends State<GalleryPermissionView> with Widg
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Heading
           Text(
-            'Access Your ${widget.isCamera ? 'Camera' : 'Album'}',
-            style: const TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 18,
-            ),
+            '${widget.isCamera ? StringConst.CAMERA : StringConst.ALBUM} Access',
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
           ),
-
-          const SizedBox(height: 24),
-
-          // Description
+          const SizedBox(height: 8),
           Text(
-            '''Allow Drishya picker to access your ${widget.isCamera ? 'camera and microphone' : 'album for picking media'} .''',
+            'We need to access your ${widget.isCamera ? 'camera' : 'album for picking media'}.',
             textAlign: TextAlign.center,
           ),
-
-          const SizedBox(height: 20),
-
-          // Allow access button
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (widget.isCamera)
-                Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child: OutlinedButton(
-                    onPressed: Navigator.of(context).pop,
-                    style: OutlinedButton.styleFrom(
-                      primary: scheme.secondary,
-                      visualDensity: VisualDensity.comfortable,
-                    ),
-                    child: const Text('Deny Access'),
-                  ),
-                ),
-              OutlinedButton(
-                onPressed: () {
-                  PhotoManager.openSetting();
-                  _setting = true;
-                },
-                style: OutlinedButton.styleFrom(
-                  visualDensity: VisualDensity.comfortable,
-                  backgroundColor: scheme.primary,
-                  primary: scheme.onPrimary,
-                ),
-                child: const Text('Allow Access'),
-              ),
+              if (widget.isCamera) ...[
+                _buildDenyButton(scheme, context),
+                const SizedBox(width: 16),
+              ],
+              _buildAllowButton(scheme),
             ],
           ),
-
-          //
         ],
       ),
+    );
+  }
+
+  Widget _buildDenyButton(ColorScheme scheme, BuildContext context) {
+    return OutlinedButton(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: scheme.secondary,
+        visualDensity: VisualDensity.comfortable,
+      ),
+      child: const Text(StringConst.DENY_ACCESS),
+      onPressed: Navigator.of(context).pop,
+    );
+  }
+
+  Widget _buildAllowButton(ColorScheme scheme) {
+    return ElevatedButton(
+      style: OutlinedButton.styleFrom(
+        visualDensity: VisualDensity.comfortable,
+        backgroundColor: scheme.primary,
+        foregroundColor: scheme.onPrimary,
+      ),
+      child: const Text(StringConst.ALLOW_ACCESS),
+      onPressed: () {
+        PhotoManager.openSetting();
+        _setting = true;
+      },
     );
   }
 }
