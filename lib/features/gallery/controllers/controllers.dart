@@ -1,3 +1,3 @@
-export 'album_controller.dart';
-export 'albums_controller.dart';
+export 'album_list_notifier.dart';
+export 'album_notifier.dart';
 export 'gallery_controller.dart';

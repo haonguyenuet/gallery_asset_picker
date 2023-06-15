@@ -1,19 +1,19 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:modern_media_picker/features/gallery/gallery.dart';
+import 'package:gallery_asset_picker/entities/gallery_asset.dart';
+import 'package:gallery_asset_picker/features/gallery/entities/gallery.dart';
+import 'package:gallery_asset_picker/features/gallery/gallery.dart';
+import 'package:gallery_asset_picker/settings/gallery_settings.dart';
+import 'package:gallery_asset_picker/settings/slidable_panel_setting.dart';
+import 'package:gallery_asset_picker/widgets/widgets.dart';
 
-import '../../../entities/asset_entity_plus.dart';
-import '../../../widgets/widgets.dart';
-import '../entities/gallery_entity.dart';
-import '../entities/gallery_settings.dart';
-
-class GalleryController extends ValueNotifier<GalleryEntity> {
-  GalleryController({GallerySetting? settings}) : super(GalleryEntity.none()) {
+class GalleryController extends ValueNotifier<Gallery> {
+  GalleryController({GallerySetting? settings}) : super(Gallery.none()) {
     updateSettings(settings);
   }
 
-  late Completer<List<AssetEntityPlus>> _selectionTask;
+  late Completer<List<GalleryAsset>> _selectionTask;
 
   final GlobalKey slidablePanelKey = GlobalKey();
   final SlidablePanelController slidablePanelController = SlidablePanelController();
@@ -46,7 +46,7 @@ class GalleryController extends ValueNotifier<GalleryEntity> {
     value = value.copyWith(allowMultiple: !value.allowMultiple);
   }
 
-  void select(AssetEntityPlus asset) {
+  void select(GalleryAsset asset) {
     final assets = List.of(value.selectedAssets);
 
     if (reachedMaximumLimit) {
@@ -75,11 +75,11 @@ class GalleryController extends ValueNotifier<GalleryEntity> {
     value = value.copyWith(selectedAssets: []);
   }
 
-  Future<List<AssetEntityPlus>> pick(
+  Future<List<GalleryAsset>> pick(
     BuildContext context, {
     SlidingRouteSettings? routeSetting,
   }) async {
-    _selectionTask = Completer<List<AssetEntityPlus>>();
+    _selectionTask = Completer<List<GalleryAsset>>();
 
     if (setting != null) {
       updateSettings(setting);
@@ -97,9 +97,9 @@ class GalleryController extends ValueNotifier<GalleryEntity> {
     return _selectionTask.future;
   }
 
-  List<AssetEntityPlus> completeSelection() {
+  List<GalleryAsset> completeSelection() {
     final assets = value.selectedAssets;
-    value = const GalleryEntity();
+    value = const Gallery();
     _selectionTask.complete(assets);
     return assets;
   }

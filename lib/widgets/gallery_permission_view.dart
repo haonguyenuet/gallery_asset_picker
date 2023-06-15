@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:modern_media_picker/utils/const.dart';
+import 'package:gallery_asset_picker/utils/const.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class GalleryPermissionView extends StatefulWidget {

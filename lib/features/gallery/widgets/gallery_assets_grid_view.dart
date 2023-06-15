@@ -2,180 +2,169 @@ import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:modern_media_picker/utils/const.dart';
+import 'package:gallery_asset_picker/entities/gallery_asset.dart';
+import 'package:gallery_asset_picker/features/gallery/controllers/album_list_notifier.dart';
+import 'package:gallery_asset_picker/features/gallery/enums/fetch_state.dart';
+import 'package:gallery_asset_picker/features/gallery/widgets/builder/album_builder.dart';
+import 'package:gallery_asset_picker/features/gallery/widgets/builder/gallery_builder.dart';
+import 'package:gallery_asset_picker/features/gallery/widgets/gallery_asset_thumbnail.dart';
+import 'package:gallery_asset_picker/features/gallery/widgets/gallery_controller_provider.dart';
+import 'package:gallery_asset_picker/utils/const.dart';
+import 'package:gallery_asset_picker/widgets/gallery_permission_view.dart';
+import 'package:gallery_asset_picker/widgets/lazy_load_scroll_view.dart';
 import 'package:photo_manager/photo_manager.dart';
-
-import '../../../entities/asset_entity_plus.dart';
-import '../../../widgets/gallery_permission_view.dart';
-import '../../../widgets/lazy_load_scroll_view.dart';
-import '../controllers/albums_controller.dart';
-import '../controllers/gallery_controller.dart';
-import '../enums/fetching_state.dart';
-import 'builder/album_builder.dart';
-import 'builder/gallery_builder.dart';
-import 'gallery_asset_thumbnail.dart';
 
 class GalleryAssetsGridView extends StatelessWidget {
   const GalleryAssetsGridView({
     Key? key,
-    required this.controller,
-    required this.albumsController,
+    required this.albumListNotifier,
     required this.onClose,
   }) : super(key: key);
 
-  final GalleryController controller;
-  final AlbumsController albumsController;
+  final AlbumListNotifier albumListNotifier;
   final VoidCallback? onClose;
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
-      color: controller.slidablePanelSetting.foregroundColor,
-      child: CurrentAlbumBuilder(
-        albumsController: albumsController,
-        builder: (context, albumController) {
-          return AlbumBuilder(
-            albumController: albumController,
-            builder: (context, album) {
-              if (album.state == AssetFetchingState.unauthorised && album.assets.isEmpty) {
-                return GalleryPermissionView(
-                  onRefresh: () {
-                    if (album.assetPathEntity == null) {
-                      albumsController.fetchAlbums(controller.setting.requestType);
-                    } else {
-                      albumController.fetchAssets();
-                    }
-                  },
-                );
-              }
-
-              if (album.state == AssetFetchingState.completed && album.assets.isEmpty) {
-                return const Center(
-                  child: Text(StringConst.NO_MEDIA_AVAILABLE, style: TextStyle(color: Colors.white)),
-                );
-              }
-
-              if (album.state == AssetFetchingState.error) {
-                return const Center(
-                  child: Text(StringConst.SOMETHING_WRONG, style: TextStyle(color: Colors.white)),
-                );
-              }
-
-              final assets = album.assets;
-              final enableCamera = controller.setting.enableCamera;
-
-              final itemCount = albumsController.value.state == AssetFetchingState.fetching
-                  ? 20
-                  : enableCamera
-                      ? assets.length + 1
-                      : assets.length;
-
-              return LazyLoadScrollView(
-                onEndOfPage: albumController.fetchAssets,
-                scrollOffset: MediaQuery.of(context).size.height * 0.4,
-                child: GridView.builder(
-                  physics: const ClampingScrollPhysics(),
-                  controller: controller.slidablePanelController.scrollController,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: controller.setting.crossAxisCount,
-                    crossAxisSpacing: 1.5,
-                    mainAxisSpacing: 1.5,
-                  ),
-                  itemCount: itemCount,
-                  padding: EdgeInsets.zero,
-                  itemBuilder: (context, index) {
-                    if (enableCamera && index == 0) {
-                      return const CameraTile();
-                    }
-
-                    final assetIndex = enableCamera ? index - 1 : index;
-                    final entity =
-                        albumsController.value.state == AssetFetchingState.fetching ? null : assets[assetIndex];
-
-                    if (entity == null) return const SizedBox();
-                    return AssetTile(controller: controller, asset: entity);
-                  },
-                ),
+    final galleryController = context.galleryController;
+    return CurrentAlbumBuilder(
+      controller: albumListNotifier,
+      builder: (context, currentAlbumNotifier) {
+        return AlbumBuilder(
+          notifier: currentAlbumNotifier,
+          builder: (context, album) {
+            if (album.fetchState == FetchState.unauthorised && album.assets.isEmpty) {
+              return GalleryPermissionView(
+                onRefresh: () {
+                  if (album.assetPathEntity == null) {
+                    albumListNotifier.fetchAlbums(galleryController.setting.requestType);
+                  } else {
+                    currentAlbumNotifier.fetchAssets();
+                  }
+                },
               );
-            },
-          );
-        },
-      ),
+            }
+
+            if (album.fetchState == FetchState.completed && album.assets.isEmpty) {
+              return const Center(
+                child: Text(StringConst.NO_MEDIA_AVAILABLE, style: TextStyle(color: Colors.white)),
+              );
+            }
+
+            if (album.fetchState == FetchState.error) {
+              return const Center(
+                child: Text(StringConst.SOMETHING_WRONG, style: TextStyle(color: Colors.white)),
+              );
+            }
+
+            final assets = album.assets;
+            final enableCamera = galleryController.setting.enableCamera;
+
+            final itemCount = albumListNotifier.value.fetchState == FetchState.fetching
+                ? 20
+                : enableCamera
+                    ? assets.length + 1
+                    : assets.length;
+
+            return LazyLoadScrollView(
+              onEndOfPage: currentAlbumNotifier.fetchAssets,
+              scrollOffset: MediaQuery.of(context).size.height * 0.4,
+              child: GridView.builder(
+                physics: const ClampingScrollPhysics(),
+                controller: galleryController.slidablePanelController.scrollController,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: galleryController.setting.crossAxisCount,
+                  crossAxisSpacing: 2,
+                  mainAxisSpacing: 2,
+                ),
+                itemCount: itemCount,
+                padding: EdgeInsets.zero,
+                itemBuilder: (context, index) {
+                  if (enableCamera && index == 0) {
+                    return const _CameraTile();
+                  }
+
+                  final assetIndex = enableCamera ? index - 1 : index;
+                  final entity = albumListNotifier.value.fetchState == FetchState.fetching ? null : assets[assetIndex];
+
+                  if (entity == null) return const SizedBox();
+                  return _AssetTile(asset: entity);
+                },
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
 
-class CameraTile extends StatelessWidget {
-  const CameraTile({super.key});
+class _CameraTile extends StatelessWidget {
+  const _CameraTile();
 
   @override
   Widget build(BuildContext context) {
+    // final galleryController = context.galleryController;
     return InkWell(
       onTap: () {
-        // controller.openCamera(context).then((value) {
-        //   if (value != null) {
-        //     albumController.insert(value);
-        //   }
-        // });
+        // TODO(Haonguyen): OPEN CAMERA
       },
       child: Icon(
         CupertinoIcons.camera,
-        color: Colors.grey.shade300,
-        size: 26,
+        color: Colors.grey.shade200,
+        size: 28,
       ),
     );
   }
 }
 
 ///
-class AssetTile extends StatelessWidget {
-  const AssetTile({Key? key, required this.asset, required this.controller}) : super(key: key);
+class _AssetTile extends StatelessWidget {
+  const _AssetTile({Key? key, required this.asset}) : super(key: key);
 
-  final GalleryController controller;
   final AssetEntity asset;
 
   @override
   Widget build(BuildContext context) {
+    final galleryController = context.galleryController;
     Uint8List? bytes;
-    return ColoredBox(
-      color: const Color.fromARGB(255, 0, 0, 0),
-      child: InkWell(
-        onTap: () {
-          final entity = asset.toPlus.copyWith(pickedThumbData: bytes);
-          controller.select(entity);
-        },
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            AssetThumbnail(asset: asset.toPlus, onBytesGenerated: (_bytes) => bytes = _bytes),
-            SelectionCount(controller: controller, asset: asset),
-          ],
-        ),
+    return InkWell(
+      onTap: () {
+        final entity = asset.toGalleryAsset.copyWith(pickedThumbData: bytes);
+        galleryController.select(entity);
+      },
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          AssetThumbnail(asset: asset.toGalleryAsset, onBytesGenerated: (_bytes) => bytes = _bytes),
+          _SelectionCount(asset: asset),
+        ],
       ),
     );
   }
 }
 
-class SelectionCount extends StatelessWidget {
-  const SelectionCount({Key? key, required this.controller, required this.asset}) : super(key: key);
+class _SelectionCount extends StatelessWidget {
+  const _SelectionCount({Key? key, required this.asset}) : super(key: key);
 
-  final GalleryController controller;
   final AssetEntity asset;
 
   @override
   Widget build(BuildContext context) {
+    final galleryController = context.galleryController;
+
     return GalleryBuilder(
-      controller: controller,
+      controller: galleryController,
       builder: (context, gallery) {
-        final singleSelection = controller.singleSelection;
+        final singleSelection = galleryController.singleSelection;
 
         final isSelected = gallery.selectedAssets.contains(asset);
-        final index = gallery.selectedAssets.indexOf(asset.toPlus);
+        final index = gallery.selectedAssets.indexOf(asset.toGalleryAsset);
 
         Widget counter = const SizedBox();
         if (isSelected) {
           counter = CircleAvatar(
-            backgroundColor: controller.setting.theme?.primaryColor,
+            backgroundColor: galleryController.setting.theme?.primaryColor,
             radius: 14,
             child: singleSelection
                 ? const Icon(Icons.check, color: Colors.white)

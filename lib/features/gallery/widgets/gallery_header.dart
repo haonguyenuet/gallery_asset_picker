@@ -2,52 +2,55 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gallery_asset_picker/features/gallery/controllers/album_list_notifier.dart';
+import 'package:gallery_asset_picker/features/gallery/widgets/builder/album_builder.dart';
+import 'package:gallery_asset_picker/features/gallery/widgets/builder/gallery_builder.dart';
+import 'package:gallery_asset_picker/features/gallery/widgets/gallery_controller_provider.dart';
+import 'package:gallery_asset_picker/settings/gallery_settings.dart';
 
-import '../controllers/albums_controller.dart';
-import '../controllers/gallery_controller.dart';
-import '../entities/gallery_settings.dart';
-import 'builder/album_builder.dart';
-import 'builder/gallery_builder.dart';
-
-class GalleryHeader extends StatelessWidget {
+class GalleryHeader extends StatefulWidget {
   const GalleryHeader({
     Key? key,
-    required this.controller,
     required this.onClose,
     required this.onAlbumToggle,
-    required this.albumsController,
+    required this.albumListNotifier,
     this.headerSubtitle,
   }) : super(key: key);
 
   final String? headerSubtitle;
-  final GalleryController controller;
-  final AlbumsController albumsController;
+  final AlbumListNotifier albumListNotifier;
   final void Function() onClose;
   final void Function(bool visible) onAlbumToggle;
+
+  @override
+  State<GalleryHeader> createState() => _GalleryHeaderState();
+}
+
+class _GalleryHeaderState extends State<GalleryHeader> {
+  late final _galleryController = context.galleryController;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
       constraints: BoxConstraints(
-        minHeight: controller.slidablePanelSetting.handleBarHeight,
-        maxHeight: controller.slidablePanelSetting.headerHeight,
+        minHeight: _galleryController.slidablePanelSetting.handleBarHeight,
+        maxHeight: _galleryController.slidablePanelSetting.headerHeight,
       ),
-      color: controller.slidablePanelSetting.headerBackground,
+      color: _galleryController.slidablePanelSetting.headerBackground,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          HandlerBar(controller: controller),
+          const _HandleBar(),
           Expanded(
             child: Row(
               children: [
                 Expanded(child: _buildCloseButton(context)),
                 FittedBox(
-                  child: AlbumInformation(
-                    subtitle: headerSubtitle,
-                    controller: controller,
-                    albumsController: albumsController,
-                    onAlbumToggle: onAlbumToggle,
+                  child: _AlbumInformation(
+                    subtitle: widget.headerSubtitle,
+                    albumListNotifier: widget.albumListNotifier,
+                    onAlbumToggle: widget.onAlbumToggle,
                   ),
                 ),
                 Expanded(child: _buildToggleMultiSelection()),
@@ -70,34 +73,34 @@ class GalleryHeader extends StatelessWidget {
           size: 28,
           color: Colors.grey.shade700,
         ),
-        onPressed: onClose,
+        onPressed: widget.onClose,
       ),
     );
   }
 
   Widget _buildToggleMultiSelection() {
-    if (controller.setting.selectionMode == SelectionMode.countBased) {
+    if (_galleryController.setting.selectionMode == SelectionMode.countBased) {
       return const SizedBox();
     }
     return Align(
       alignment: Alignment.centerRight,
       child: GalleryBuilder(
-        controller: controller,
+        controller: _galleryController,
         builder: (context, gallery) {
           return CupertinoButton(
             padding: const EdgeInsets.all(8),
             minSize: 0,
             onPressed: () {
-              if (controller.value.isAlbumVisible) {
-                onAlbumToggle(true);
+              if (_galleryController.value.isAlbumVisible) {
+                widget.onAlbumToggle(true);
               } else {
-                controller.toggleMultiSelection();
+                _galleryController.toggleMultiSelection();
               }
             },
             child: Icon(
               CupertinoIcons.square_stack_3d_up,
               size: 28,
-              color: gallery.allowMultiple ? controller.setting.theme?.primaryColor : Colors.white38,
+              color: gallery.allowMultiple ? _galleryController.setting.theme?.primaryColor : Colors.white38,
             ),
           );
         },
@@ -106,22 +109,17 @@ class GalleryHeader extends StatelessWidget {
   }
 }
 
-class HandlerBar extends StatelessWidget {
-  const HandlerBar({
-    Key? key,
-    required this.controller,
-  }) : super(key: key);
-
-  final GalleryController controller;
+class _HandleBar extends StatelessWidget {
+  const _HandleBar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if (controller.isFullScreenMode) {
+    final galleryController = context.galleryController;
+    if (galleryController.isFullScreenMode) {
       return SizedBox(height: MediaQuery.of(context).padding.top);
     }
-
     return SizedBox(
-      height: controller.slidablePanelSetting.handleBarHeight,
+      height: galleryController.slidablePanelSetting.handleBarHeight,
       child: Center(
         child: ClipRRect(
           borderRadius: BorderRadius.circular(4),
@@ -136,42 +134,41 @@ class HandlerBar extends StatelessWidget {
   }
 }
 
-class AlbumInformation extends StatelessWidget {
-  const AlbumInformation({
+class _AlbumInformation extends StatelessWidget {
+  const _AlbumInformation({
     Key? key,
     this.subtitle,
-    required this.controller,
-    required this.albumsController,
+    required this.albumListNotifier,
     required this.onAlbumToggle,
   }) : super(key: key);
 
   final String? subtitle;
-  final GalleryController controller;
-  final AlbumsController albumsController;
+  final AlbumListNotifier albumListNotifier;
   final void Function(bool visible) onAlbumToggle;
 
   @override
   Widget build(BuildContext context) {
+    final galleryController = context.galleryController;
     return Row(
       children: [
         CurrentAlbumBuilder(
-          albumsController: albumsController,
-          builder: (context, albumController) {
-            final isAll = albumController.value.assetPathEntity?.isAll ?? true;
+          controller: albumListNotifier,
+          builder: (context, albumNotifier) {
+            final isAll = albumNotifier.value.assetPathEntity?.isAll ?? true;
             return Text(
-              isAll ? controller.setting.albumTitle : albumController.value.assetPathEntity?.name ?? 'Unknown',
+              isAll ? galleryController.setting.albumTitle : albumNotifier.value.assetPathEntity?.name ?? 'Unknown',
               style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
             );
           },
         ),
         GalleryBuilder(
-          controller: controller,
+          controller: galleryController,
           builder: (context, gallery) {
             return AnimatedOpacity(
               opacity: gallery.selectedAssets.isEmpty ? 1.0 : 0.0,
               duration: const Duration(milliseconds: 200),
               child: ValueListenableBuilder<bool>(
-                valueListenable: controller.albumVisibility,
+                valueListenable: galleryController.albumVisibility,
                 builder: (context, visible, child) {
                   return TweenAnimationBuilder<double>(
                     duration: const Duration(milliseconds: 300),
@@ -183,12 +180,12 @@ class AlbumInformation extends StatelessWidget {
                       angle: pi * factor,
                       child: CupertinoButton(
                         minSize: 0,
+                        child: Icon(CupertinoIcons.chevron_down, size: 20, color: Colors.grey.shade700),
                         onPressed: () {
-                          if (controller.value.selectedAssets.isEmpty) {
+                          if (gallery.selectedAssets.isEmpty) {
                             onAlbumToggle(visible);
                           }
                         },
-                        child: Icon(CupertinoIcons.chevron_down, size: 20, color: Colors.grey.shade700),
                       ),
                     ),
                   );

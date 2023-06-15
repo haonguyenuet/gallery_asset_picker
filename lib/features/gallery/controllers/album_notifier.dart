@@ -1,11 +1,10 @@
 import 'package:flutter/foundation.dart';
-import 'package:modern_media_picker/features/gallery/enums/fetching_state.dart';
+import 'package:gallery_asset_picker/features/gallery/entities/album.dart';
+import 'package:gallery_asset_picker/features/gallery/enums/fetch_state.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-import '../entities/album_entity.dart';
-
-class AlbumController extends ValueNotifier<AlbumEntity> {
-  AlbumController({AlbumEntity? album}) : super(album ?? AlbumEntity.none());
+class AlbumNotifier extends ValueNotifier<Album> {
+  AlbumNotifier({Album? album}) : super(album ?? Album.none());
 
   int _currentPage = 0;
 
@@ -17,13 +16,13 @@ class AlbumController extends ValueNotifier<AlbumEntity> {
         final assets = (await value.assetPathEntity?.getAssetListPaged(page: _currentPage, size: 30)) ?? [];
         final updatedAssets = [...value.assets, ...assets];
         ++_currentPage;
-        value = value.copyWith(state: AssetFetchingState.completed, assets: updatedAssets);
+        value = value.copyWith(fetchState: FetchState.completed, assets: updatedAssets);
       } catch (e) {
         debugPrint('Exception fetching assets => $e');
-        value = value.copyWith(state: AssetFetchingState.error, error: e.toString());
+        value = value.copyWith(fetchState: FetchState.error, error: e.toString());
       }
     } else {
-      value = value.copyWith(state: AssetFetchingState.unauthorised);
+      value = value.copyWith(fetchState: FetchState.unauthorised);
     }
     return value.assets;
   }

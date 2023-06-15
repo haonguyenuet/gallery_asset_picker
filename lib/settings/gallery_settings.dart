@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:modern_media_picker/utils/const.dart';
+import 'package:gallery_asset_picker/entities/gallery_asset.dart';
+import 'package:gallery_asset_picker/settings/slidable_panel_setting.dart';
+import 'package:gallery_asset_picker/utils/const.dart';
 import 'package:photo_manager/photo_manager.dart';
-
-import '../../../entities/asset_entity_plus.dart';
-import '../../../widgets/slidable_panel/slidable_panel.dart';
 
 /// Available multiselection mode for gallery
 enum SelectionMode {
@@ -35,7 +34,7 @@ class GallerySetting {
 
   ///
   /// Previously selected entities
-  final List<AssetEntityPlus> selectedAssets;
+  final List<GalleryAsset> selectedAssets;
 
   ///
   /// Type of media e.g, image, video, audio, other
@@ -76,7 +75,7 @@ class GallerySetting {
 
   ///
   /// On select or remove asset
-  final Function(AssetEntityPlus asset, bool removed)? onChanged;
+  final Function(GalleryAsset asset, bool removed)? onChanged;
 
   ///
   /// On select maximum count
@@ -93,7 +92,7 @@ class GallerySetting {
   ///
   /// Helper function to copy its properties
   GallerySetting copyWith({
-    List<AssetEntityPlus>? selectedAssets,
+    List<GalleryAsset>? selectedAssets,
     RequestType? requestType,
     int? maximumCount,
     SelectionMode? selectionMode,
@@ -103,7 +102,7 @@ class GallerySetting {
     int? crossAxisCount,
     SlidablePanelSetting? slidablePanelSetting,
     // CameraSetting? cameraSetting,
-    Function(AssetEntityPlus asset, bool removed)? onChanged,
+    Function(GalleryAsset asset, bool removed)? onChanged,
     Function()? onReachMaximum,
     Widget Function()? closingDialogBuilder,
     ThemeData? theme,

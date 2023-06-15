@@ -2,11 +2,10 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gallery_asset_picker/entities/gallery_asset.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-import '../../../entities/asset_entity_plus.dart';
-
-/// Widget to display [AssetEntityPlus] thumbnail
+/// Widget to display [GalleryAsset] thumbnail
 class AssetThumbnail extends StatelessWidget {
   const AssetThumbnail({
     Key? key,
@@ -14,7 +13,7 @@ class AssetThumbnail extends StatelessWidget {
     this.onBytesGenerated,
   }) : super(key: key);
 
-  final AssetEntityPlus asset;
+  final GalleryAsset asset;
   final ValueSetter<Uint8List?>? onBytesGenerated;
 
   @override
@@ -56,7 +55,7 @@ class AssetThumbnail extends StatelessWidget {
   }
 }
 
-typedef DecoderCallback = Future<ui.Codec> Function(
+typedef _DecoderCallback = Future<ui.Codec> Function(
   Uint8List buffer, {
   int? cacheWidth,
   int? cacheHeight,
@@ -73,11 +72,11 @@ class _MediaThumbnailProvider extends ImageProvider<_MediaThumbnailProvider> {
   });
 
   ///
-  final AssetEntityPlus asset;
+  final GalleryAsset asset;
   final ValueSetter<Uint8List?>? onBytesLoaded;
 
   @override
-  ImageStreamCompleter load(_MediaThumbnailProvider key, DecoderCallback decode) => MultiFrameImageStreamCompleter(
+  ImageStreamCompleter load(_MediaThumbnailProvider key, _DecoderCallback decode) => MultiFrameImageStreamCompleter(
         codec: _loadAsync(key, decode),
         scale: 1,
         informationCollector: () sync* {
@@ -87,7 +86,7 @@ class _MediaThumbnailProvider extends ImageProvider<_MediaThumbnailProvider> {
 
   Future<ui.Codec> _loadAsync(
     _MediaThumbnailProvider key,
-    DecoderCallback decode,
+    _DecoderCallback decode,
   ) async {
     assert(key == this, 'Checks _MediaThumbnailProvider');
     final bytes = await asset.thumbnailData;

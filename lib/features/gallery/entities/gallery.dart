@@ -1,26 +1,23 @@
-// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
-
 import 'package:flutter/foundation.dart';
+import 'package:gallery_asset_picker/entities/gallery_asset.dart';
 
-import '../../../entities/asset_entity_plus.dart';
-
-class GalleryEntity {
-  const GalleryEntity({
-    this.selectedAssets = const <AssetEntityPlus>[],
+class Gallery {
+  const Gallery({
+    this.selectedAssets = const <GalleryAsset>[],
     this.isAlbumVisible = false,
     this.allowMultiple = false,
   });
 
-  final List<AssetEntityPlus> selectedAssets;
+  final List<GalleryAsset> selectedAssets;
   final bool isAlbumVisible;
   final bool allowMultiple;
 
-  GalleryEntity copyWith({
-    List<AssetEntityPlus>? selectedAssets,
+  Gallery copyWith({
+    List<GalleryAsset>? selectedAssets,
     bool? isAlbumVisible,
     bool? allowMultiple,
   }) {
-    return GalleryEntity(
+    return Gallery(
       selectedAssets: selectedAssets ?? this.selectedAssets,
       isAlbumVisible: isAlbumVisible ?? this.isAlbumVisible,
       allowMultiple: allowMultiple ?? this.allowMultiple,
@@ -28,7 +25,7 @@ class GalleryEntity {
   }
 
   @override
-  bool operator ==(covariant GalleryEntity other) {
+  bool operator ==(covariant Gallery other) {
     if (identical(this, other)) return true;
     return listEquals(other.selectedAssets, selectedAssets) &&
         other.isAlbumVisible == isAlbumVisible &&
@@ -38,5 +35,5 @@ class GalleryEntity {
   @override
   int get hashCode => selectedAssets.hashCode ^ isAlbumVisible.hashCode ^ allowMultiple.hashCode;
 
-  factory GalleryEntity.none() => const GalleryEntity();
+  factory Gallery.none() => const Gallery();
 }

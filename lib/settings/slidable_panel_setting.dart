@@ -1,4 +1,5 @@
-part of 'slidable_panel.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class SlidablePanelSetting {
   const SlidablePanelSetting({

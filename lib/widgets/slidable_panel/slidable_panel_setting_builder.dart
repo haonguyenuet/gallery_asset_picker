@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'slidable_panel.dart';
+import 'package:gallery_asset_picker/settings/slidable_panel_setting.dart';
 
 const _defaultMin = 0.45;
 

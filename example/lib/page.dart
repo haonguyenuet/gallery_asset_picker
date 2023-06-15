@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:modern_media_picker/modern_media_picker.dart';
+import 'package:gallery_asset_picker/gallery_asset_picker.dart';
+import 'package:gallery_asset_picker/settings/gallery_settings.dart';
 
 ///
 class GridViewWidget extends StatefulWidget {

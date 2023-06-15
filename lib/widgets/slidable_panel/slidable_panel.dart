@@ -1,10 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
-import 'package:flutter/services.dart';
+import 'package:gallery_asset_picker/settings/slidable_panel_setting.dart';
 
 part 'slidable_panel_controller.dart';
-part 'slidable_panel_setting.dart';
 part 'slidable_panel_status.dart';
 part 'slidable_panel_value.dart';
 
@@ -122,7 +121,8 @@ class SlidablePanelState extends State<SlidablePanel> with TickerProviderStateMi
     }
 
     if (_scrollToTop || _scrollToBottom) {
-      final startingPixel = event.position.dy - (_scrollToTop ? _setting.handleBarHeight : _pointerPositionBeforeScrollToMin.dy);
+      final startingPixel =
+          event.position.dy - (_scrollToTop ? _setting.handleBarHeight : _pointerPositionBeforeScrollToMin.dy);
       final num remainingPixel = (_remainingHeight - startingPixel).clamp(0.0, _remainingHeight);
 
       final num factor = (remainingPixel / _remainingHeight).clamp(0.0, 1.0);

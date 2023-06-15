@@ -1,33 +1,32 @@
+import 'package:gallery_asset_picker/features/gallery/enums/fetch_state.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-import '../enums/fetching_state.dart';
-
-class AlbumEntity {
-  const AlbumEntity({
+class Album {
+  const Album({
     this.assetPathEntity,
     this.assets = const <AssetEntity>[],
-    this.state = AssetFetchingState.fetching,
+    this.fetchState = FetchState.fetching,
     this.error,
   });
 
   final AssetPathEntity? assetPathEntity;
   final List<AssetEntity> assets;
-  final AssetFetchingState state;
+  final FetchState fetchState;
   final String? error;
 
-  AlbumEntity copyWith({
+  Album copyWith({
     AssetPathEntity? assetPathEntity,
     List<AssetEntity>? assets,
     String? error,
-    AssetFetchingState? state,
+    FetchState? fetchState,
   }) {
-    return AlbumEntity(
+    return Album(
       assetPathEntity: assetPathEntity ?? this.assetPathEntity,
       assets: assets ?? this.assets,
       error: error ?? this.error,
-      state: state ?? this.state,
+      fetchState: fetchState ?? this.fetchState,
     );
   }
 
-  factory AlbumEntity.none() => const AlbumEntity();
+  factory Album.none() => const Album();
 }

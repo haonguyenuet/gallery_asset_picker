@@ -3,8 +3,8 @@ import 'dart:typed_data';
 
 import 'package:photo_manager/photo_manager.dart';
 
-class AssetEntityPlus extends AssetEntity {
-  const AssetEntityPlus({
+class GalleryAsset extends AssetEntity {
+  const GalleryAsset({
     required super.id,
     required super.height,
     required super.width,
@@ -31,7 +31,7 @@ class AssetEntityPlus extends AssetEntity {
   final File? pickedFile;
 
   @override
-  AssetEntityPlus copyWith({
+  GalleryAsset copyWith({
     Uint8List? pickedThumbData,
     File? pickedFile,
     String? id,
@@ -50,7 +50,7 @@ class AssetEntityPlus extends AssetEntity {
     String? mimeType,
     int? subtype,
   }) {
-    return AssetEntityPlus(
+    return GalleryAsset(
       pickedThumbData: pickedThumbData ?? this.pickedThumbData,
       pickedFile: pickedFile ?? this.pickedFile,
       id: id ?? this.id,
@@ -73,8 +73,8 @@ class AssetEntityPlus extends AssetEntity {
 }
 
 extension AssetEntityExt on AssetEntity {
-  /// Convert [AssetEntity] to [AssetEntityPlus]
-  AssetEntityPlus get toPlus => AssetEntityPlus(
+  /// Convert [AssetEntity] to [GalleryAsset]
+  GalleryAsset get toGalleryAsset => GalleryAsset(
         id: id,
         width: width,
         height: height,

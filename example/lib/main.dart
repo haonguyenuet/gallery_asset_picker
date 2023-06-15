@@ -1,6 +1,6 @@
 import 'package:example/page.dart';
 import 'package:flutter/material.dart';
-import 'package:modern_media_picker/modern_media_picker.dart';
+import 'package:gallery_asset_picker/gallery_asset_picker.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
