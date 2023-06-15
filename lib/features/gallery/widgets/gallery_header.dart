@@ -167,31 +167,33 @@ class AlbumInformation extends StatelessWidget {
         GalleryBuilder(
           controller: controller,
           builder: (context, gallery) {
-            if (gallery.selectedAssets.isEmpty) return const SizedBox();
-
-            return ValueListenableBuilder<bool>(
-              valueListenable: controller.albumVisibility,
-              builder: (context, visible, child) {
-                return TweenAnimationBuilder<double>(
-                  duration: const Duration(milliseconds: 300),
-                  tween: Tween(
-                    begin: visible ? 0.0 : 1.0,
-                    end: visible ? 1.0 : 0.0,
-                  ),
-                  builder: (context, factor, child) => Transform.rotate(
-                    angle: pi * factor,
-                    child: CupertinoButton(
-                      minSize: 0,
-                      onPressed: () {
-                        if (controller.value.selectedAssets.isEmpty) {
-                          onAlbumToggle(visible);
-                        }
-                      },
-                      child: Icon(CupertinoIcons.chevron_down, size: 20, color: Colors.grey.shade700),
+            return AnimatedOpacity(
+              opacity: gallery.selectedAssets.isEmpty ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 200),
+              child: ValueListenableBuilder<bool>(
+                valueListenable: controller.albumVisibility,
+                builder: (context, visible, child) {
+                  return TweenAnimationBuilder<double>(
+                    duration: const Duration(milliseconds: 300),
+                    tween: Tween(
+                      begin: visible ? 0.0 : 1.0,
+                      end: visible ? 1.0 : 0.0,
                     ),
-                  ),
-                );
-              },
+                    builder: (context, factor, child) => Transform.rotate(
+                      angle: pi * factor,
+                      child: CupertinoButton(
+                        minSize: 0,
+                        onPressed: () {
+                          if (controller.value.selectedAssets.isEmpty) {
+                            onAlbumToggle(visible);
+                          }
+                        },
+                        child: Icon(CupertinoIcons.chevron_down, size: 20, color: Colors.grey.shade700),
+                      ),
+                    ),
+                  );
+                },
+              ),
             );
           },
         ),

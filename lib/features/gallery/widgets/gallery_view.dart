@@ -77,7 +77,7 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
 
   void _onAlbumChange(AlbumController albumController) {
     if (_animationController.isAnimating) return;
-    _albumsController.changeAlbumController(albumController);
+    _albumsController.changeCurrentAlbumController(albumController);
     _toogleAlbumList(true);
   }
 

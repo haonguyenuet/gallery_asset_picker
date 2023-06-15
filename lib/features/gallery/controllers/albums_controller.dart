@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:modern_media_picker/features/gallery/enums/fetching_state.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../../../entities/asset_entity_plus.dart';
@@ -50,21 +51,21 @@ class AlbumsController extends ValueNotifier<AlbumsEntity> {
           }
           return albumController;
         });
-        value = AlbumsEntity.completed(albumControllers);
+        value = value.copyWith(state: AssetFetchingState.completed, albumControllers: albumControllers);
         return albumControllers;
       } catch (e) {
         debugPrint('Exception fetching albums => $e');
-        value = AlbumsEntity.error(e.toString());
+        value = value.copyWith(state: AssetFetchingState.error, error: e.toString());
         return [];
       }
     } else {
-      value = AlbumsEntity.unauthorised();
-      currentAlbumController.value = AlbumController(album: AlbumEntity.unauthorised());
+      value = value.copyWith(state: AssetFetchingState.unauthorised);
+      currentAlbumController.value = AlbumController(album: const AlbumEntity(state: AssetFetchingState.unauthorised));
       return [];
     }
   }
 
-  void changeAlbumController(AlbumController albumController) {
+  void changeCurrentAlbumController(AlbumController albumController) {
     currentAlbumController.value = albumController;
     albumController.fetchAssets();
   }

@@ -30,8 +30,8 @@ class AlbumsPage extends StatelessWidget {
       controller: controller,
       albumsController: albumsController,
       hidePermissionView: true,
-      builder: (context, value) {
-        if (value.albumControllers.isEmpty) {
+      builder: (context, albumsController) {
+        if (albumsController.albumControllers.isEmpty) {
           return Container(
             alignment: Alignment.center,
             color: Colors.black,
@@ -45,12 +45,12 @@ class AlbumsPage extends StatelessWidget {
           color: Colors.black,
           child: ListView.builder(
             padding: const EdgeInsets.only(top: 16),
-            itemCount: value.albumControllers.length,
+            itemCount: albumsController.albumControllers.length,
             itemBuilder: (context, index) {
-              final album = value.albumControllers[index];
+              final albumController = albumsController.albumControllers[index];
               return AlbumTile(
                 controller: controller,
-                albumController: album,
+                albumController: albumController,
                 onPressed: onAlbumChange,
               );
             },
@@ -111,10 +111,7 @@ class AlbumTile extends StatelessWidget {
                 },
               ),
             ),
-
             const SizedBox(width: 16),
-
-            // Column
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,12 +124,18 @@ class AlbumTile extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    album.assetPathEntity?.assetCountAsync.toString() ?? '',
-                    style: TextStyle(
-                      color: Colors.grey.shade500,
-                      fontSize: 13,
-                    ),
+                  FutureBuilder<int>(
+                    future: album.assetPathEntity?.assetCountAsync,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData == false) return const SizedBox();
+                      return Text(
+                        snapshot.data.toString(),
+                        style: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontSize: 13,
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

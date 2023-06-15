@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:modern_media_picker/features/gallery/enums/fetching_state.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../entities/album_entity.dart';
@@ -16,13 +17,13 @@ class AlbumController extends ValueNotifier<AlbumEntity> {
         final assets = (await value.assetPathEntity?.getAssetListPaged(page: _currentPage, size: 30)) ?? [];
         final updatedAssets = [...value.assets, ...assets];
         ++_currentPage;
-        value = AlbumEntity.completed(updatedAssets);
+        value = value.copyWith(state: AssetFetchingState.completed, assets: updatedAssets);
       } catch (e) {
         debugPrint('Exception fetching assets => $e');
-        value = AlbumEntity.error(e.toString());
+        value = value.copyWith(state: AssetFetchingState.error, error: e.toString());
       }
     } else {
-      value = AlbumEntity.unauthorised();
+      value = value.copyWith(state: AssetFetchingState.unauthorised);
     }
     return value.assets;
   }

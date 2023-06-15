@@ -30,16 +30,4 @@ class AlbumEntity {
   }
 
   factory AlbumEntity.none() => const AlbumEntity();
-
-  factory AlbumEntity.unauthorised() => const AlbumEntity(state: AssetFetchingState.unauthorised);
-
-  factory AlbumEntity.completed(List<AssetEntity> assets) => AlbumEntity(
-        state: AssetFetchingState.completed,
-        assets: assets,
-      );
-
-  factory AlbumEntity.error(String? error) => AlbumEntity(
-        state: AssetFetchingState.error,
-        error: error,
-      );
 }

@@ -93,7 +93,7 @@ class SlidablePanelState extends State<SlidablePanel> with TickerProviderStateMi
   void _onPointerMove(PointerMoveEvent event) {
     if (!_controller.gestureEnabled || _animationController.isAnimating || !_shouldScroll(event.position.dy)) return;
 
-    _velocityTracker!.addPosition(event.timeStamp, event.position);
+    _velocityTracker?.addPosition(event.timeStamp, event.position);
 
     final currStatus = _pointerPositionInitial.dy - event.position.dy < 0.0
         ? SlidablePanelStatus.reverse
@@ -118,7 +118,7 @@ class SlidablePanelState extends State<SlidablePanel> with TickerProviderStateMi
     }
 
     if (!_scrollToBottom && preStatus == SlidablePanelStatus.collapsed && currStatus == SlidablePanelStatus.reverse) {
-      return _controller.close();
+      // return _controller.close();
     }
 
     if (_scrollToTop || _scrollToBottom) {
