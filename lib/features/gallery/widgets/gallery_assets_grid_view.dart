@@ -163,21 +163,22 @@ class _SelectionCount extends StatelessWidget {
 
         final isSelected = gallery.selectedAssets.contains(asset);
         final index = gallery.selectedAssets.indexOf(asset.toGalleryAsset);
+        final counterRaito = 3 / galleryController.setting.crossAxisCount;
 
         Widget counter = const SizedBox();
         if (isSelected) {
           counter = CircleAvatar(
             backgroundColor: galleryController.setting.theme?.primaryColor,
-            radius: 14,
+            radius: 14 * counterRaito,
             child: singleSelection
                 ? const Icon(Icons.check, color: Colors.white)
-                : Text('${index + 1}', style: const TextStyle(color: Colors.white)),
+                : Text('${index + 1}', style: TextStyle(color: Colors.white, fontSize: 16 * counterRaito)),
           );
         }
         if (!singleSelection) {
           counter = Container(
-            height: 30,
-            width: 30,
+            height: 30 * counterRaito,
+            width: 30 * counterRaito,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(color: Colors.grey.shade200, width: 2),
