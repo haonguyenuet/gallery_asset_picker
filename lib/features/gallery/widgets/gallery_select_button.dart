@@ -4,7 +4,9 @@ import 'package:gallery_asset_picker/utils/const.dart';
 import 'package:gallery_asset_picker/widgets/common_button.dart';
 
 class GallerySelectButton extends StatefulWidget {
-  const GallerySelectButton({Key? key}) : super(key: key);
+  const GallerySelectButton({Key? key, required this.galleryController}) : super(key: key);
+
+  final GalleryController galleryController;
 
   @override
   GallerySelectButtonState createState() => GallerySelectButtonState();
@@ -19,7 +21,7 @@ class GallerySelectButtonState extends State<GallerySelectButton> with TickerPro
   void initState() {
     super.initState();
     const duration = Duration(milliseconds: 300);
-    _galleryController = context.galleryController;
+    _galleryController = widget.galleryController;
     _opacityController = AnimationController(vsync: this, duration: duration);
     _opacity = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _opacityController, curve: Curves.easeIn));
     _galleryController.addListener(_galleryControllerListener);

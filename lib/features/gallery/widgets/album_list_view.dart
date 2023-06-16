@@ -22,30 +22,33 @@ class AlbumListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlbumListBuilder(
-      notifier: albumListNotifier,
-      hidePermissionView: true,
-      builder: (context, albumListNotifier) {
-        if (albumListNotifier.albumNotifiers.isEmpty) {
-          return const Center(
-            child: Text(
-              StringConst.NO_ALBUM_AVAILABLE,
-              style: TextStyle(color: Colors.white),
-            ),
-          );
-        }
-        return ListView.builder(
-          padding: const EdgeInsets.only(top: 16),
-          itemCount: albumListNotifier.albumNotifiers.length,
-          itemBuilder: (context, index) {
-            final albumNotifier = albumListNotifier.albumNotifiers[index];
-            return _AlbumTile(
-              albumNotifier: albumNotifier,
-              onPressed: onAlbumChange,
+    return ColoredBox(
+      color: Colors.black,
+      child: AlbumListBuilder(
+        notifier: albumListNotifier,
+        hidePermissionView: true,
+        builder: (context, albumListNotifier) {
+          if (albumListNotifier.albumNotifiers.isEmpty) {
+            return const Center(
+              child: Text(
+                StringConst.NO_ALBUM_AVAILABLE,
+                style: TextStyle(color: Colors.white),
+              ),
             );
-          },
-        );
-      },
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.only(top: 16),
+            itemCount: albumListNotifier.albumNotifiers.length,
+            itemBuilder: (context, index) {
+              final albumNotifier = albumListNotifier.albumNotifiers[index];
+              return _AlbumTile(
+                albumNotifier: albumNotifier,
+                onPressed: onAlbumChange,
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

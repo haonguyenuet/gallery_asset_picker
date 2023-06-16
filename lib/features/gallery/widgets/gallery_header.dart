@@ -3,41 +3,37 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_asset_picker/features/gallery/controllers/album_list_notifier.dart';
+import 'package:gallery_asset_picker/features/gallery/controllers/gallery_controller.dart';
 import 'package:gallery_asset_picker/features/gallery/widgets/builder/album_builder.dart';
 import 'package:gallery_asset_picker/features/gallery/widgets/builder/gallery_builder.dart';
 import 'package:gallery_asset_picker/features/gallery/widgets/gallery_controller_provider.dart';
 import 'package:gallery_asset_picker/settings/gallery_settings.dart';
 
-class GalleryHeader extends StatefulWidget {
+class GalleryHeader extends StatelessWidget {
   const GalleryHeader({
     Key? key,
     required this.onClose,
     required this.onAlbumToggle,
     required this.albumListNotifier,
+    required this.galleryController,
     this.headerSubtitle,
   }) : super(key: key);
 
-  final String? headerSubtitle;
   final AlbumListNotifier albumListNotifier;
+  final GalleryController galleryController;
   final void Function() onClose;
   final void Function(bool visible) onAlbumToggle;
-
-  @override
-  State<GalleryHeader> createState() => _GalleryHeaderState();
-}
-
-class _GalleryHeaderState extends State<GalleryHeader> {
-  late final _galleryController = context.galleryController;
+  final String? headerSubtitle;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
       constraints: BoxConstraints(
-        minHeight: _galleryController.slidablePanelSetting.handleBarHeight,
-        maxHeight: _galleryController.slidablePanelSetting.headerHeight,
+        minHeight: galleryController.slidablePanelSetting.handleBarHeight,
+        maxHeight: galleryController.slidablePanelSetting.headerHeight,
       ),
-      color: _galleryController.slidablePanelSetting.headerBackground,
+      color: galleryController.slidablePanelSetting.headerBackground,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -48,9 +44,9 @@ class _GalleryHeaderState extends State<GalleryHeader> {
                 Expanded(child: _buildCloseButton(context)),
                 FittedBox(
                   child: _AlbumInformation(
-                    subtitle: widget.headerSubtitle,
-                    albumListNotifier: widget.albumListNotifier,
-                    onAlbumToggle: widget.onAlbumToggle,
+                    subtitle: headerSubtitle,
+                    albumListNotifier: albumListNotifier,
+                    onAlbumToggle: onAlbumToggle,
                   ),
                 ),
                 Expanded(child: _buildToggleMultiSelection()),
@@ -70,38 +66,38 @@ class _GalleryHeaderState extends State<GalleryHeader> {
         minSize: 0,
         child: Icon(
           CupertinoIcons.clear,
-          size: 28,
+          size: 20,
           color: Colors.grey.shade700,
         ),
-        onPressed: widget.onClose,
+        onPressed: onClose,
       ),
     );
   }
 
   Widget _buildToggleMultiSelection() {
-    if (_galleryController.setting.selectionMode == SelectionMode.countBased) {
+    if (galleryController.setting.selectionMode == SelectionMode.countBased) {
       return const SizedBox();
     }
     return Align(
       alignment: Alignment.centerRight,
       child: GalleryBuilder(
-        controller: _galleryController,
+        controller: galleryController,
         builder: (context, gallery) {
           return CupertinoButton(
             padding: const EdgeInsets.all(8),
             minSize: 0,
-            onPressed: () {
-              if (_galleryController.value.isAlbumVisible) {
-                widget.onAlbumToggle(true);
-              } else {
-                _galleryController.toggleMultiSelection();
-              }
-            },
             child: Icon(
               CupertinoIcons.square_stack_3d_up,
-              size: 28,
-              color: gallery.allowMultiple ? _galleryController.setting.theme?.primaryColor : Colors.white38,
+              size: 20,
+              color: gallery.allowMultiple ? galleryController.setting.theme?.primaryColor : Colors.white38,
             ),
+            onPressed: () {
+              if (galleryController.value.isAlbumVisible) {
+                onAlbumToggle(true);
+              } else {
+                galleryController.toggleMultiSelection();
+              }
+            },
           );
         },
       ),
@@ -180,6 +176,7 @@ class _AlbumInformation extends StatelessWidget {
                       angle: pi * factor,
                       child: CupertinoButton(
                         minSize: 0,
+                        padding: const EdgeInsets.all(4),
                         child: Icon(CupertinoIcons.chevron_down, size: 20, color: Colors.grey.shade700),
                         onPressed: () {
                           if (gallery.selectedAssets.isEmpty) {

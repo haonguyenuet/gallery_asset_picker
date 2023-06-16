@@ -27,74 +27,77 @@ class GalleryAssetsGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final galleryController = context.galleryController;
-    return CurrentAlbumBuilder(
-      controller: albumListNotifier,
-      builder: (context, currentAlbumNotifier) {
-        return AlbumBuilder(
-          notifier: currentAlbumNotifier,
-          builder: (context, album) {
-            if (album.fetchState == FetchState.unauthorised && album.assets.isEmpty) {
-              return GalleryPermissionView(
-                onRefresh: () {
-                  if (album.assetPathEntity == null) {
-                    albumListNotifier.fetchAlbums(galleryController.setting.requestType);
-                  } else {
-                    currentAlbumNotifier.fetchAssets();
-                  }
-                },
-              );
-            }
+    return ColoredBox(
+      color: Colors.black,
+      child: CurrentAlbumBuilder(
+        controller: albumListNotifier,
+        builder: (context, currentAlbumNotifier) {
+          return AlbumBuilder(
+            notifier: currentAlbumNotifier,
+            builder: (context, album) {
+              if (album.fetchState == FetchState.unauthorised && album.assets.isEmpty) {
+                return GalleryPermissionView(
+                  onRefresh: () {
+                    if (album.assetPathEntity == null) {
+                      albumListNotifier.fetchAlbums(galleryController.setting.requestType);
+                    } else {
+                      currentAlbumNotifier.fetchAssets();
+                    }
+                  },
+                );
+              }
 
-            if (album.fetchState == FetchState.completed && album.assets.isEmpty) {
-              return const Center(
-                child: Text(StringConst.NO_MEDIA_AVAILABLE, style: TextStyle(color: Colors.white)),
-              );
-            }
+              if (album.fetchState == FetchState.completed && album.assets.isEmpty) {
+                return const Center(
+                  child: Text(StringConst.NO_MEDIA_AVAILABLE, style: TextStyle(color: Colors.white)),
+                );
+              }
 
-            if (album.fetchState == FetchState.error) {
-              return const Center(
-                child: Text(StringConst.SOMETHING_WRONG, style: TextStyle(color: Colors.white)),
-              );
-            }
+              if (album.fetchState == FetchState.error) {
+                return const Center(
+                  child: Text(StringConst.SOMETHING_WRONG, style: TextStyle(color: Colors.white)),
+                );
+              }
 
-            final assets = album.assets;
-            final enableCamera = galleryController.setting.enableCamera;
+              final assets = album.assets;
+              final enableCamera = galleryController.setting.enableCamera;
 
-            final itemCount = albumListNotifier.value.fetchState == FetchState.fetching
-                ? 20
-                : enableCamera
-                    ? assets.length + 1
-                    : assets.length;
+              final itemCount = albumListNotifier.value.fetchState == FetchState.fetching
+                  ? 20
+                  : enableCamera
+                      ? assets.length + 1
+                      : assets.length;
 
-            return LazyLoadScrollView(
-              onEndOfPage: currentAlbumNotifier.fetchAssets,
-              scrollOffset: MediaQuery.of(context).size.height * 0.4,
-              child: GridView.builder(
-                physics: const ClampingScrollPhysics(),
-                controller: galleryController.slidablePanelController.scrollController,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: galleryController.setting.crossAxisCount,
-                  crossAxisSpacing: 2,
-                  mainAxisSpacing: 2,
+              return LazyLoadScrollView(
+                onEndOfPage: currentAlbumNotifier.fetchAssets,
+                scrollOffset: MediaQuery.of(context).size.height * 0.4,
+                child: GridView.builder(
+                  physics: const ClampingScrollPhysics(),
+                  controller: galleryController.slidablePanelController.scrollController,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: galleryController.setting.crossAxisCount,
+                    crossAxisSpacing: 2,
+                    mainAxisSpacing: 2,
+                  ),
+                  itemCount: itemCount,
+                  padding: EdgeInsets.zero,
+                  itemBuilder: (context, index) {
+                    if (enableCamera && index == 0) {
+                      return const _CameraTile();
+                    }
+
+                    final i = enableCamera ? index - 1 : index;
+                    final entity = albumListNotifier.value.fetchState == FetchState.fetching ? null : assets[i];
+
+                    if (entity == null) return const SizedBox();
+                    return _AssetTile(asset: entity);
+                  },
                 ),
-                itemCount: itemCount,
-                padding: EdgeInsets.zero,
-                itemBuilder: (context, index) {
-                  if (enableCamera && index == 0) {
-                    return const _CameraTile();
-                  }
-
-                  final assetIndex = enableCamera ? index - 1 : index;
-                  final entity = albumListNotifier.value.fetchState == FetchState.fetching ? null : assets[assetIndex];
-
-                  if (entity == null) return const SizedBox();
-                  return _AssetTile(asset: entity);
-                },
-              ),
-            );
-          },
-        );
-      },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

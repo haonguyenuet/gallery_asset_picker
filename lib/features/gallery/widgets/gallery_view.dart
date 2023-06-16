@@ -134,6 +134,7 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
         onClose: _onWillClose,
         onAlbumToggle: _toggleAlbumList,
         albumListNotifier: _albumListNotifier,
+        galleryController: _galleryController,
       ),
     );
   }
@@ -145,11 +146,11 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
           // Header space for full screen mode
           SizedBox(height: _slidablePanelSetting.headerHeight)
         else
-          // Toogling size for header hiding animation
+          // Toggling size for header hiding animation
           ValueListenableBuilder<SlidablePanelValue>(
             valueListenable: _galleryController.slidablePanelController,
             builder: (context, value, child) {
-              final height = (_slidablePanelSetting.headerHeight * value.factor * 1.5).clamp(
+              final height = (_slidablePanelSetting.headerHeight * value.factor * 1.2).clamp(
                 _slidablePanelSetting.handleBarHeight,
                 _slidablePanelSetting.headerHeight,
               );
@@ -168,9 +169,9 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
   }
 
   Widget _buildSelectButton() {
-    return const Align(
+    return Align(
       alignment: Alignment.bottomCenter,
-      child: GallerySelectButton(),
+      child: GallerySelectButton(galleryController: _galleryController),
     );
   }
 

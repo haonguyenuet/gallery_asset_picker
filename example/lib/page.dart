@@ -17,6 +17,7 @@ class _GridViewWidgetState extends State<GridViewWidget> {
     settings: const GallerySetting(
       enableCamera: true,
       selectionMode: SelectionMode.countBased,
+      crossAxisCount: 4,
       maxCount: 5,
       requestType: RequestType.image,
     ),
@@ -37,29 +38,31 @@ class _GridViewWidgetState extends State<GridViewWidget> {
         body: ValueListenableBuilder<bool>(
             valueListenable: galleryController.slidablePanelController.visibility,
             builder: (context, isVisible, child) {
-              return Padding(
-                padding: EdgeInsets.only(bottom: isVisible ? 10 : MediaQuery.of(context).padding.bottom),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: const SizedBox(),
-                    ),
-                    Row(
-                      children: [
-                        SizedBox(width: 16),
-                        InkWell(
-                          onTap: () async {
-                            final entities = await galleryController.pick(context);
-                          },
-                          child: Icon(Icons.image),
-                        ),
-                        SizedBox(width: 16),
-                        Expanded(child: CupertinoTextField()),
-                        SizedBox(width: 16),
-                      ],
-                    ),
-                  ],
-                ),
+              // return Padding(
+              //   padding: EdgeInsets.only(bottom: isVisible ? 10 : MediaQuery.of(context).padding.bottom),
+              //   child: Column(
+              return Column(
+                children: [
+                  Expanded(
+                    child: const SizedBox(),
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(width: 16),
+                      InkWell(
+                        onTap: () async {
+                          final entities = await galleryController.pick(context);
+                          print(entities.length);
+                        },
+                        child: Icon(Icons.image),
+                      ),
+                      SizedBox(width: 16),
+                      Expanded(child: CupertinoTextField()),
+                      SizedBox(width: 16),
+                    ],
+                  ),
+                ],
+                // ),
               );
             }),
       ),
