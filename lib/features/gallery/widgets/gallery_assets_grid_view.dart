@@ -115,7 +115,7 @@ class _CameraTile extends StatelessWidget {
       child: Icon(
         CupertinoIcons.camera,
         color: Colors.grey.shade200,
-        size: 28,
+        size: 24,
       ),
     );
   }
@@ -171,7 +171,7 @@ class _SelectionCount extends StatelessWidget {
             backgroundColor: galleryController.setting.theme?.primaryColor,
             radius: 14 * counterRaito,
             child: singleSelection
-                ? const Icon(Icons.check, color: Colors.white)
+                ? Icon(CupertinoIcons.checkmark_alt, color: Colors.white, size: 24 * counterRaito)
                 : Text('${index + 1}', style: TextStyle(color: Colors.white, fontSize: 16 * counterRaito)),
           );
         }

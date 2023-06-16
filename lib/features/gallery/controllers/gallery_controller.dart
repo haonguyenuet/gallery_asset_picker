@@ -24,8 +24,7 @@ class GalleryController extends ValueNotifier<Gallery> {
   SlidablePanelSetting get slidablePanelSetting => setting.slidablePanelSetting;
   bool get isFullScreenMode => slidablePanelKey.currentState == null;
   bool get reachedMaximumLimit => value.selectedAssets.length == setting.maxCount;
-  bool get singleSelection =>
-      setting.selectionMode == SelectionMode.actionBased ? !value.allowMultiple : setting.maxCount == 1;
+  bool get singleSelection => setting.maxCount == 1;
 
   void updateSettings(GallerySetting? setting) {
     _setting = setting ?? const GallerySetting();
@@ -42,33 +41,28 @@ class GalleryController extends ValueNotifier<Gallery> {
     value = value.copyWith(isAlbumVisible: visible);
   }
 
-  void toggleMultiSelection() {
-    value = value.copyWith(allowMultiple: !value.allowMultiple);
-  }
-
   void select(GalleryAsset asset) {
-    final assets = List.of(value.selectedAssets);
-
-    if (reachedMaximumLimit) {
-      assets.remove(asset);
-      value = value.copyWith(selectedAssets: assets);
-      return setting.onReachMaximum?.call();
-    }
-
     if (singleSelection) {
       setting.onChanged?.call(asset, false);
       value = value.copyWith(selectedAssets: [asset]);
       return;
     }
 
+    final assets = List.of(value.selectedAssets);
     final isSelected = assets.contains(asset);
     if (isSelected) {
       assets.remove(asset);
-    } else {
+      setting.onChanged?.call(asset, isSelected);
+      value = value.copyWith(selectedAssets: assets);
+    } else if (!reachedMaximumLimit) {
       assets.add(asset);
+      setting.onChanged?.call(asset, isSelected);
+      value = value.copyWith(selectedAssets: assets);
     }
-    setting.onChanged?.call(asset, isSelected);
-    value = value.copyWith(selectedAssets: assets);
+
+    if (reachedMaximumLimit) {
+      return setting.onReachMaximum?.call();
+    }
   }
 
   void clearSelection() {

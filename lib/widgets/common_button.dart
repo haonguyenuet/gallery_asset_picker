@@ -20,13 +20,13 @@ class CommonButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: width ?? double.infinity,
-      height: height ?? 44,
+      height: height ?? 40,
       child: ElevatedButton(
         onPressed: () => onPressed?.call(context),
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.primary,
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
           padding: const EdgeInsets.symmetric(vertical: 12),
         ),
         child: Text(label ?? ''),

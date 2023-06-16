@@ -4,23 +4,11 @@ import 'package:gallery_asset_picker/settings/slidable_panel_setting.dart';
 import 'package:gallery_asset_picker/utils/const.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-/// Available multiselection mode for gallery
-enum SelectionMode {
-  /// maximumCount provided in [GallerySetting] will be use to determine
-  /// selection mode.
-  countBased,
-
-  /// Multiselection toogler widget will be used to determine selection mode.
-  /// maximumCount provided in [GallerySetting] will be preserved
-  actionBased,
-}
-
 class GallerySetting {
   const GallerySetting({
     this.selectedAssets = const [],
     this.requestType = RequestType.all,
-    this.maxCount = 50,
-    this.selectionMode = SelectionMode.countBased,
+    this.maxCount,
     this.albumTitle = StringConst.ALL_ALBUMS,
     this.albumSubtitle = 'Select Media',
     this.enableCamera = true,
@@ -42,12 +30,8 @@ class GallerySetting {
   final RequestType requestType;
 
   ///
-  /// Total media allowed to select. Default is 50
-  final int maxCount;
-
-  ///
-  /// Multiselection mode, default is [SelectionMode.countBased]
-  final SelectionMode selectionMode;
+  /// Total media allowed to select. Default is null
+  final int? maxCount;
 
   ///
   /// Album name for all photos, default is set to "All Photos"
@@ -95,7 +79,6 @@ class GallerySetting {
     List<GalleryAsset>? selectedAssets,
     RequestType? requestType,
     int? maximumCount,
-    SelectionMode? selectionMode,
     String? albumTitle,
     String? albumSubtitle,
     bool? enableCamera,
@@ -111,7 +94,6 @@ class GallerySetting {
       selectedAssets: selectedAssets ?? this.selectedAssets,
       requestType: requestType ?? this.requestType,
       maxCount: maximumCount ?? this.maxCount,
-      selectionMode: selectionMode ?? this.selectionMode,
       albumTitle: albumTitle ?? this.albumTitle,
       albumSubtitle: albumSubtitle ?? this.albumSubtitle,
       enableCamera: enableCamera ?? this.enableCamera,

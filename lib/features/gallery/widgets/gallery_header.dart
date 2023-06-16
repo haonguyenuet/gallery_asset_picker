@@ -7,7 +7,6 @@ import 'package:gallery_asset_picker/features/gallery/controllers/gallery_contro
 import 'package:gallery_asset_picker/features/gallery/widgets/builder/album_builder.dart';
 import 'package:gallery_asset_picker/features/gallery/widgets/builder/gallery_builder.dart';
 import 'package:gallery_asset_picker/features/gallery/widgets/gallery_controller_provider.dart';
-import 'package:gallery_asset_picker/settings/gallery_settings.dart';
 
 class GalleryHeader extends StatelessWidget {
   const GalleryHeader({
@@ -41,7 +40,7 @@ class GalleryHeader extends StatelessWidget {
           Expanded(
             child: Row(
               children: [
-                Expanded(child: _buildCloseButton(context)),
+                Expanded(child: _buildCloseButton()),
                 FittedBox(
                   child: _AlbumInformation(
                     subtitle: headerSubtitle,
@@ -49,7 +48,7 @@ class GalleryHeader extends StatelessWidget {
                     onAlbumToggle: onAlbumToggle,
                   ),
                 ),
-                Expanded(child: _buildToggleMultiSelection()),
+                Expanded(child: _buildClearButton()),
               ],
             ),
           ),
@@ -58,46 +57,38 @@ class GalleryHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildCloseButton(BuildContext context) {
+  Widget _buildCloseButton() {
     return Align(
       alignment: Alignment.centerLeft,
       child: CupertinoButton(
         padding: const EdgeInsets.all(8),
         minSize: 0,
-        child: Icon(
-          CupertinoIcons.clear,
-          size: 20,
-          color: Colors.grey.shade700,
+        child: Text(
+          'Close',
+          style: galleryController.setting.theme?.textTheme.titleSmall?.copyWith(color: Colors.grey.shade700) ??
+              TextStyle(fontSize: 14, color: Colors.grey.shade700),
         ),
         onPressed: onClose,
       ),
     );
   }
 
-  Widget _buildToggleMultiSelection() {
-    if (galleryController.setting.selectionMode == SelectionMode.countBased) {
-      return const SizedBox();
-    }
+  Widget _buildClearButton() {
     return Align(
       alignment: Alignment.centerRight,
       child: GalleryBuilder(
         controller: galleryController,
         builder: (context, gallery) {
+          if (gallery.selectedAssets.isEmpty) return const SizedBox();
           return CupertinoButton(
             padding: const EdgeInsets.all(8),
             minSize: 0,
-            child: Icon(
-              CupertinoIcons.square_stack_3d_up,
-              size: 20,
-              color: gallery.allowMultiple ? galleryController.setting.theme?.primaryColor : Colors.white38,
+            child: Text(
+              'Clear',
+              style: galleryController.setting.theme?.textTheme.titleSmall?.copyWith(color: Colors.grey.shade700) ??
+                  TextStyle(fontSize: 14, color: Colors.grey.shade700),
             ),
-            onPressed: () {
-              if (galleryController.value.isAlbumVisible) {
-                onAlbumToggle(true);
-              } else {
-                galleryController.toggleMultiSelection();
-              }
-            },
+            onPressed: galleryController.clearSelection,
           );
         },
       ),
@@ -153,41 +144,39 @@ class _AlbumInformation extends StatelessWidget {
             final isAll = albumNotifier.value.assetPathEntity?.isAll ?? true;
             return Text(
               isAll ? galleryController.setting.albumTitle : albumNotifier.value.assetPathEntity?.name ?? 'Unknown',
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
+              style: galleryController.setting.theme?.textTheme.titleMedium?.copyWith(color: Colors.white) ??
+                  const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
             );
           },
         ),
         GalleryBuilder(
           controller: galleryController,
           builder: (context, gallery) {
-            return AnimatedOpacity(
-              opacity: gallery.selectedAssets.isEmpty ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 200),
-              child: ValueListenableBuilder<bool>(
-                valueListenable: galleryController.albumVisibility,
-                builder: (context, visible, child) {
-                  return TweenAnimationBuilder<double>(
-                    duration: const Duration(milliseconds: 300),
-                    tween: Tween(
-                      begin: visible ? 0.0 : 1.0,
-                      end: visible ? 1.0 : 0.0,
+            if (gallery.selectedAssets.isNotEmpty) return const SizedBox();
+            return ValueListenableBuilder<bool>(
+              valueListenable: galleryController.albumVisibility,
+              builder: (context, visible, child) {
+                return TweenAnimationBuilder<double>(
+                  duration: const Duration(milliseconds: 300),
+                  tween: Tween(
+                    begin: visible ? 0.0 : 1.0,
+                    end: visible ? 1.0 : 0.0,
+                  ),
+                  builder: (context, factor, child) => Transform.rotate(
+                    angle: pi * factor,
+                    child: CupertinoButton(
+                      minSize: 0,
+                      padding: const EdgeInsets.all(4),
+                      child: Icon(CupertinoIcons.chevron_down, size: 20, color: Colors.grey.shade700),
+                      onPressed: () {
+                        if (gallery.selectedAssets.isEmpty) {
+                          onAlbumToggle(visible);
+                        }
+                      },
                     ),
-                    builder: (context, factor, child) => Transform.rotate(
-                      angle: pi * factor,
-                      child: CupertinoButton(
-                        minSize: 0,
-                        padding: const EdgeInsets.all(4),
-                        child: Icon(CupertinoIcons.chevron_down, size: 20, color: Colors.grey.shade700),
-                        onPressed: () {
-                          if (gallery.selectedAssets.isEmpty) {
-                            onAlbumToggle(visible);
-                          }
-                        },
-                      ),
-                    ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             );
           },
         ),

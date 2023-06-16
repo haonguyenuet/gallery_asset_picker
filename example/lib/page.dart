@@ -16,9 +16,8 @@ class _GridViewWidgetState extends State<GridViewWidget> {
   final galleryController = GalleryController(
     settings: const GallerySetting(
       enableCamera: true,
-      selectionMode: SelectionMode.countBased,
       crossAxisCount: 4,
-      maxCount: 5,
+      maxCount: 2,
       requestType: RequestType.image,
     ),
   );

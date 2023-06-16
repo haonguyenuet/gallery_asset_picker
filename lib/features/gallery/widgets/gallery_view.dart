@@ -33,7 +33,6 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
 
   GallerySetting get _gallarySetting => widget.setting;
   SlidablePanelSetting get _slidablePanelSetting => _gallarySetting.slidablePanelSetting;
-  bool get isActionMode => _gallarySetting.selectionMode == SelectionMode.actionBased;
 
   @override
   void initState() {

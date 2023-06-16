@@ -5,35 +5,29 @@ class Gallery {
   const Gallery({
     this.selectedAssets = const <GalleryAsset>[],
     this.isAlbumVisible = false,
-    this.allowMultiple = false,
   });
 
   final List<GalleryAsset> selectedAssets;
   final bool isAlbumVisible;
-  final bool allowMultiple;
 
   Gallery copyWith({
     List<GalleryAsset>? selectedAssets,
     bool? isAlbumVisible,
-    bool? allowMultiple,
   }) {
     return Gallery(
       selectedAssets: selectedAssets ?? this.selectedAssets,
       isAlbumVisible: isAlbumVisible ?? this.isAlbumVisible,
-      allowMultiple: allowMultiple ?? this.allowMultiple,
     );
   }
 
   @override
   bool operator ==(covariant Gallery other) {
     if (identical(this, other)) return true;
-    return listEquals(other.selectedAssets, selectedAssets) &&
-        other.isAlbumVisible == isAlbumVisible &&
-        other.allowMultiple == allowMultiple;
+    return listEquals(other.selectedAssets, selectedAssets) && other.isAlbumVisible == isAlbumVisible;
   }
 
   @override
-  int get hashCode => selectedAssets.hashCode ^ isAlbumVisible.hashCode ^ allowMultiple.hashCode;
+  int get hashCode => selectedAssets.hashCode ^ isAlbumVisible.hashCode;
 
   factory Gallery.none() => const Gallery();
 }
