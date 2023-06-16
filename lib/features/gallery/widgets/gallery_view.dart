@@ -78,10 +78,10 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
       _toggleAlbumList();
       return false;
     }
-    if (_galleryController.value.selectedAssets.isNotEmpty) {
+    if (_galleryController.value.selectedAssets.isNotEmpty && _gallarySetting.closingDialogBuilder != null) {
       showDialog(
         context: context,
-        builder: (context) => _gallarySetting.closingDialogBuilder?.call() ?? _defaultClosingDialog(),
+        builder: (context) => _gallarySetting.closingDialogBuilder!.call(),
       );
       return false;
     }
@@ -139,11 +139,6 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
     return Column(
       children: [
         headerSpace,
-        Divider(
-          color: _gallarySetting.theme?.primaryColor ?? Colors.grey.shade500,
-          thickness: 0.5,
-          height: 0.5,
-        ),
         const Expanded(child: GalleryAssetsGridView()),
       ],
     );
@@ -169,35 +164,6 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
           ),
         );
       },
-    );
-  }
-
-  Widget _defaultClosingDialog() {
-    return AlertDialog(
-      title: const Text(
-        'Unselect these items?',
-        style: TextStyle(color: Colors.white70),
-      ),
-      content: Text(
-        'Going back will undo the selections you made.',
-        style: TextStyle(color: Colors.grey.shade600),
-      ),
-      actions: [
-        TextButton(
-          onPressed: Navigator.of(context).pop,
-          child: const Text('Cancel', style: TextStyle(color: Colors.lightBlue)),
-        ),
-        TextButton(
-          onPressed: () {
-            _galleryController.clearSelection();
-            Navigator.of(context).pop();
-          },
-          child: const Text('Unselect', style: TextStyle(color: Colors.blue)),
-        ),
-      ],
-      backgroundColor: Colors.grey.shade900,
-      titlePadding: const EdgeInsets.all(16),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
     );
   }
 }
