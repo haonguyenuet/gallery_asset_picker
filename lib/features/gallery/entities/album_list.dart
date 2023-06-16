@@ -1,24 +1,24 @@
-import 'package:gallery_asset_picker/features/gallery/controllers/album_notifier.dart';
+import 'package:gallery_asset_picker/features/gallery/controllers/album_controller.dart';
 import 'package:gallery_asset_picker/features/gallery/enums/fetch_state.dart';
 
 class AlbumList {
   const AlbumList({
-    this.albumNotifiers = const <AlbumNotifier>[],
+    this.albumControllers = const <AlbumController>[],
     this.fetchState = FetchState.fetching,
     this.error,
   });
 
-  final List<AlbumNotifier> albumNotifiers;
+  final List<AlbumController> albumControllers;
   final FetchState fetchState;
   final String? error;
 
   AlbumList copyWith({
-    List<AlbumNotifier>? albumNotifiers,
+    List<AlbumController>? albumControllers,
     FetchState? fetchState,
     String? error,
   }) {
     return AlbumList(
-      albumNotifiers: albumNotifiers ?? this.albumNotifiers,
+      albumControllers: albumControllers ?? this.albumControllers,
       error: error ?? this.error,
       fetchState: fetchState ?? this.fetchState,
     );

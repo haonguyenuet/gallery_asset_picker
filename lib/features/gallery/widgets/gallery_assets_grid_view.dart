@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_asset_picker/entities/gallery_asset.dart';
-import 'package:gallery_asset_picker/features/gallery/controllers/album_list_notifier.dart';
 import 'package:gallery_asset_picker/features/gallery/enums/fetch_state.dart';
 import 'package:gallery_asset_picker/features/gallery/widgets/builder/album_builder.dart';
 import 'package:gallery_asset_picker/features/gallery/widgets/builder/gallery_builder.dart';
@@ -15,14 +14,7 @@ import 'package:gallery_asset_picker/widgets/lazy_load_scroll_view.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class GalleryAssetsGridView extends StatelessWidget {
-  const GalleryAssetsGridView({
-    Key? key,
-    required this.albumListNotifier,
-    required this.onClose,
-  }) : super(key: key);
-
-  final AlbumListNotifier albumListNotifier;
-  final VoidCallback? onClose;
+  const GalleryAssetsGridView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,18 +22,18 @@ class GalleryAssetsGridView extends StatelessWidget {
     return ColoredBox(
       color: Colors.black,
       child: CurrentAlbumBuilder(
-        controller: albumListNotifier,
-        builder: (context, currentAlbumNotifier) {
+        controller: galleryController.albumListController.currentAlbumController,
+        builder: (context, albumController) {
           return AlbumBuilder(
-            notifier: currentAlbumNotifier,
+            controller: albumController,
             builder: (context, album) {
               if (album.fetchState == FetchState.unauthorised && album.assets.isEmpty) {
                 return GalleryPermissionView(
                   onRefresh: () {
                     if (album.assetPathEntity == null) {
-                      albumListNotifier.fetchAlbums(galleryController.setting.requestType);
+                      galleryController.albumListController.fetchAlbums(galleryController.setting.requestType);
                     } else {
-                      currentAlbumNotifier.fetchAssets();
+                      albumController.fetchAssets();
                     }
                   },
                 );
@@ -62,14 +54,14 @@ class GalleryAssetsGridView extends StatelessWidget {
               final assets = album.assets;
               final enableCamera = galleryController.setting.enableCamera;
 
-              final itemCount = albumListNotifier.value.fetchState == FetchState.fetching
+              final itemCount = galleryController.albumListController.value.fetchState == FetchState.fetching
                   ? 20
                   : enableCamera
                       ? assets.length + 1
                       : assets.length;
 
               return LazyLoadScrollView(
-                onEndOfPage: currentAlbumNotifier.fetchAssets,
+                onEndOfPage: albumController.fetchAssets,
                 scrollOffset: MediaQuery.of(context).size.height * 0.4,
                 child: GridView.builder(
                   physics: const ClampingScrollPhysics(),
@@ -87,7 +79,9 @@ class GalleryAssetsGridView extends StatelessWidget {
                     }
 
                     final i = enableCamera ? index - 1 : index;
-                    final entity = albumListNotifier.value.fetchState == FetchState.fetching ? null : assets[i];
+                    final entity = galleryController.albumListController.value.fetchState == FetchState.fetching
+                        ? null
+                        : assets[i];
 
                     if (entity == null) return const SizedBox();
                     return _AssetTile(asset: entity);
@@ -155,12 +149,10 @@ class _SelectionCount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final galleryController = context.galleryController;
-
     return GalleryBuilder(
       controller: galleryController,
       builder: (context, gallery) {
         final singleSelection = galleryController.singleSelection;
-
         final isSelected = gallery.selectedAssets.contains(asset);
         final index = gallery.selectedAssets.indexOf(asset.toGalleryAsset);
         final counterRaito = 3 / galleryController.setting.crossAxisCount;
@@ -168,7 +160,7 @@ class _SelectionCount extends StatelessWidget {
         Widget counter = const SizedBox();
         if (isSelected) {
           counter = CircleAvatar(
-            backgroundColor: galleryController.setting.theme?.primaryColor,
+            backgroundColor: galleryController.setting.theme?.primaryColor ?? Theme.of(context).primaryColor,
             radius: 14 * counterRaito,
             child: singleSelection
                 ? Icon(CupertinoIcons.checkmark_alt, color: Colors.white, size: 24 * counterRaito)

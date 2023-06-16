@@ -6,18 +6,15 @@ class GalleryControllerProvider extends InheritedWidget {
   /// Creates a widget that associates a [GalleryController] with a subtree.
   const GalleryControllerProvider({super.key, required super.child, required this.controller});
 
-  /// The [GalleryController] associated with the subtree.
-  ///
   final GalleryController controller;
 
-  /// Returns the [GalleryController] most closely associated with the given
-  /// context.
-  ///
-  /// Returns null if there is no [GalleryController] associated with the
-  /// given context.
   static GalleryController of(BuildContext context) {
     final result = context.dependOnInheritedWidgetOfExactType<GalleryControllerProvider>();
-    assert(result != null, 'Need ...');
+    assert(
+      result != null,
+      'Error: Could not find the GalleryController above this '
+      'This happens because you used a `BuildContext` that does not include the provider',
+    );
     return result!.controller;
   }
 

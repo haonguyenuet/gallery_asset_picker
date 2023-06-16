@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:gallery_asset_picker/entities/gallery_asset.dart';
+import 'package:gallery_asset_picker/features/gallery/controllers/album_list_controller.dart';
 import 'package:gallery_asset_picker/features/gallery/entities/gallery.dart';
 import 'package:gallery_asset_picker/features/gallery/gallery.dart';
 import 'package:gallery_asset_picker/settings/gallery_settings.dart';
@@ -14,10 +15,9 @@ class GalleryController extends ValueNotifier<Gallery> {
   }
 
   late Completer<List<GalleryAsset>> _selectionTask;
-
   final GlobalKey slidablePanelKey = GlobalKey();
   final SlidablePanelController slidablePanelController = SlidablePanelController();
-  final ValueNotifier<bool> albumVisibility = ValueNotifier(false);
+  final AlbumListController albumListController = AlbumListController();
   GallerySetting _setting = const GallerySetting();
 
   GallerySetting get setting => _setting;
@@ -35,10 +35,9 @@ class GalleryController extends ValueNotifier<Gallery> {
     });
   }
 
-  void setAlbumVisibility({required bool visible}) {
-    slidablePanelController.gestureEnabled = !visible;
-    albumVisibility.value = visible;
-    value = value.copyWith(isAlbumVisible: visible);
+  void toggleAlbumListVisibility() {
+    value = value.copyWith(isAlbumVisible: !value.isAlbumVisible);
+    slidablePanelController.gestureEnabled = !value.isAlbumVisible;
   }
 
   void select(GalleryAsset asset) {
@@ -69,10 +68,14 @@ class GalleryController extends ValueNotifier<Gallery> {
     value = value.copyWith(selectedAssets: []);
   }
 
-  Future<List<GalleryAsset>> pick(
-    BuildContext context, {
-    SlidingRouteSettings? routeSetting,
-  }) async {
+  List<GalleryAsset> completeSelection() {
+    final assets = value.selectedAssets;
+    value = Gallery.none();
+    _selectionTask.complete(assets);
+    return assets;
+  }
+
+  Future<List<GalleryAsset>> open(BuildContext context, {SlidingRouteSettings? routeSetting}) async {
     _selectionTask = Completer<List<GalleryAsset>>();
 
     if (setting != null) {
@@ -91,17 +94,18 @@ class GalleryController extends ValueNotifier<Gallery> {
     return _selectionTask.future;
   }
 
-  List<GalleryAsset> completeSelection() {
-    final assets = value.selectedAssets;
-    value = const Gallery();
-    _selectionTask.complete(assets);
-    return assets;
+  void close(BuildContext context) {
+    if (isFullScreenMode) {
+      Navigator.pop(context);
+    } else {
+      slidablePanelController.close();
+    }
   }
 
   @override
   void dispose() {
+    albumListController.dispose();
     slidablePanelController.dispose();
-    albumVisibility.dispose();
     super.dispose();
   }
 }

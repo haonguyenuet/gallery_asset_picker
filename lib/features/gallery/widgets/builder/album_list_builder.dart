@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/features/gallery/controllers/album_list_notifier.dart';
+import 'package:gallery_asset_picker/features/gallery/controllers/album_list_controller.dart';
 import 'package:gallery_asset_picker/features/gallery/entities/album_list.dart';
 import 'package:gallery_asset_picker/features/gallery/enums/fetch_state.dart';
 import 'package:gallery_asset_picker/features/gallery/widgets/gallery_controller_provider.dart';
@@ -11,12 +11,12 @@ typedef AlbumListWidgetBuilder = Widget Function(BuildContext context, AlbumList
 class AlbumListBuilder extends StatelessWidget {
   const AlbumListBuilder({
     Key? key,
-    required this.notifier,
+    required this.controller,
     required this.builder,
     this.hidePermissionView = false,
   }) : super(key: key);
 
-  final AlbumListNotifier notifier;
+  final AlbumListController controller;
   final AlbumListWidgetBuilder builder;
   final bool hidePermissionView;
 
@@ -24,18 +24,18 @@ class AlbumListBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     final galleryController = context.galleryController;
     return ValueListenableBuilder<AlbumList>(
-      valueListenable: notifier,
+      valueListenable: controller,
       builder: (context, value, child) {
-        if (value.fetchState == FetchState.unauthorised && value.albumNotifiers.isEmpty && !hidePermissionView) {
+        if (value.fetchState == FetchState.unauthorised && value.albumControllers.isEmpty && !hidePermissionView) {
           return GalleryPermissionView(
             onRefresh: () {
-              notifier.fetchAlbums(galleryController.setting.requestType);
+              controller.fetchAlbums(galleryController.setting.requestType);
             },
           );
         }
 
         // No data
-        if (value.fetchState == FetchState.completed && value.albumNotifiers.isEmpty) {
+        if (value.fetchState == FetchState.completed && value.albumControllers.isEmpty) {
           return const Center(
             child: Text(
               StringConst.NO_ALBUM_AVAILABLE,

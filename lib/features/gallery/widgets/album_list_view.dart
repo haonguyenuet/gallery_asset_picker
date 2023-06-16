@@ -1,34 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/entities/gallery_asset.dart';
-import 'package:gallery_asset_picker/features/gallery/controllers/album_list_notifier.dart';
-import 'package:gallery_asset_picker/features/gallery/controllers/album_notifier.dart';
-import 'package:gallery_asset_picker/features/gallery/entities/album.dart';
-import 'package:gallery_asset_picker/features/gallery/widgets/builder/album_list_builder.dart';
-import 'package:gallery_asset_picker/features/gallery/widgets/gallery_asset_thumbnail.dart';
+import 'package:gallery_asset_picker/gallery_asset_picker.dart';
 import 'package:gallery_asset_picker/utils/const.dart';
-import 'package:photo_manager/photo_manager.dart';
 
 const _imageSize = 48;
 
-class AlbumListPage extends StatelessWidget {
-  const AlbumListPage({
-    Key? key,
-    required this.albumListNotifier,
-    required this.onAlbumChange,
-  }) : super(key: key);
+class AlbumListView extends StatelessWidget {
+  const AlbumListView({Key? key, required this.onAlbumChange}) : super(key: key);
 
-  final AlbumListNotifier albumListNotifier;
-  final ValueSetter<AlbumNotifier> onAlbumChange;
+  final ValueSetter<AlbumController> onAlbumChange;
 
   @override
   Widget build(BuildContext context) {
+    final galleryController = context.galleryController;
     return ColoredBox(
       color: Colors.black,
       child: AlbumListBuilder(
-        notifier: albumListNotifier,
+        controller: galleryController.albumListController,
         hidePermissionView: true,
-        builder: (context, albumListNotifier) {
-          if (albumListNotifier.albumNotifiers.isEmpty) {
+        builder: (context, albumList) {
+          if (albumList.albumControllers.isEmpty) {
             return const Center(
               child: Text(
                 StringConst.NO_ALBUM_AVAILABLE,
@@ -38,11 +28,11 @@ class AlbumListPage extends StatelessWidget {
           }
           return ListView.builder(
             padding: const EdgeInsets.only(top: 16),
-            itemCount: albumListNotifier.albumNotifiers.length,
+            itemCount: albumList.albumControllers.length,
             itemBuilder: (context, index) {
-              final albumNotifier = albumListNotifier.albumNotifiers[index];
+              final albumController = albumList.albumControllers[index];
               return _AlbumTile(
-                albumNotifier: albumNotifier,
+                albumController: albumController,
                 onPressed: onAlbumChange,
               );
             },
@@ -54,12 +44,12 @@ class AlbumListPage extends StatelessWidget {
 }
 
 class _AlbumTile extends StatelessWidget {
-  const _AlbumTile({Key? key, required this.albumNotifier, this.onPressed}) : super(key: key);
+  const _AlbumTile({Key? key, required this.albumController, this.onPressed}) : super(key: key);
 
-  final AlbumNotifier albumNotifier;
-  final ValueChanged<AlbumNotifier>? onPressed;
+  final AlbumController albumController;
+  final ValueChanged<AlbumController>? onPressed;
 
-  Album get album => albumNotifier.value;
+  Album get album => albumController.value;
 
   Future<AssetEntity?> get firstAsset async {
     final assets = (await album.assetPathEntity?.getAssetListPaged(page: 0, size: 1)) ?? [];
@@ -72,7 +62,7 @@ class _AlbumTile extends StatelessWidget {
     final isAll = album.assetPathEntity?.isAll ?? true;
 
     return GestureDetector(
-      onTap: () => onPressed?.call(albumNotifier),
+      onTap: () => onPressed?.call(albumController),
       child: Padding(
         padding: const EdgeInsets.only(left: 16, bottom: 20, right: 16),
         child: Row(
@@ -80,7 +70,7 @@ class _AlbumTile extends StatelessWidget {
             Container(
               height: _imageSize.toDouble(),
               width: _imageSize.toDouble(),
-              color: Colors.grey.shade800,
+              color: Colors.grey.shade700,
               child: FutureBuilder<AssetEntity?>(
                 future: firstAsset,
                 builder: (context, snapshot) {

@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/features/gallery/controllers/album_list_notifier.dart';
-import 'package:gallery_asset_picker/features/gallery/controllers/album_notifier.dart';
+import 'package:gallery_asset_picker/features/gallery/controllers/album_controller.dart';
 import 'package:gallery_asset_picker/features/gallery/entities/album.dart';
 
 typedef AlbumWidgetBuilder = Widget Function(BuildContext context, Album album);
-typedef CurrentAlbumWidgetBuilder = Widget Function(BuildContext context, AlbumNotifier albumNotifier);
+typedef CurrentAlbumWidgetBuilder = Widget Function(BuildContext context, AlbumController albumController);
 
 class AlbumBuilder extends StatelessWidget {
   const AlbumBuilder({
     Key? key,
-    required this.notifier,
+    required this.controller,
     required this.builder,
   }) : super(key: key);
 
-  final AlbumNotifier notifier;
+  final AlbumController controller;
   final AlbumWidgetBuilder builder;
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<Album>(
-      valueListenable: notifier,
+      valueListenable: controller,
       builder: (context, value, child) => builder.call(context, value),
     );
   }
@@ -32,13 +31,13 @@ class CurrentAlbumBuilder extends StatelessWidget {
     required this.builder,
   }) : super(key: key);
 
-  final AlbumListNotifier controller;
+  final ValueNotifier<AlbumController> controller;
   final CurrentAlbumWidgetBuilder builder;
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<AlbumNotifier>(
-      valueListenable: controller.currentAlbumNotifier,
+    return ValueListenableBuilder<AlbumController>(
+      valueListenable: controller,
       builder: (context, value, child) => builder.call(context, value),
     );
   }

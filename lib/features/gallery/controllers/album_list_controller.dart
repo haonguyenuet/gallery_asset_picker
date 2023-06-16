@@ -1,15 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:gallery_asset_picker/entities/gallery_asset.dart';
-import 'package:gallery_asset_picker/features/gallery/controllers/album_notifier.dart';
+import 'package:gallery_asset_picker/features/gallery/controllers/album_controller.dart';
 import 'package:gallery_asset_picker/features/gallery/entities/album.dart';
 import 'package:gallery_asset_picker/features/gallery/entities/album_list.dart';
 import 'package:gallery_asset_picker/features/gallery/enums/fetch_state.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-class AlbumListNotifier extends ValueNotifier<AlbumList> {
-  AlbumListNotifier() : super(AlbumList.none());
+class AlbumListController extends ValueNotifier<AlbumList> {
+  AlbumListController() : super(AlbumList.none());
 
-  final currentAlbumNotifier = ValueNotifier(AlbumNotifier());
+  final currentAlbumController = ValueNotifier(AlbumController());
 
   /// Fetch recent entities
   Future<List<GalleryAsset>> recentAssets({
@@ -36,22 +36,19 @@ class AlbumListNotifier extends ValueNotifier<AlbumList> {
   }
 
   /// Get album list
-  Future<List<AlbumNotifier>> fetchAlbums(RequestType requestType) async {
+  Future<List<AlbumController>> fetchAlbums(RequestType requestType) async {
     final state = await PhotoManager.requestPermissionExtend();
     if (state == PermissionState.authorized) {
       try {
         final albums = await PhotoManager.getAssetPathList(type: requestType);
         // Update album list
-        final albumNotifiers = List.generate(albums.length, (index) {
-          final albumNotifier = AlbumNotifier(album: Album(assetPathEntity: albums[index]));
-          if (index == 0) {
-            currentAlbumNotifier.value = albumNotifier;
-            albumNotifier.fetchAssets();
-          }
-          return albumNotifier;
+        final albumControllers = List.generate(albums.length, (index) {
+          final albumController = AlbumController(album: Album(assetPathEntity: albums[index]));
+          if (index == 0) changeCurrentAlbumController(albumController);
+          return albumController;
         });
-        value = value.copyWith(fetchState: FetchState.completed, albumNotifiers: albumNotifiers);
-        return albumNotifiers;
+        value = value.copyWith(fetchState: FetchState.completed, albumControllers: albumControllers);
+        return albumControllers;
       } catch (e) {
         debugPrint('Exception fetching albums => $e');
         value = value.copyWith(fetchState: FetchState.error, error: e.toString());
@@ -59,19 +56,19 @@ class AlbumListNotifier extends ValueNotifier<AlbumList> {
       }
     } else {
       value = value.copyWith(fetchState: FetchState.unauthorised);
-      currentAlbumNotifier.value = AlbumNotifier(album: const Album(fetchState: FetchState.unauthorised));
+      currentAlbumController.value = AlbumController(album: const Album(fetchState: FetchState.unauthorised));
       return [];
     }
   }
 
-  void changeCurrentAlbumNotifier(AlbumNotifier albumNotifier) {
-    currentAlbumNotifier.value = albumNotifier;
-    albumNotifier.fetchAssets();
+  void changeCurrentAlbumController(AlbumController albumController) {
+    currentAlbumController.value = albumController;
+    albumController.fetchAssets();
   }
 
   @override
   void dispose() {
-    currentAlbumNotifier.dispose();
+    currentAlbumController.dispose();
     super.dispose();
   }
 }

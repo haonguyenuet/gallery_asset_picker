@@ -13,14 +13,21 @@ class GridViewWidget extends StatefulWidget {
 }
 
 class _GridViewWidgetState extends State<GridViewWidget> {
-  final galleryController = GalleryController(
-    settings: const GallerySetting(
-      enableCamera: true,
-      crossAxisCount: 4,
-      maxCount: 2,
-      requestType: RequestType.image,
-    ),
-  );
+  late final GalleryController galleryController;
+
+  @override
+  void initState() {
+    super.initState();
+    galleryController = GalleryController(
+      settings: GallerySetting(
+        enableCamera: true,
+        crossAxisCount: 4,
+        maxCount: 2,
+        requestType: RequestType.image,
+        onReachMaximum: () {},
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -33,37 +40,30 @@ class _GridViewWidgetState extends State<GridViewWidget> {
     return SlidableGalleryWrapper(
       controller: galleryController,
       child: Scaffold(
-        appBar: AppBar(),
-        body: ValueListenableBuilder<bool>(
-            valueListenable: galleryController.slidablePanelController.visibility,
-            builder: (context, isVisible, child) {
-              // return Padding(
-              //   padding: EdgeInsets.only(bottom: isVisible ? 10 : MediaQuery.of(context).padding.bottom),
-              //   child: Column(
-              return Column(
-                children: [
-                  Expanded(
-                    child: const SizedBox(),
-                  ),
-                  Row(
-                    children: [
-                      SizedBox(width: 16),
-                      InkWell(
-                        onTap: () async {
-                          final entities = await galleryController.pick(context);
-                          print(entities.length);
-                        },
-                        child: Icon(Icons.image),
-                      ),
-                      SizedBox(width: 16),
-                      Expanded(child: CupertinoTextField()),
-                      SizedBox(width: 16),
-                    ],
-                  ),
-                ],
-                // ),
-              );
-            }),
+        appBar: AppBar(backgroundColor: Colors.white),
+        body: Column(
+          children: [
+            Expanded(
+              child: const SizedBox(),
+            ),
+            Row(
+              children: [
+                SizedBox(width: 16),
+                InkWell(
+                  onTap: () async {
+                    final entities = await galleryController.open(context);
+                    print(entities.length);
+                  },
+                  child: Icon(Icons.image),
+                ),
+                SizedBox(width: 16),
+                Expanded(child: CupertinoTextField()),
+                SizedBox(width: 16),
+              ],
+            ),
+          ],
+          // ),
+        ),
       ),
     );
   }

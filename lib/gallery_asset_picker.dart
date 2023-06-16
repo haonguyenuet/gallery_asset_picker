@@ -1,7 +1,8 @@
 library gallery_asset_picker;
 
 export 'package:gallery_asset_picker/entities/gallery_asset.dart';
-export 'package:gallery_asset_picker/features/gallery/controllers/album_list_notifier.dart';
+export 'package:gallery_asset_picker/features/gallery/controllers/album_controller.dart';
+export 'package:gallery_asset_picker/features/gallery/controllers/album_list_controller.dart';
 export 'package:gallery_asset_picker/features/gallery/controllers/gallery_controller.dart';
 export 'package:gallery_asset_picker/features/gallery/entities/album.dart';
 export 'package:gallery_asset_picker/features/gallery/entities/album_list.dart';

@@ -15,26 +15,26 @@ class GallerySelectButton extends StatefulWidget {
 class GallerySelectButtonState extends State<GallerySelectButton> with TickerProviderStateMixin {
   late final GalleryController _galleryController;
   late final AnimationController _opacityController;
-  late Animation<double> _opacity;
+  late final Animation<double> _opacity;
 
   @override
   void initState() {
     super.initState();
     const duration = Duration(milliseconds: 300);
     _galleryController = widget.galleryController;
+    _galleryController.addListener(_galleryListener);
     _opacityController = AnimationController(vsync: this, duration: duration);
     _opacity = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _opacityController, curve: Curves.easeIn));
-    _galleryController.addListener(_galleryControllerListener);
   }
 
   @override
   void dispose() {
-    _galleryController.removeListener(_galleryControllerListener);
+    _galleryController.removeListener(_galleryListener);
     _opacityController.dispose();
     super.dispose();
   }
 
-  void _galleryControllerListener() {
+  void _galleryListener() {
     if (mounted) {
       final assets = _galleryController.value.selectedAssets;
       if (assets.isEmpty) {
@@ -64,11 +64,7 @@ class GallerySelectButtonState extends State<GallerySelectButton> with TickerPro
               width: MediaQuery.of(context).size.width,
               backgroundColor: _galleryController.setting.theme?.primaryColor,
               onPressed: (context) {
-                if (_galleryController.isFullScreenMode) {
-                  Navigator.of(context).pop();
-                } else {
-                  _galleryController.slidablePanelController.close();
-                }
+                _galleryController.close(context);
                 _galleryController.completeSelection();
               },
             ),

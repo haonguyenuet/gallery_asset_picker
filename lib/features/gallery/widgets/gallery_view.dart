@@ -2,16 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gallery_asset_picker/features/gallery/controllers/album_list_notifier.dart';
-import 'package:gallery_asset_picker/features/gallery/controllers/album_notifier.dart';
-import 'package:gallery_asset_picker/features/gallery/controllers/gallery_controller.dart';
-import 'package:gallery_asset_picker/features/gallery/widgets/album_list_view.dart';
-import 'package:gallery_asset_picker/features/gallery/widgets/gallery_assets_grid_view.dart';
-import 'package:gallery_asset_picker/features/gallery/widgets/gallery_header.dart';
-import 'package:gallery_asset_picker/features/gallery/widgets/gallery_select_button.dart';
+import 'package:gallery_asset_picker/gallery_asset_picker.dart';
 import 'package:gallery_asset_picker/settings/gallery_settings.dart';
 import 'package:gallery_asset_picker/settings/slidable_panel_setting.dart';
-import 'package:gallery_asset_picker/widgets/slidable_panel/slidable_panel.dart';
+import 'package:gallery_asset_picker/widgets/slidable_panel/builder/slidable_panel_value_builder.dart';
 
 /// [GalleryView] is main ui of package
 class GalleryView extends StatefulWidget {
@@ -26,19 +20,19 @@ class GalleryView extends StatefulWidget {
 
 class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStateMixin {
   late final GalleryController _galleryController;
-  late final AlbumListNotifier _albumListNotifier;
-
   late final AnimationController _animationController;
   late final Animation<double> _animation;
 
-  GallerySetting get _gallarySetting => widget.setting;
   SlidablePanelSetting get _slidablePanelSetting => _gallarySetting.slidablePanelSetting;
+  GallerySetting get _gallarySetting => widget.setting;
+  SlidablePanelController get _slidablePanelController => _galleryController.slidablePanelController;
+  AlbumListController get _albumListController => _galleryController.albumListController;
 
   @override
   void initState() {
     super.initState();
     _galleryController = widget.controller..updateSettings(_gallarySetting);
-    _albumListNotifier = AlbumListNotifier()..fetchAlbums(_gallarySetting.requestType);
+    _albumListController.fetchAlbums(_gallarySetting.requestType);
 
     _animationController = AnimationController(
       vsync: this,
@@ -58,15 +52,13 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
 
   @override
   void dispose() {
-    _albumListNotifier.dispose();
     _animationController.dispose();
     super.dispose();
   }
 
-  void _toggleAlbumList(bool isVisible) {
+  void _toggleAlbumList() {
     if (_animationController.isAnimating) return;
-    _galleryController.setAlbumVisibility(visible: !isVisible);
-    _galleryController.slidablePanelController.gestureEnabled = _animationController.value == 1.0;
+    _galleryController.toggleAlbumListVisibility();
     if (_animationController.value == 1.0) {
       _animationController.reverse();
     } else {
@@ -74,33 +66,26 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
     }
   }
 
-  void _onAlbumChange(AlbumNotifier albumNotifier) {
+  void _onAlbumChange(AlbumController albumController) {
     if (_animationController.isAnimating) return;
-    _albumListNotifier.changeCurrentAlbumNotifier(albumNotifier);
-    _toggleAlbumList(true);
+    _albumListController.changeCurrentAlbumController(albumController);
+    _toggleAlbumList();
   }
 
   Future<bool> _onWillClose() async {
     if (_animationController.isAnimating) return false;
-    if (_galleryController.albumVisibility.value) {
-      _toggleAlbumList(true);
+    if (_galleryController.value.isAlbumVisible) {
+      _toggleAlbumList();
       return false;
     }
     if (_galleryController.value.selectedAssets.isNotEmpty) {
       showDialog(
         context: context,
-        builder: (context) => _galleryController.setting.closingDialogBuilder?.call() ?? _defaultClosingDialog(),
+        builder: (context) => _gallarySetting.closingDialogBuilder?.call() ?? _defaultClosingDialog(),
       );
       return false;
     }
-    if (_galleryController.isFullScreenMode) {
-      Navigator.of(context).pop();
-      return true;
-    }
-    if (_galleryController.slidablePanelController.isVisible) {
-      _galleryController.slidablePanelController.close();
-      return false;
-    }
+    _galleryController.close(context);
     return true;
   }
 
@@ -131,38 +116,35 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
       alignment: Alignment.topCenter,
       child: GalleryHeader(
         onClose: _onWillClose,
-        onAlbumToggle: _toggleAlbumList,
-        albumListNotifier: _albumListNotifier,
+        onAlbumListToggle: _toggleAlbumList,
         galleryController: _galleryController,
       ),
     );
   }
 
   Widget _buildAssets() {
-    return Column(
-      children: [
-        if (_galleryController.isFullScreenMode)
-          // Header space for full screen mode
-          SizedBox(height: _slidablePanelSetting.headerHeight)
-        else
-          // Toggling size for header hiding animation
-          ValueListenableBuilder<SlidablePanelValue>(
-            valueListenable: _galleryController.slidablePanelController,
-            builder: (context, value, child) {
+    // Space to reveal the header in below
+    final headerSpace = _galleryController.isFullScreenMode
+        ? SizedBox(height: _slidablePanelSetting.headerHeight)
+        : SlidablePanelValueBuilder(
+            controller: _slidablePanelController,
+            builder: (context, value) {
               final height = (_slidablePanelSetting.headerHeight * value.factor * 1.2).clamp(
                 _slidablePanelSetting.handleBarHeight,
                 _slidablePanelSetting.headerHeight,
               );
               return SizedBox(height: height);
             },
-          ),
-        Divider(color: _galleryController.setting.theme?.primaryColor, thickness: 0.5, height: 0.5),
-        Expanded(
-          child: GalleryAssetsGridView(
-            onClose: _onWillClose,
-            albumListNotifier: _albumListNotifier,
-          ),
+          );
+    return Column(
+      children: [
+        headerSpace,
+        Divider(
+          color: _gallarySetting.theme?.primaryColor ?? Colors.grey.shade500,
+          thickness: 0.5,
+          height: 0.5,
         ),
+        const Expanded(child: GalleryAssetsGridView()),
       ],
     );
   }
@@ -183,10 +165,7 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
           visible: _animation.value > 0.0,
           child: Transform.translate(
             offset: Offset(0, offsetY),
-            child: AlbumListPage(
-              onAlbumChange: _onAlbumChange,
-              albumListNotifier: _albumListNotifier,
-            ),
+            child: AlbumListView(onAlbumChange: _onAlbumChange),
           ),
         );
       },

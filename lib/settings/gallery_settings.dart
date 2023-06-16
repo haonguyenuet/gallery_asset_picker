@@ -9,7 +9,7 @@ class GallerySetting {
     this.selectedAssets = const [],
     this.requestType = RequestType.all,
     this.maxCount,
-    this.albumTitle = StringConst.ALL_ALBUMS,
+    this.albumTitle = StringConst.ALL_PHOTOS,
     this.albumSubtitle = 'Select Media',
     this.enableCamera = true,
     this.crossAxisCount = 3,

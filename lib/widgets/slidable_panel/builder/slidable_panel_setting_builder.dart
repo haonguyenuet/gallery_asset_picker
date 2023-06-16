@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gallery_asset_picker/settings/slidable_panel_setting.dart';
 
-const _defaultMin = 0.45;
+const _defaultMin = 0.4;
 
-class SlidablePanelSettingBuilder extends StatelessWidget {
-  const SlidablePanelSettingBuilder({
+class SlidablePanelSafeBuilder extends StatelessWidget {
+  const SlidablePanelSafeBuilder({
     Key? key,
     required this.setting,
     required this.builder,

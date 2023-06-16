@@ -12,6 +12,8 @@ class SlidablePanelValue {
   /// From 0.0 - 1.0
   final double factor;
 
+  bool get visible => status != SlidablePanelStatus.closed;
+
   SlidablePanelValue copyWith({
     SlidablePanelStatus? status,
     double? factor,
@@ -20,5 +22,9 @@ class SlidablePanelValue {
       status: status ?? this.status,
       factor: factor ?? this.factor,
     );
+  }
+
+  factory SlidablePanelValue.closed() {
+    return const SlidablePanelValue();
   }
 }

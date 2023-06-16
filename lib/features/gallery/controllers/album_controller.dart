@@ -3,8 +3,8 @@ import 'package:gallery_asset_picker/features/gallery/entities/album.dart';
 import 'package:gallery_asset_picker/features/gallery/enums/fetch_state.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-class AlbumNotifier extends ValueNotifier<Album> {
-  AlbumNotifier({Album? album}) : super(album ?? Album.none());
+class AlbumController extends ValueNotifier<Album> {
+  AlbumController({Album? album}) : super(album ?? Album.none());
 
   int _currentPage = 0;
 
