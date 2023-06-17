@@ -1,15 +1,14 @@
+// ignore_for_file: unused_local_variable
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/features/camera/src/camera_view.dart';
-import 'package:gallery_asset_picker/features/camera/src/controllers/camera_controller.dart';
 import 'package:gallery_asset_picker/gallery_asset_picker.dart';
-import 'package:gallery_asset_picker/settings/gallery_settings.dart';
-import 'package:gallery_asset_picker/settings/slidable_panel_setting.dart';
-import 'package:gallery_asset_picker/utils/system_utils.dart';
+import 'package:gallery_asset_picker/utils/utils.dart';
+import 'package:gallery_asset_picker/widgets/widgets.dart';
 
-class GalleryController extends ValueNotifier<Gallery> {
-  GalleryController({GallerySetting? settings}) : super(Gallery.none()) {
+class GalleryController extends ValueNotifier<GalleryValue> {
+  GalleryController({GallerySetting? settings}) : super(GalleryValue.none()) {
     updateSettings(settings);
   }
 
@@ -69,7 +68,7 @@ class GalleryController extends ValueNotifier<Gallery> {
 
   List<GalleryAsset> completeSelection() {
     final assets = value.selectedAssets;
-    value = Gallery.none();
+    value = GalleryValue.none();
     _selectionTask.complete(assets);
     return assets;
   }
@@ -101,7 +100,7 @@ class GalleryController extends ValueNotifier<Gallery> {
     final navigator = NavigatorUtils.of(context);
 
     final route = SlidingPageRoute<List<GalleryAsset>>(
-      child: CameraView(
+      child: CameraPage(
         controller: XCameraController(),
         setting: setting.cameraSetting,
       ),

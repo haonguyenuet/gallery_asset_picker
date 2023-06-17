@@ -1,6 +1,5 @@
 import 'package:example/page.dart';
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/gallery_asset_picker.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

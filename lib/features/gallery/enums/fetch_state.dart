@@ -1,1 +1,1 @@
-enum FetchState { unauthorised, fetching, completed, error }
+enum FetchStatus { unauthorised, fetching, completed, error }

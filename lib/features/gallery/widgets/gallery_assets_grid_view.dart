@@ -2,10 +2,10 @@ import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/features/gallery/widgets/builder/album_builder.dart';
+import 'package:gallery_asset_picker/features/gallery/enums/fetch_state.dart';
 import 'package:gallery_asset_picker/gallery_asset_picker.dart';
 import 'package:gallery_asset_picker/utils/const.dart';
-import 'package:gallery_asset_picker/widgets/gallery_permission_view.dart';
+import 'package:gallery_asset_picker/widgets/widgets.dart';
 
 class GalleryAssetsGridView extends StatelessWidget {
   const GalleryAssetsGridView({Key? key}) : super(key: key);
@@ -21,7 +21,7 @@ class GalleryAssetsGridView extends StatelessWidget {
           return AlbumBuilder(
             controller: albumController,
             builder: (context, album) {
-              if (album.fetchState == FetchState.unauthorised && album.assets.isEmpty) {
+              if (album.fetchStatus == FetchStatus.unauthorised && album.assets.isEmpty) {
                 return GalleryPermissionView(
                   onRefresh: () {
                     if (album.assetPathEntity == null) {
@@ -33,13 +33,13 @@ class GalleryAssetsGridView extends StatelessWidget {
                 );
               }
 
-              if (album.fetchState == FetchState.completed && album.assets.isEmpty) {
+              if (album.fetchStatus == FetchStatus.completed && album.assets.isEmpty) {
                 return const Center(
                   child: Text(StringConst.NO_MEDIA_AVAILABLE, style: TextStyle(color: Colors.white)),
                 );
               }
 
-              if (album.fetchState == FetchState.error) {
+              if (album.fetchStatus == FetchStatus.error) {
                 return const Center(
                   child: Text(StringConst.SOMETHING_WRONG, style: TextStyle(color: Colors.white)),
                 );
@@ -48,7 +48,7 @@ class GalleryAssetsGridView extends StatelessWidget {
               final assets = album.assets;
               final enableCamera = galleryController.setting.enableCamera;
 
-              final itemCount = galleryController.albumListController.value.fetchState == FetchState.fetching
+              final itemCount = galleryController.albumListController.value.fetchStatus == FetchStatus.fetching
                   ? 20
                   : enableCamera
                       ? assets.length + 1
@@ -73,7 +73,7 @@ class GalleryAssetsGridView extends StatelessWidget {
                     }
 
                     final i = enableCamera ? index - 1 : index;
-                    final entity = galleryController.albumListController.value.fetchState == FetchState.fetching
+                    final entity = galleryController.albumListController.value.fetchStatus == FetchStatus.fetching
                         ? null
                         : assets[i];
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gallery_asset_picker/features/gallery/controllers/album_controller.dart';
-import 'package:gallery_asset_picker/features/gallery/entities/album.dart';
+import 'package:gallery_asset_picker/features/gallery/values/album_value.dart';
 
-typedef AlbumWidgetBuilder = Widget Function(BuildContext context, Album album);
+typedef AlbumWidgetBuilder = Widget Function(BuildContext context, AlbumValue album);
 typedef CurrentAlbumWidgetBuilder = Widget Function(BuildContext context, AlbumController albumController);
 
 class AlbumBuilder extends StatelessWidget {
@@ -17,7 +17,7 @@ class AlbumBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<Album>(
+    return ValueListenableBuilder<AlbumValue>(
       valueListenable: controller,
       builder: (context, value, child) => builder.call(context, value),
     );

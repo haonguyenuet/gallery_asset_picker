@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_asset_picker/gallery_asset_picker.dart';
-import 'package:gallery_asset_picker/settings/gallery_settings.dart';
 
 ///
 class GridViewWidget extends StatefulWidget {
@@ -37,7 +36,7 @@ class _GridViewWidgetState extends State<GridViewWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return SlidableGalleryWrapper(
+    return SlidableGalleryOverlay(
       controller: galleryController,
       child: Scaffold(
         appBar: AppBar(backgroundColor: Colors.white),

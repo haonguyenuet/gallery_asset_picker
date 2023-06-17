@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/features/camera/src/controllers/camera_controller.dart';
-import 'package:gallery_asset_picker/features/camera/src/values/camera_value.dart';
+import 'package:gallery_asset_picker/features/camera/controllers/camera_controller.dart';
+import 'package:gallery_asset_picker/features/camera/values/camera_value.dart';
 
 class CameraBuilder extends StatelessWidget {
   const CameraBuilder({

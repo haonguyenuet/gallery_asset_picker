@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Built a slide page transition for the picker.
 class SlidingPageRoute<T> extends PageRoute<T> {
   SlidingPageRoute({
     required this.child,

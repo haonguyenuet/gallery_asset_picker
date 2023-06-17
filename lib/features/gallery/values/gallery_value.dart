@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:gallery_asset_picker/entities/gallery_asset.dart';
 
-class Gallery {
-  const Gallery({
+@immutable
+class GalleryValue {
+  const GalleryValue({
     this.selectedAssets = const <GalleryAsset>[],
     this.isAlbumVisible = false,
   });
@@ -10,18 +11,18 @@ class Gallery {
   final List<GalleryAsset> selectedAssets;
   final bool isAlbumVisible;
 
-  Gallery copyWith({
+  GalleryValue copyWith({
     List<GalleryAsset>? selectedAssets,
     bool? isAlbumVisible,
   }) {
-    return Gallery(
+    return GalleryValue(
       selectedAssets: selectedAssets ?? this.selectedAssets,
       isAlbumVisible: isAlbumVisible ?? this.isAlbumVisible,
     );
   }
 
   @override
-  bool operator ==(covariant Gallery other) {
+  bool operator ==(covariant GalleryValue other) {
     if (identical(this, other)) return true;
     return listEquals(other.selectedAssets, selectedAssets) && other.isAlbumVisible == isAlbumVisible;
   }
@@ -29,5 +30,5 @@ class Gallery {
   @override
   int get hashCode => selectedAssets.hashCode ^ isAlbumVisible.hashCode;
 
-  factory Gallery.none() => const Gallery();
+  factory GalleryValue.none() => const GalleryValue();
 }

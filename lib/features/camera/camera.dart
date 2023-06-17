@@ -1,6 +1,4 @@
-library camera_picker;
-
-export 'src/camera_view.dart';
-export 'src/controllers/controllers.dart';
-export 'src/values/entities.dart';
-export 'src/widgets/widgets.dart' show CamControllerProvider, CamControllerProviderExtension;
+export 'camera_page.dart';
+export 'controllers/controllers.dart';
+export 'values/values.dart';
+export 'widgets/widgets.dart';

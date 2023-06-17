@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gallery_asset_picker/features/gallery/controllers/gallery_controller.dart';
-import 'package:gallery_asset_picker/features/gallery/entities/gallery.dart';
+import 'package:gallery_asset_picker/features/gallery/values/gallery_value.dart';
 
-typedef GalleryWidgetBuilder = Widget Function(BuildContext context, Gallery value);
+typedef GalleryWidgetBuilder = Widget Function(BuildContext context, GalleryValue value);
 
 class GalleryBuilder extends StatelessWidget {
   const GalleryBuilder({
@@ -16,7 +16,7 @@ class GalleryBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<Gallery>(
+    return ValueListenableBuilder<GalleryValue>(
       valueListenable: controller,
       builder: (context, value, child) => builder(context, value),
     );

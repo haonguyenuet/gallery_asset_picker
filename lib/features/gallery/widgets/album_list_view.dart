@@ -49,7 +49,7 @@ class _AlbumTile extends StatelessWidget {
   final AlbumController albumController;
   final ValueChanged<AlbumController>? onPressed;
 
-  Album get album => albumController.value;
+  AlbumValue get album => albumController.value;
 
   Future<AssetEntity?> get firstAsset async {
     final assets = (await album.assetPathEntity?.getAssetListPaged(page: 0, size: 1)) ?? [];

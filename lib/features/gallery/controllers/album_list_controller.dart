@@ -1,17 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:gallery_asset_picker/entities/gallery_asset.dart';
 import 'package:gallery_asset_picker/features/gallery/controllers/album_controller.dart';
-import 'package:gallery_asset_picker/features/gallery/entities/album.dart';
-import 'package:gallery_asset_picker/features/gallery/entities/album_list.dart';
 import 'package:gallery_asset_picker/features/gallery/enums/fetch_state.dart';
+import 'package:gallery_asset_picker/features/gallery/values/album_list_value.dart';
+import 'package:gallery_asset_picker/features/gallery/values/album_value.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-class AlbumListController extends ValueNotifier<AlbumList> {
-  AlbumListController() : super(AlbumList.none());
+class AlbumListController extends ValueNotifier<AlbumListValue> {
+  AlbumListController() : super(AlbumListValue.none());
 
   final currentAlbumController = ValueNotifier(AlbumController());
 
-  /// Fetch recent entities
   Future<List<GalleryAsset>> recentAssets({
     int count = 20,
     RequestType? requestType,
@@ -35,7 +34,6 @@ class AlbumListController extends ValueNotifier<AlbumList> {
     }
   }
 
-  /// Get album list
   Future<List<AlbumController>> fetchAlbums(RequestType requestType) async {
     final state = await PhotoManager.requestPermissionExtend();
     if (state == PermissionState.authorized) {
@@ -43,20 +41,20 @@ class AlbumListController extends ValueNotifier<AlbumList> {
         final albums = await PhotoManager.getAssetPathList(type: requestType);
         // Update album list
         final albumControllers = List.generate(albums.length, (index) {
-          final albumController = AlbumController(album: Album(assetPathEntity: albums[index]));
+          final albumController = AlbumController(album: AlbumValue(assetPathEntity: albums[index]));
           if (index == 0) changeCurrentAlbumController(albumController);
           return albumController;
         });
-        value = value.copyWith(fetchState: FetchState.completed, albumControllers: albumControllers);
+        value = value.copyWith(fetchStatus: FetchStatus.completed, albumControllers: albumControllers);
         return albumControllers;
       } catch (e) {
         debugPrint('Exception fetching albums => $e');
-        value = value.copyWith(fetchState: FetchState.error, error: e.toString());
+        value = value.copyWith(fetchStatus: FetchStatus.error, error: e.toString());
         return [];
       }
     } else {
-      value = value.copyWith(fetchState: FetchState.unauthorised);
-      currentAlbumController.value = AlbumController(album: const Album(fetchState: FetchState.unauthorised));
+      value = value.copyWith(fetchStatus: FetchStatus.unauthorised);
+      currentAlbumController.value = AlbumController(album: const AlbumValue(fetchStatus: FetchStatus.unauthorised));
       return [];
     }
   }

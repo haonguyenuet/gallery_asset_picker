@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/features/camera/src/controllers/camera_controller.dart';
+import 'package:gallery_asset_picker/features/camera/controllers/camera_controller.dart';
 import 'package:gallery_asset_picker/gallery_asset_picker.dart';
+import 'package:gallery_asset_picker/utils/navigator_utils.dart';
 
 class CameraCloseButton extends StatelessWidget {
   const CameraCloseButton({

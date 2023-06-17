@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/features/camera/src/controllers/camera_controller.dart';
+import 'package:gallery_asset_picker/features/camera/controllers/camera_controller.dart';
 
-import 'package:gallery_asset_picker/features/camera/src/widgets/camera_builder.dart';
+import 'package:gallery_asset_picker/features/camera/widgets/camera_builder.dart';
 
 class CameraRotateButton extends StatelessWidget {
   const CameraRotateButton({Key? key, required this.xCameraController}) : super(key: key);

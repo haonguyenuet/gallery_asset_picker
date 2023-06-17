@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/features/camera/src/controllers/camera_controller.dart';
+import 'package:gallery_asset_picker/features/camera/controllers/camera_controller.dart';
 
 class CameraShutterButton extends StatefulWidget {
   const CameraShutterButton({Key? key, required this.xCameraController, this.size = 70.0}) : super(key: key);

@@ -1,6 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/features/camera/src/controllers/camera_controller.dart';
+import 'package:gallery_asset_picker/features/camera/controllers/camera_controller.dart';
 
 class RawCameraView extends StatelessWidget {
   const RawCameraView({Key? key, required this.xCameraController}) : super(key: key);

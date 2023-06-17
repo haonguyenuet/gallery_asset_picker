@@ -36,7 +36,7 @@ class XCameraValue {
       cameraType: cameraType ?? this.cameraType,
       flashMode: flashMode ?? this.flashMode,
       isTakingPicture: isTakingPicture ?? this.isTakingPicture,
-      error: error ?? this.error,
+      error: error,
     );
   }
 }

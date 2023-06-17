@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gallery_asset_picker/gallery_asset_picker.dart';
-import 'package:gallery_asset_picker/settings/gallery_settings.dart';
-import 'package:gallery_asset_picker/settings/slidable_panel_setting.dart';
 import 'package:gallery_asset_picker/widgets/slidable_panel/builder/slidable_panel_value_builder.dart';
+import 'package:gallery_asset_picker/widgets/widgets.dart';
 
 /// [GalleryView] is main ui of package
 class GalleryView extends StatefulWidget {

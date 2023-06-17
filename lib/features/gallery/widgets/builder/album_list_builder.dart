@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:gallery_asset_picker/features/gallery/controllers/album_list_controller.dart';
-import 'package:gallery_asset_picker/features/gallery/entities/album_list.dart';
+import 'package:gallery_asset_picker/features/gallery/values/album_list_value.dart';
 import 'package:gallery_asset_picker/features/gallery/enums/fetch_state.dart';
 import 'package:gallery_asset_picker/features/gallery/widgets/gallery_controller_provider.dart';
 import 'package:gallery_asset_picker/utils/const.dart';
 import 'package:gallery_asset_picker/widgets/gallery_permission_view.dart';
 
-typedef AlbumListWidgetBuilder = Widget Function(BuildContext context, AlbumList albums);
+typedef AlbumListWidgetBuilder = Widget Function(BuildContext context, AlbumListValue albums);
 
 class AlbumListBuilder extends StatelessWidget {
   const AlbumListBuilder({
@@ -23,10 +23,10 @@ class AlbumListBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final galleryController = context.galleryController;
-    return ValueListenableBuilder<AlbumList>(
+    return ValueListenableBuilder<AlbumListValue>(
       valueListenable: controller,
       builder: (context, value, child) {
-        if (value.fetchState == FetchState.unauthorised && value.albumControllers.isEmpty && !hidePermissionView) {
+        if (value.fetchStatus == FetchStatus.unauthorised && value.albumControllers.isEmpty && !hidePermissionView) {
           return GalleryPermissionView(
             onRefresh: () {
               controller.fetchAlbums(galleryController.setting.requestType);
@@ -35,7 +35,7 @@ class AlbumListBuilder extends StatelessWidget {
         }
 
         // No data
-        if (value.fetchState == FetchState.completed && value.albumControllers.isEmpty) {
+        if (value.fetchStatus == FetchStatus.completed && value.albumControllers.isEmpty) {
           return const Center(
             child: Text(
               StringConst.NO_ALBUM_AVAILABLE,
@@ -47,7 +47,7 @@ class AlbumListBuilder extends StatelessWidget {
           );
         }
 
-        if (value.fetchState == FetchState.error) {
+        if (value.fetchStatus == FetchStatus.error) {
           return const Center(
             child: Text(
               StringConst.SOMETHING_WRONG,
