@@ -188,8 +188,8 @@ class _SlidablePanelState extends State<SlidablePanel> with TickerProviderStateM
           controller: _controller,
           builder: (context, value) {
             return AnimatedSwitcher(
-              duration: Duration.zero,
-              reverseDuration: const Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 100),
+              reverseDuration: const Duration(milliseconds: 100),
               transitionBuilder: (child, animation) => Align(
                 alignment: Alignment.bottomCenter,
                 child: SizeTransition(sizeFactor: animation, child: child),

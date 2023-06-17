@@ -57,8 +57,8 @@ class _CameraShutterButtonState extends State<CameraShutterButton> with TickerPr
             // Background
             Container(
               margin: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
-                color: Colors.white70,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9),
                 shape: BoxShape.circle,
               ),
             ),
@@ -108,11 +108,8 @@ class _PulseState extends State<_Pulse> {
               scale: widget.controller.status == AnimationStatus.reverse ? 1.0 : _animation.value,
               child: SizedBox.fromSize(
                 size: Size.square(widget.size),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.9),
-                  ),
+                child: const DecoratedBox(
+                  decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white),
                 ),
               ),
             ),

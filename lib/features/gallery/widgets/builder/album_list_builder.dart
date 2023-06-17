@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gallery_asset_picker/features/gallery/controllers/album_list_controller.dart';
-import 'package:gallery_asset_picker/features/gallery/values/album_list_value.dart';
 import 'package:gallery_asset_picker/features/gallery/enums/fetch_state.dart';
+import 'package:gallery_asset_picker/features/gallery/values/album_list_value.dart';
 import 'package:gallery_asset_picker/features/gallery/widgets/gallery_controller_provider.dart';
 import 'package:gallery_asset_picker/utils/const.dart';
 import 'package:gallery_asset_picker/widgets/gallery_permission_view.dart';

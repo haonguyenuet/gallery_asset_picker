@@ -5,9 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_asset_picker/features/camera/exceptions/camera_exceptions.dart';
-import 'package:gallery_asset_picker/features/camera/values/camera_value.dart';
 import 'package:gallery_asset_picker/gallery_asset_picker.dart';
-import 'package:gallery_asset_picker/settings/camera_setting.dart';
 import 'package:path/path.dart' as path;
 
 class XCameraController extends ValueNotifier<XCameraValue> {
@@ -65,8 +63,7 @@ class XCameraController extends ValueNotifier<XCameraValue> {
     );
     _cameraController!.addListener(() {
       if (_cameraController?.value.hasError == true) {
-        final exception = CameraException('CREATE_CAMERA', 'Camera error ${_cameraController!.value.errorDescription}');
-        value = value.copyWith(error: exception);
+        value = value.copyWith(error: CameraExeptions.createCamera);
         return;
       }
     });

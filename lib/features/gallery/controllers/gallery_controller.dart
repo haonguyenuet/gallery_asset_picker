@@ -1,5 +1,3 @@
-// ignore_for_file: unused_local_variable
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -40,7 +38,7 @@ class GalleryController extends ValueNotifier<GalleryValue> {
 
   void select(GalleryAsset asset) {
     if (singleSelection) {
-      setting.onChanged?.call(asset, false);
+      setting.onChanged?.call(asset, removed: false);
       value = value.copyWith(selectedAssets: [asset]);
       return;
     }
@@ -49,11 +47,11 @@ class GalleryController extends ValueNotifier<GalleryValue> {
     final isSelected = assets.contains(asset);
     if (isSelected) {
       assets.remove(asset);
-      setting.onChanged?.call(asset, isSelected);
+      setting.onChanged?.call(asset, removed: isSelected);
       value = value.copyWith(selectedAssets: assets);
     } else if (!reachedMaximumLimit) {
       assets.add(asset);
-      setting.onChanged?.call(asset, isSelected);
+      setting.onChanged?.call(asset, removed: isSelected);
       value = value.copyWith(selectedAssets: assets);
     }
 
@@ -82,6 +80,7 @@ class GalleryController extends ValueNotifier<GalleryValue> {
           .then((value) => SystemUtils.showStatusBar());
     } else {
       FocusScope.of(context).unfocus();
+      await Future.delayed(const Duration(milliseconds: 50));
       slidablePanelController.open();
     }
 
@@ -99,16 +98,30 @@ class GalleryController extends ValueNotifier<GalleryValue> {
   Future<GalleryAsset?> openCamera(BuildContext context) async {
     final navigator = NavigatorUtils.of(context);
 
-    final route = SlidingPageRoute<List<GalleryAsset>>(
+    final cameraRoute = SlidingPageRoute<List<GalleryAsset>>(
       child: CameraPage(
         controller: XCameraController(),
         setting: setting.cameraSetting,
       ),
       setting: const SlidingRouteSettings(
-        start: TransitionFrom.leftToRight,
-        reverse: TransitionFrom.rightToLeft,
+        start: TransitionFrom.bottomToTop,
+        reverse: TransitionFrom.topToBottom,
       ),
     );
+
+    final assets = await navigator.push(cameraRoute);
+    await SystemUtils.showStatusBar();
+
+    if (assets?.isNotEmpty ?? false) {
+      final asset = assets!.first;
+      setting.onChanged?.call(asset, removed: false);
+
+      if (isFullScreenMode) {
+      } else {
+        if (singleSelection) {
+        } else {}
+      }
+    }
     return null;
   }
 

@@ -62,8 +62,8 @@ class GalleryAssetsGridView extends StatelessWidget {
                   controller: galleryController.slidablePanelController.scrollController,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: galleryController.setting.crossAxisCount,
-                    crossAxisSpacing: 2,
-                    mainAxisSpacing: 2,
+                    crossAxisSpacing: 1,
+                    mainAxisSpacing: 1,
                   ),
                   itemCount: itemCount,
                   padding: EdgeInsets.zero,
@@ -103,11 +103,7 @@ class _CameraTile extends StatelessWidget {
         final asset = await galleryController.openCamera(context);
         if (asset != null) albumController.insert(asset);
       },
-      child: Icon(
-        CupertinoIcons.camera,
-        color: Colors.grey.shade200,
-        size: 24,
-      ),
+      child: const Icon(CupertinoIcons.camera, color: Colors.white, size: 24),
     );
   }
 }
@@ -157,20 +153,22 @@ class _SelectionCount extends StatelessWidget {
         Widget counter = const SizedBox();
         if (isSelected) {
           counter = CircleAvatar(
-            backgroundColor: galleryController.setting.theme?.primaryColor ?? Theme.of(context).primaryColor,
+            backgroundColor: Colors.blue.shade700,
             radius: 14 * counterRaito,
             child: singleSelection
                 ? Icon(CupertinoIcons.checkmark_alt, color: Colors.white, size: 24 * counterRaito)
-                : Text('${index + 1}', style: TextStyle(color: Colors.white, fontSize: 16 * counterRaito)),
+                : Text('${index + 1}',
+                    style: TextStyle(color: Colors.white, fontSize: 14 * counterRaito, fontWeight: FontWeight.w500)),
           );
         }
         if (!singleSelection) {
           counter = Container(
-            height: 30 * counterRaito,
-            width: 30 * counterRaito,
+            height: 24 * counterRaito,
+            width: 24 * counterRaito,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.grey.shade200, width: 2),
+              // borderRadius: BorderRadius.all(Radius.circular(20)),
+              border: Border.all(color: Colors.white, width: 2, strokeAlign: 0),
             ),
             child: isSelected ? counter : const SizedBox(),
           );

@@ -95,15 +95,18 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
       child: WillPopScope(
         onWillPop: _onWillClose,
         child: Scaffold(
-          backgroundColor: Colors.black,
-          body: Stack(
-            fit: StackFit.expand,
-            children: [
-              _buildHeader(),
-              _buildAssets(),
-              _buildSelectButton(),
-              _buildAnimatedAlbumList(),
-            ],
+          backgroundColor: _slidablePanelSetting.backgroundColor,
+          body: Padding(
+            padding: EdgeInsets.only(top: _galleryController.isFullScreenMode ? MediaQuery.of(context).padding.top : 0),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                _buildHeader(),
+                _buildAssets(),
+                _buildSelectButton(),
+                _buildAnimatedAlbumList(),
+              ],
+            ),
           ),
         ),
       ),
@@ -128,7 +131,7 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
         : SlidablePanelValueBuilder(
             controller: _slidablePanelController,
             builder: (context, value) {
-              final height = (_slidablePanelSetting.headerHeight * value.factor * 1.2).clamp(
+              final height = (_slidablePanelSetting.headerHeight * value.factor).clamp(
                 _slidablePanelSetting.handleBarHeight,
                 _slidablePanelSetting.headerHeight,
               );

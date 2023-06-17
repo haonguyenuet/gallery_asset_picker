@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-typedef KeyboardVisibilityBuilder = Widget Function(BuildContext context, bool isKeyboardVisible, Widget? child);
+typedef KeyboardVisibilityBuilder = Widget Function(BuildContext context, bool isKeyboardVisible);
 typedef KeyboardVisibilityListener = void Function(bool visible);
 
 class KeyboardVisibility extends StatefulWidget {
@@ -52,6 +52,6 @@ class _KeyboardVisibilityState extends State<KeyboardVisibility> with WidgetsBin
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder?.call(context, _visible, widget.child) ?? widget.child ?? const SizedBox();
+    return widget.builder?.call(context, _visible) ?? widget.child ?? const SizedBox();
   }
 }

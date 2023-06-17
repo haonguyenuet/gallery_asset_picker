@@ -64,8 +64,8 @@ class GallerySelectButtonState extends State<GallerySelectButton> with TickerPro
               width: MediaQuery.of(context).size.width,
               backgroundColor: _galleryController.setting.theme?.primaryColor,
               onPressed: (context) {
-                _galleryController.close(context);
                 _galleryController.completeSelection();
+                _galleryController.close(context);
               },
             ),
           ),

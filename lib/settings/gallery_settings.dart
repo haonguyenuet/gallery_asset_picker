@@ -61,7 +61,7 @@ class GallerySetting {
 
   ///
   /// On select or remove asset
-  final Function(GalleryAsset asset, bool removed)? onChanged;
+  final Function(GalleryAsset asset, {bool removed})? onChanged;
 
   ///
   /// On select maximum count
@@ -87,7 +87,7 @@ class GallerySetting {
     int? crossAxisCount,
     SlidablePanelSetting? slidablePanelSetting,
     CameraSetting? cameraSetting,
-    Function(GalleryAsset asset, bool removed)? onChanged,
+    Function(GalleryAsset asset, {bool removed})? onChanged,
     Function()? onReachMaximum,
     Widget Function()? closingDialogBuilder,
     ThemeData? theme,

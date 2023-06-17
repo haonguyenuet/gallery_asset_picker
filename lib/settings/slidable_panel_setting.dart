@@ -5,8 +5,8 @@ class SlidablePanelSetting {
   const SlidablePanelSetting({
     this.maxHeight,
     this.minHeight,
-    this.toolbarHeight = kToolbarHeight,
-    this.handleBarHeight = 25.0,
+    this.toolbarHeight = 48,
+    this.handleBarHeight = 20.0,
     this.snapingPoint = 0.4,
     this.headerBackground = Colors.black,
     this.foregroundColor = Colors.black,

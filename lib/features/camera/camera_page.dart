@@ -6,7 +6,7 @@ import 'package:gallery_asset_picker/features/camera/controllers/camera_controll
 import 'package:gallery_asset_picker/features/camera/widgets/camera_builder.dart';
 import 'package:gallery_asset_picker/features/camera/widgets/camera_close_button.dart';
 import 'package:gallery_asset_picker/features/camera/widgets/camera_flash_button.dart';
-import 'package:gallery_asset_picker/features/camera/widgets/camera_footer.dart';
+import 'package:gallery_asset_picker/features/camera/widgets/camera_rotate_button.dart';
 import 'package:gallery_asset_picker/features/camera/widgets/camera_shutter_button.dart';
 import 'package:gallery_asset_picker/features/camera/widgets/raw_camera_view.dart';
 import 'package:gallery_asset_picker/settings/camera_setting.dart';
@@ -97,25 +97,24 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver, Ti
               children: [
                 RawCameraView(xCameraController: _controller),
                 Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: CameraFooter(xCameraController: _controller),
+                  right: 16,
+                  bottom: MediaQuery.of(context).padding.bottom,
+                  child: CameraRotateButton(xCameraController: _controller),
                 ),
                 Positioned(
                   left: 16,
-                  top: 16,
+                  top: 24 + MediaQuery.of(context).padding.top,
                   child: CameraCloseButton(xCameraController: _controller),
                 ),
                 Positioned(
                   right: 16,
-                  top: 16,
+                  top: 24 + MediaQuery.of(context).padding.top,
                   child: CameraFlashButton(xCameraController: _controller),
                 ),
                 Positioned(
                   left: 0,
                   right: 0,
-                  bottom: 64,
+                  bottom: 64 + MediaQuery.of(context).padding.bottom,
                   child: CameraShutterButton(xCameraController: _controller),
                 ),
               ],

@@ -18,11 +18,11 @@ class CameraCloseButton extends StatelessWidget {
       padding: EdgeInsets.zero,
       minSize: 0,
       child: Container(
-        height: 36,
-        width: 36,
+        height: 40,
+        width: 40,
         alignment: Alignment.center,
         decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.black26),
-        child: const Icon(CupertinoIcons.clear, color: Colors.white, size: 16),
+        child: const Icon(Icons.clear, color: Colors.white, size: 24),
       ),
       onPressed: NavigatorUtils.of(context).pop,
     );

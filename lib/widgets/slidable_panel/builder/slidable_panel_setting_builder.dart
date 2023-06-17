@@ -21,7 +21,8 @@ class SlidablePanelSafeBuilder extends StatelessWidget {
         final size = constraints.biggest;
         final isFullScreen = size.height == mediaQuery.size.height;
         final panelSetting = setting ?? const SlidablePanelSetting();
-        final _maxHeight = panelSetting.maxHeight ?? size.height - (isFullScreen ? mediaQuery.padding.top : 0);
+        final _maxHeight =
+            panelSetting.maxHeight ?? size.height - (isFullScreen ? mediaQuery.padding.top + kToolbarHeight : 0);
         final _minHeight = panelSetting.minHeight ?? _maxHeight * _defaultMin;
         final _setting = panelSetting.copyWith(
           maxHeight: _maxHeight,

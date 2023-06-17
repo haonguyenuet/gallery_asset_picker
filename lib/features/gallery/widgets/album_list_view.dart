@@ -52,6 +52,9 @@ class _AlbumTile extends StatelessWidget {
   AlbumValue get album => albumController.value;
 
   Future<AssetEntity?> get firstAsset async {
+    if (album.assets.isNotEmpty) {
+      return album.assets.first;
+    }
     final assets = (await album.assetPathEntity?.getAssetListPaged(page: 0, size: 1)) ?? [];
     if (assets.isEmpty) return null;
     return assets.first;

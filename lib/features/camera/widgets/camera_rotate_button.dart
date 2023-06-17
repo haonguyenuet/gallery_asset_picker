@@ -18,13 +18,10 @@ class CameraRotateButton extends StatelessWidget {
           padding: EdgeInsets.zero,
           minSize: 0,
           child: Container(
-            padding: const EdgeInsets.only(top: 10),
-            width: 54,
+            height: 40,
+            width: 40,
             alignment: Alignment.center,
-            child: const Icon(
-              Icons.cameraswitch,
-              color: Colors.white,
-            ),
+            child: const Icon(Icons.cameraswitch, color: Colors.white, size: 24),
           ),
           onPressed: () => xCameraController.switchCameraDirection(value.oppositeLensDirection),
         );

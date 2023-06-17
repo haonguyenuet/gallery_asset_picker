@@ -25,10 +25,9 @@ class GalleryHeader extends StatelessWidget {
       height: galleryController.slidablePanelSetting.headerHeight,
       color: galleryController.slidablePanelSetting.headerBackground,
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
-          _buildHandleBar(context),
-          Expanded(
+          Flexible(child: _buildHandleBar()),
+          Flexible(
             child: Row(
               children: [
                 Expanded(child: _buildCloseButton()),
@@ -49,9 +48,9 @@ class GalleryHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildHandleBar(BuildContext context) {
+  Widget _buildHandleBar() {
     if (galleryController.isFullScreenMode) {
-      return SizedBox(height: MediaQuery.of(context).padding.top);
+      return SizedBox(height: galleryController.slidablePanelSetting.handleBarHeight);
     }
     return SizedBox(
       height: galleryController.slidablePanelSetting.handleBarHeight,
@@ -72,12 +71,12 @@ class GalleryHeader extends StatelessWidget {
     return Align(
       alignment: Alignment.centerLeft,
       child: CupertinoButton(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
         minSize: 0,
         child: Text(
-          'Close',
+          'Cancel',
           style: galleryController.setting.theme?.textTheme.titleSmall?.copyWith(color: Colors.grey.shade700) ??
-              TextStyle(fontSize: 14, color: Colors.grey.shade700),
+              TextStyle(fontSize: 16, color: Colors.blue.shade400),
         ),
         onPressed: onClose,
       ),
@@ -92,12 +91,12 @@ class GalleryHeader extends StatelessWidget {
         builder: (context, gallery) {
           if (gallery.selectedAssets.isEmpty) return const SizedBox();
           return CupertinoButton(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
             minSize: 0,
             child: Text(
               'Clear',
               style: galleryController.setting.theme?.textTheme.titleSmall?.copyWith(color: Colors.grey.shade700) ??
-                  TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                  TextStyle(fontSize: 16, color: Colors.red.shade400),
             ),
             onPressed: galleryController.clearSelection,
           );
@@ -156,11 +155,7 @@ class GalleryHeader extends StatelessWidget {
               minSize: 0,
               padding: const EdgeInsets.all(4),
               child: Icon(CupertinoIcons.chevron_down, size: 20, color: Colors.grey.shade700),
-              onPressed: () {
-                if (gallery.selectedAssets.isEmpty) {
-                  onAlbumListToggle();
-                }
-              },
+              onPressed: onAlbumListToggle,
             ),
           ),
         );
