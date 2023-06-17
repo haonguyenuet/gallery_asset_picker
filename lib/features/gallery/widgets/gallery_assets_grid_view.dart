@@ -2,16 +2,10 @@ import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/entities/gallery_asset.dart';
-import 'package:gallery_asset_picker/features/gallery/enums/fetch_state.dart';
 import 'package:gallery_asset_picker/features/gallery/widgets/builder/album_builder.dart';
-import 'package:gallery_asset_picker/features/gallery/widgets/builder/gallery_builder.dart';
-import 'package:gallery_asset_picker/features/gallery/widgets/gallery_asset_thumbnail.dart';
-import 'package:gallery_asset_picker/features/gallery/widgets/gallery_controller_provider.dart';
+import 'package:gallery_asset_picker/gallery_asset_picker.dart';
 import 'package:gallery_asset_picker/utils/const.dart';
 import 'package:gallery_asset_picker/widgets/gallery_permission_view.dart';
-import 'package:gallery_asset_picker/widgets/lazy_load_scroll_view.dart';
-import 'package:photo_manager/photo_manager.dart';
 
 class GalleryAssetsGridView extends StatelessWidget {
   const GalleryAssetsGridView({Key? key}) : super(key: key);
@@ -75,7 +69,7 @@ class GalleryAssetsGridView extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   itemBuilder: (context, index) {
                     if (enableCamera && index == 0) {
-                      return const _CameraTile();
+                      return _CameraTile(albumController);
                     }
 
                     final i = enableCamera ? index - 1 : index;
@@ -97,14 +91,17 @@ class GalleryAssetsGridView extends StatelessWidget {
 }
 
 class _CameraTile extends StatelessWidget {
-  const _CameraTile();
+  const _CameraTile(this.albumController);
+
+  final AlbumController albumController;
 
   @override
   Widget build(BuildContext context) {
-    // final galleryController = context.galleryController;
+    final galleryController = context.galleryController;
     return InkWell(
-      onTap: () {
-        // TODO(Haonguyen): OPEN CAMERA
+      onTap: () async {
+        final asset = await galleryController.openCamera(context);
+        if (asset != null) albumController.insert(asset);
       },
       child: Icon(
         CupertinoIcons.camera,

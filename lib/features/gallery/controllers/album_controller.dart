@@ -27,9 +27,9 @@ class AlbumController extends ValueNotifier<Album> {
     return value.assets;
   }
 
-  /// Insert entity into album
-  void insert(AssetEntity entity) {
+  /// Insert asset into album
+  void insert(AssetEntity asset) {
     if (value.assets.isEmpty) return;
-    value = value.copyWith(assets: [entity, ...value.assets]);
+    value = value.copyWith(assets: [asset, ...value.assets]);
   }
 }

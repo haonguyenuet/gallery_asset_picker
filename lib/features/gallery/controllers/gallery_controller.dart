@@ -1,13 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/entities/gallery_asset.dart';
-import 'package:gallery_asset_picker/features/gallery/controllers/album_list_controller.dart';
-import 'package:gallery_asset_picker/features/gallery/entities/gallery.dart';
-import 'package:gallery_asset_picker/features/gallery/gallery.dart';
+import 'package:gallery_asset_picker/features/camera/src/camera_view.dart';
+import 'package:gallery_asset_picker/features/camera/src/controllers/camera_controller.dart';
+import 'package:gallery_asset_picker/gallery_asset_picker.dart';
 import 'package:gallery_asset_picker/settings/gallery_settings.dart';
 import 'package:gallery_asset_picker/settings/slidable_panel_setting.dart';
-import 'package:gallery_asset_picker/widgets/widgets.dart';
+import 'package:gallery_asset_picker/utils/system_utils.dart';
 
 class GalleryController extends ValueNotifier<Gallery> {
   GalleryController({GallerySetting? settings}) : super(Gallery.none()) {
@@ -75,17 +74,13 @@ class GalleryController extends ValueNotifier<Gallery> {
     return assets;
   }
 
-  Future<List<GalleryAsset>> open(BuildContext context, {SlidingRouteSettings? routeSetting}) async {
+  Future<List<GalleryAsset>> open(BuildContext context) async {
     _selectionTask = Completer<List<GalleryAsset>>();
 
-    if (setting != null) {
-      updateSettings(setting);
-    }
     if (isFullScreenMode) {
-      Navigator.of(context).push(SlidingPageRoute(
-        child: GalleryPage(controller: this),
-        setting: routeSetting ?? const SlidingRouteSettings(settings: RouteSettings(name: 'GalleryView')),
-      ));
+      NavigatorUtils.of(context)
+          .push(SlidingPageRoute(child: GalleryPage(controller: this)))
+          .then((value) => SystemUtils.showStatusBar());
     } else {
       FocusScope.of(context).unfocus();
       slidablePanelController.open();
@@ -96,10 +91,26 @@ class GalleryController extends ValueNotifier<Gallery> {
 
   void close(BuildContext context) {
     if (isFullScreenMode) {
-      Navigator.pop(context);
+      NavigatorUtils.of(context).pop();
     } else {
       slidablePanelController.close();
     }
+  }
+
+  Future<GalleryAsset?> openCamera(BuildContext context) async {
+    final navigator = NavigatorUtils.of(context);
+
+    final route = SlidingPageRoute<List<GalleryAsset>>(
+      child: CameraView(
+        controller: XCameraController(),
+        setting: setting.cameraSetting,
+      ),
+      setting: const SlidingRouteSettings(
+        start: TransitionFrom.leftToRight,
+        reverse: TransitionFrom.rightToLeft,
+      ),
+    );
+    return null;
   }
 
   @override

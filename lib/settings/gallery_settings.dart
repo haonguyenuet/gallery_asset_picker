@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gallery_asset_picker/entities/gallery_asset.dart';
+import 'package:gallery_asset_picker/settings/camera_setting.dart';
 import 'package:gallery_asset_picker/settings/slidable_panel_setting.dart';
 import 'package:gallery_asset_picker/utils/const.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -14,6 +15,7 @@ class GallerySetting {
     this.enableCamera = true,
     this.crossAxisCount = 3,
     this.slidablePanelSetting = const SlidablePanelSetting(),
+    this.cameraSetting = const CameraSetting(),
     this.onChanged,
     this.onReachMaximum,
     this.closingDialogBuilder,
@@ -55,7 +57,7 @@ class GallerySetting {
 
   ///
   /// Camera setting
-  // final CameraSetting? cameraSetting;
+  final CameraSetting cameraSetting;
 
   ///
   /// On select or remove asset
@@ -84,7 +86,7 @@ class GallerySetting {
     bool? enableCamera,
     int? crossAxisCount,
     SlidablePanelSetting? slidablePanelSetting,
-    // CameraSetting? cameraSetting,
+    CameraSetting? cameraSetting,
     Function(GalleryAsset asset, bool removed)? onChanged,
     Function()? onReachMaximum,
     Widget Function()? closingDialogBuilder,
@@ -99,7 +101,7 @@ class GallerySetting {
       enableCamera: enableCamera ?? this.enableCamera,
       crossAxisCount: crossAxisCount ?? this.crossAxisCount,
       slidablePanelSetting: slidablePanelSetting ?? this.slidablePanelSetting,
-      // cameraSetting: cameraSetting ?? this.cameraSetting,
+      cameraSetting: cameraSetting ?? this.cameraSetting,
       onChanged: onChanged ?? this.onChanged,
       onReachMaximum: onReachMaximum ?? this.onReachMaximum,
       closingDialogBuilder: closingDialogBuilder ?? this.closingDialogBuilder,

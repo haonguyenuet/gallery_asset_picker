@@ -18,7 +18,7 @@ export 'package:gallery_asset_picker/features/gallery/widgets/gallery_assets_gri
 export 'package:gallery_asset_picker/features/gallery/widgets/gallery_controller_provider.dart';
 export 'package:gallery_asset_picker/features/gallery/widgets/gallery_header.dart';
 export 'package:gallery_asset_picker/features/gallery/widgets/gallery_select_button.dart';
-export 'package:gallery_asset_picker/utils/ui_handler.dart';
+export 'package:gallery_asset_picker/utils/navigator_utils.dart';
 export 'package:gallery_asset_picker/widgets/animations/page_route.dart';
 export 'package:gallery_asset_picker/widgets/keyboard_visibility.dart';
 export 'package:gallery_asset_picker/widgets/lazy_load_scroll_view.dart';

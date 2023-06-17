@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:gallery_asset_picker/utils/const.dart';
 import 'package:photo_manager/photo_manager.dart';
 
+import '../utils/navigator_utils.dart';
+
 class GalleryPermissionView extends StatefulWidget {
   const GalleryPermissionView({Key? key, this.onRefresh, this.theme, this.isCamera = false}) : super(key: key);
 
@@ -85,7 +87,7 @@ class _GalleryPermissionViewState extends State<GalleryPermissionView> with Widg
         visualDensity: VisualDensity.comfortable,
       ),
       child: const Text(StringConst.DENY_ACCESS),
-      onPressed: Navigator.of(context).pop,
+      onPressed: NavigatorUtils.of(context).pop,
     );
   }
 
