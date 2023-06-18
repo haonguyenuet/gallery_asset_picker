@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_asset_picker/gallery_asset_picker.dart';
 import 'package:gallery_asset_picker/utils/const.dart';
@@ -34,6 +35,7 @@ class AlbumListView extends StatelessWidget {
               return _AlbumTile(
                 albumController: albumController,
                 onPressed: onAlbumChange,
+                isCurrent: albumController.value == albumList.currentAlbumController?.value,
               );
             },
           );
@@ -44,10 +46,16 @@ class AlbumListView extends StatelessWidget {
 }
 
 class _AlbumTile extends StatelessWidget {
-  const _AlbumTile({Key? key, required this.albumController, this.onPressed}) : super(key: key);
+  const _AlbumTile({
+    Key? key,
+    required this.albumController,
+    required this.isCurrent,
+    this.onPressed,
+  }) : super(key: key);
 
   final AlbumController albumController;
   final ValueChanged<AlbumController>? onPressed;
+  final bool isCurrent;
 
   AlbumValue get album => albumController.value;
 
@@ -114,6 +122,13 @@ class _AlbumTile extends StatelessWidget {
                 ],
               ),
             ),
+            if (isCurrent) ...[
+              const SizedBox(width: 16),
+              Icon(
+                CupertinoIcons.checkmark_alt,
+                color: Colors.grey.shade200,
+              ),
+            ]
           ],
         ),
       ),

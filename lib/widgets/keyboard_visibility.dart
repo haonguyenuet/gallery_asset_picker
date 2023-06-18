@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
 
-typedef KeyboardVisibilityBuilder = Widget Function(BuildContext context, bool isKeyboardVisible);
-typedef KeyboardVisibilityListener = void Function(bool visible);
-
 class KeyboardVisibility extends StatefulWidget {
   const KeyboardVisibility({
     Key? key,
-    this.child,
-    this.listener,
-    this.builder,
+    required this.child,
+    this.onVisibleChanged,
   }) : super(key: key);
 
-  final KeyboardVisibilityBuilder? builder;
-  final KeyboardVisibilityListener? listener;
-  final Widget? child;
+  final Function(bool visible)? onVisibleChanged;
+  final Widget child;
 
   @override
   State<KeyboardVisibility> createState() => _KeyboardVisibilityState();
@@ -36,22 +31,18 @@ class _KeyboardVisibilityState extends State<KeyboardVisibility> with WidgetsBin
 
   @override
   void didChangeMetrics() {
-    final viewInsets = View.of(context).viewInsets;
-    final bottomInset = viewInsets.bottom;
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     final visible = bottomInset > 0.0;
 
     if (visible != _visible) {
       _visible = visible;
-      widget.listener?.call(visible);
-      if (widget.builder != null) {
-        setState(() {});
-      }
+      widget.onVisibleChanged?.call(_visible);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder?.call(context, _visible) ?? widget.child ?? const SizedBox();
+    return widget.child;
   }
 }

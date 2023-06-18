@@ -2,9 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/features/gallery/controllers/gallery_controller.dart';
-import 'package:gallery_asset_picker/features/gallery/widgets/builder/album_builder.dart';
-import 'package:gallery_asset_picker/features/gallery/widgets/builder/gallery_builder.dart';
+import 'package:gallery_asset_picker/features/gallery/gallery.dart';
 
 class GalleryHeader extends StatelessWidget {
   const GalleryHeader({
@@ -23,7 +21,7 @@ class GalleryHeader extends StatelessWidget {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: galleryController.slidablePanelSetting.headerHeight,
-      color: galleryController.slidablePanelSetting.headerBackground,
+      color: galleryController.setting.headerBackgroundColor,
       child: Column(
         children: [
           Flexible(child: _buildHandleBar()),
@@ -58,8 +56,8 @@ class GalleryHeader extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: Container(
-            width: 40,
-            height: 5,
+            width: 36,
+            height: 4,
             color: Colors.grey.shade700,
           ),
         ),
@@ -119,16 +117,17 @@ class GalleryHeader extends StatelessWidget {
         }
 
         final isAlbumVisible = gallery.isAlbumVisible;
-        return CurrentAlbumBuilder(
-          controller: galleryController.albumListController.currentAlbumController,
-          builder: (context, albumController) {
-            final isAll = albumController.value.assetPathEntity?.isAll ?? true;
+        return AlbumListBuilder(
+          controller: galleryController.albumListController,
+          builder: (context, albumList) {
+            final currentAlbumController = albumList.currentAlbumController;
+            final isAll = currentAlbumController?.value.assetPathEntity?.isAll ?? true;
             return Text(
               isAlbumVisible
                   ? 'Select album'
                   : isAll
                       ? galleryController.setting.albumTitle
-                      : albumController.value.assetPathEntity?.name ?? 'Unknown',
+                      : currentAlbumController?.value.assetPathEntity?.name ?? 'Unknown',
               style: galleryController.setting.theme?.textTheme.titleMedium?.copyWith(color: Colors.white) ??
                   const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
             );

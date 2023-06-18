@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gallery_asset_picker/gallery_asset_picker.dart';
+import 'package:gallery_asset_picker/utils/utils.dart';
 import 'package:gallery_asset_picker/widgets/slidable_panel/builder/slidable_panel_value_builder.dart';
 import 'package:gallery_asset_picker/widgets/widgets.dart';
 
@@ -84,32 +85,43 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
       );
       return false;
     }
-    _galleryController.close(context);
+    if (_galleryController.isFullScreenMode) {
+      NavigatorUtils.of(context).pop();
+    } else {
+      if (_slidablePanelController.panelStatus == SlidablePanelStatus.expanded) {
+        _slidablePanelController.collapse();
+      } else {
+        _slidablePanelController.close();
+      }
+    }
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
+    final galleryStack = Stack(
+      fit: StackFit.expand,
+      children: [
+        _buildHeader(),
+        _buildAssets(),
+        _buildSelectButton(),
+        _buildAlbumList(),
+      ],
+    );
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: _slidablePanelSetting.overlayStyle,
-      child: WillPopScope(
-        onWillPop: _onWillClose,
-        child: Scaffold(
-          backgroundColor: _slidablePanelSetting.backgroundColor,
-          body: Padding(
-            padding: EdgeInsets.only(top: _galleryController.isFullScreenMode ? MediaQuery.of(context).padding.top : 0),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                _buildHeader(),
-                _buildAssets(),
-                _buildSelectButton(),
-                _buildAnimatedAlbumList(),
-              ],
-            ),
-          ),
-        ),
-      ),
+      value: _gallarySetting.overlayStyle,
+      child: _galleryController.isFullScreenMode
+          ? WillPopScope(
+              onWillPop: _onWillClose,
+              child: Scaffold(
+                backgroundColor: Colors.black,
+                body: Padding(
+                  padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+                  child: galleryStack,
+                ),
+              ),
+            )
+          : galleryStack,
     );
   }
 
@@ -125,24 +137,20 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
   }
 
   Widget _buildAssets() {
-    // Space to reveal the header in below
-    final headerSpace = _galleryController.isFullScreenMode
-        ? SizedBox(height: _slidablePanelSetting.headerHeight)
-        : SlidablePanelValueBuilder(
-            controller: _slidablePanelController,
-            builder: (context, value) {
-              final height = (_slidablePanelSetting.headerHeight * value.factor).clamp(
-                _slidablePanelSetting.handleBarHeight,
-                _slidablePanelSetting.headerHeight,
-              );
-              return SizedBox(height: height);
-            },
-          );
-    return Column(
-      children: [
-        headerSpace,
-        const Expanded(child: GalleryAssetsGridView()),
-      ],
+    return SlidablePanelValueBuilder(
+      controller: _slidablePanelController,
+      builder: (context, value) {
+        // Space to reveal the header in below
+        final headerSpace = _galleryController.isFullScreenMode
+            ? _slidablePanelSetting.headerHeight
+            : (_slidablePanelSetting.headerHeight * value.factor)
+                .clamp(_slidablePanelSetting.handleBarHeight, _slidablePanelSetting.headerHeight);
+
+        return Padding(
+          padding: EdgeInsets.only(top: headerSpace),
+          child: const GalleryAssetsGridView(),
+        );
+      },
     );
   }
 
@@ -153,7 +161,7 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildAnimatedAlbumList() {
+  Widget _buildAlbumList() {
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {

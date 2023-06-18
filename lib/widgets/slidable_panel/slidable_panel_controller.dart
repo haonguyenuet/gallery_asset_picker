@@ -5,6 +5,7 @@ class SlidablePanelController extends ValueNotifier<SlidablePanelValue> {
       : _scrollController = scrollController ?? ScrollController(),
         super(SlidablePanelValue.closed());
 
+  late _SlidablePanelState _state;
   final ScrollController _scrollController;
   bool _gesture = true;
 
@@ -17,6 +18,10 @@ class SlidablePanelController extends ValueNotifier<SlidablePanelValue> {
     _gesture = isEnable;
   }
 
+  void _init(_SlidablePanelState state) {
+    _state = state;
+  }
+
   void open() {
     if (value.status == SlidablePanelStatus.collapsed) return;
     value = const SlidablePanelValue(
@@ -24,6 +29,16 @@ class SlidablePanelController extends ValueNotifier<SlidablePanelValue> {
       factor: 0,
     );
     _gesture = true;
+  }
+
+  void collapse() {
+    if (!value.visible || value.status == SlidablePanelStatus.collapsed) return;
+    _state._slideToPosition(0);
+  }
+
+  void expand() {
+    if (!value.visible || value.status == SlidablePanelStatus.expanded) return;
+    _state._slideToPosition(1);
   }
 
   void close() {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gallery_asset_picker/gallery_asset_picker.dart';
 import 'package:gallery_asset_picker/widgets/slidable_panel/builder/slidable_panel_setting_builder.dart';
 import 'package:gallery_asset_picker/widgets/slidable_panel/builder/slidable_panel_value_builder.dart';
-import 'package:gallery_asset_picker/widgets/slidable_panel/builder/slidable_panel_value_listener.dart';
 import 'package:gallery_asset_picker/widgets/widgets.dart';
 
 /// Your page will navigate to [GalleryPage] when call [pick], like full screen selection mode
@@ -58,45 +57,51 @@ class SlidableGalleryOverlay extends StatelessWidget {
   }
 
   Widget _buildMainView(BuildContext context, SlidablePanelSetting slidablePanelSetting) {
-    return Column(
-      children: [
-        KeyboardVisibility(
-          listener: (isKeyboardVisible) {
-            if (isKeyboardVisible) controller.slidablePanelController.close();
-          },
-          child: Expanded(
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    return KeyboardVisibility(
+      onVisibleChanged: (isKeyboardVisible) {
+        if (isKeyboardVisible) {
+          controller.slidablePanelController.close();
+        }
+      },
+      child: Column(
+        children: [
+          Expanded(
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: controller.slidablePanelController.close,
+              onTap: () {
+                FocusManager.instance.primaryFocus?.unfocus();
+                controller.slidablePanelController.close();
+              },
               child: child,
             ),
           ),
-        ),
-        // White space for panel min height
-        SlidablePanelValueBuilder(
-          controller: controller.slidablePanelController,
-          builder: (context, value) {
-            final bottomInset = View.of(context).viewInsets.bottom;
-            return SizedBox(height: bottomInset == 0 && value.visible ? slidablePanelSetting.minHeight : 0.0);
-          },
-        ),
-      ],
+          // White space for panel min height
+          SlidablePanelValueBuilder(
+            controller: controller.slidablePanelController,
+            builder: (context, value) {
+              return SizedBox(
+                height: value.visible
+                    ? (slidablePanelSetting.minHeight! - bottomInset).clamp(0, slidablePanelSetting.minHeight!)
+                    : 0,
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildGalleryView(SlidablePanelSetting slidablePanelSetting) {
-    return SlidablePanelValueListener(
+    return SlidablePanel(
+      setting: slidablePanelSetting,
       controller: controller.slidablePanelController,
       listener: (context, value) {
         if (!value.visible) controller.clearSelection();
       },
-      child: SlidablePanel(
-        setting: slidablePanelSetting,
-        controller: controller.slidablePanelController,
-        child: GalleryView(
-          controller: controller,
-          setting: controller.setting.copyWith(slidablePanelSetting: slidablePanelSetting),
-        ),
+      child: GalleryView(
+        controller: controller,
+        setting: controller.setting.copyWith(slidablePanelSetting: slidablePanelSetting),
       ),
     );
   }

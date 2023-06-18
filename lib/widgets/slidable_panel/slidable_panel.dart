@@ -11,14 +11,16 @@ part 'slidable_panel_value.dart';
 class SlidablePanel extends StatefulWidget {
   const SlidablePanel({
     Key? key,
-    this.controller,
     this.setting,
+    this.listener,
+    required this.controller,
     required this.child,
   }) : super(key: key);
 
-  final SlidablePanelSetting? setting;
-  final SlidablePanelController? controller;
   final Widget child;
+  final SlidablePanelController controller;
+  final SlidablePanelSetting? setting;
+  final Function(BuildContext context, SlidablePanelValue value)? listener;
 
   @override
   _SlidablePanelState createState() => _SlidablePanelState();
@@ -56,24 +58,38 @@ class _SlidablePanelState extends State<SlidablePanel> with TickerProviderStateM
   void initState() {
     super.initState();
     _setting = widget.setting ?? const SlidablePanelSetting();
-    _controller = widget.controller ?? SlidablePanelController();
+    _controller = widget.controller.._init(this);
     _scrollController = _controller.scrollController;
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
 
+    _controller.addListener(_listener);
     _animationController.addListener(_animationListener);
+  }
+
+  @override
+  void didUpdateWidget(covariant SlidablePanel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.setting != widget.setting) {
+      _setting = widget.setting ?? const SlidablePanelSetting();
+    }
   }
 
   @override
   void dispose() {
     _animationController.removeListener(_animationListener);
     _animationController.dispose();
+    _controller.removeListener(_listener);
     if (widget.controller == null) {
       _controller.dispose();
     }
     super.dispose();
+  }
+
+  void _listener() {
+    return widget.listener?.call(context, _controller.value);
   }
 
   void _animationListener() {
@@ -188,8 +204,8 @@ class _SlidablePanelState extends State<SlidablePanel> with TickerProviderStateM
           controller: _controller,
           builder: (context, value) {
             return AnimatedSwitcher(
-              duration: const Duration(milliseconds: 100),
-              reverseDuration: const Duration(milliseconds: 100),
+              duration: Duration.zero,
+              reverseDuration: const Duration(milliseconds: 200),
               transitionBuilder: (child, animation) => Align(
                 alignment: Alignment.bottomCenter,
                 child: SizeTransition(sizeFactor: animation, child: child),
@@ -207,7 +223,7 @@ class _SlidablePanelState extends State<SlidablePanel> with TickerProviderStateM
                             onPointerUp: _onPointerUp,
                             child: widget.child,
                           ),
-                        )
+                        ),
                       ],
                     ),
             );

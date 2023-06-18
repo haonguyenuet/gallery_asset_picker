@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gallery_asset_picker/gallery_asset_picker.dart';
-import 'package:gallery_asset_picker/utils/const.dart';
+import 'package:gallery_asset_picker/utils/utils.dart';
 import 'package:gallery_asset_picker/widgets/common_button.dart';
 
 class GallerySelectButton extends StatefulWidget {
@@ -65,7 +65,11 @@ class GallerySelectButtonState extends State<GallerySelectButton> with TickerPro
               backgroundColor: _galleryController.setting.theme?.primaryColor,
               onPressed: (context) {
                 _galleryController.completeSelection();
-                _galleryController.close(context);
+                if (_galleryController.isFullScreenMode) {
+                  NavigatorUtils.of(context).pop();
+                } else {
+                  _galleryController.slidablePanelController.close();
+                }
               },
             ),
           ),

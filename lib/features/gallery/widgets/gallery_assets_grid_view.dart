@@ -15,37 +15,38 @@ class GalleryAssetsGridView extends StatelessWidget {
     final galleryController = context.galleryController;
     return ColoredBox(
       color: Colors.black,
-      child: CurrentAlbumBuilder(
-        controller: galleryController.albumListController.currentAlbumController,
-        builder: (context, albumController) {
+      child: AlbumListBuilder(
+        controller: galleryController.albumListController,
+        builder: (context, albumList) {
+          final currentAlbumController = albumList.currentAlbumController ?? AlbumController();
           return AlbumBuilder(
-            controller: albumController,
-            builder: (context, album) {
-              if (album.fetchStatus == FetchStatus.unauthorised && album.assets.isEmpty) {
+            controller: currentAlbumController,
+            builder: (context, currentAlbum) {
+              if (currentAlbum.fetchStatus == FetchStatus.unauthorised && currentAlbum.assets.isEmpty) {
                 return GalleryPermissionView(
                   onRefresh: () {
-                    if (album.assetPathEntity == null) {
+                    if (currentAlbum.assetPathEntity == null) {
                       galleryController.albumListController.fetchAlbums(galleryController.setting.requestType);
                     } else {
-                      albumController.fetchAssets();
+                      albumList.currentAlbumController!.fetchAssets();
                     }
                   },
                 );
               }
 
-              if (album.fetchStatus == FetchStatus.completed && album.assets.isEmpty) {
+              if (currentAlbum.fetchStatus == FetchStatus.completed && currentAlbum.assets.isEmpty) {
                 return const Center(
                   child: Text(StringConst.NO_MEDIA_AVAILABLE, style: TextStyle(color: Colors.white)),
                 );
               }
 
-              if (album.fetchStatus == FetchStatus.error) {
+              if (currentAlbum.fetchStatus == FetchStatus.error) {
                 return const Center(
                   child: Text(StringConst.SOMETHING_WRONG, style: TextStyle(color: Colors.white)),
                 );
               }
 
-              final assets = album.assets;
+              final assets = currentAlbum.assets;
               final enableCamera = galleryController.setting.enableCamera;
 
               final itemCount = galleryController.albumListController.value.fetchStatus == FetchStatus.fetching
@@ -55,7 +56,7 @@ class GalleryAssetsGridView extends StatelessWidget {
                       : assets.length;
 
               return LazyLoadScrollView(
-                onEndOfPage: albumController.fetchAssets,
+                onEndOfPage: currentAlbumController.fetchAssets,
                 scrollOffset: MediaQuery.of(context).size.height * 0.4,
                 child: GridView.builder(
                   physics: const ClampingScrollPhysics(),
@@ -69,16 +70,16 @@ class GalleryAssetsGridView extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   itemBuilder: (context, index) {
                     if (enableCamera && index == 0) {
-                      return _CameraTile(albumController);
+                      return _CameraTile(currentAlbumController);
                     }
 
                     final i = enableCamera ? index - 1 : index;
-                    final entity = galleryController.albumListController.value.fetchStatus == FetchStatus.fetching
+                    final asset = galleryController.albumListController.value.fetchStatus == FetchStatus.fetching
                         ? null
                         : assets[i];
 
-                    if (entity == null) return const SizedBox();
-                    return _AssetTile(asset: entity);
+                    if (asset == null) return const SizedBox();
+                    return _AssetTile(key: ValueKey(asset.id), asset: asset);
                   },
                 ),
               );
@@ -120,8 +121,8 @@ class _AssetTile extends StatelessWidget {
     Uint8List? bytes;
     return InkWell(
       onTap: () {
-        final entity = asset.toGalleryAsset.copyWith(pickedThumbData: bytes);
-        galleryController.select(entity);
+        final pickedAsset = asset.toGalleryAsset.copyWith(pickedThumbData: bytes);
+        galleryController.select(pickedAsset);
       },
       child: Stack(
         fit: StackFit.expand,
@@ -177,7 +178,7 @@ class _SelectionCount extends StatelessWidget {
         return Container(
           color: isSelected ? Colors.white38 : Colors.transparent,
           padding: const EdgeInsets.all(6),
-          child: Align(alignment: Alignment.topRight, child: counter),
+          child: Align(alignment: singleSelection ? Alignment.center : Alignment.topRight, child: counter),
         );
       },
     );

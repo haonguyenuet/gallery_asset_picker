@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gallery_asset_picker/entities/gallery_asset.dart';
 import 'package:gallery_asset_picker/settings/camera_setting.dart';
 import 'package:gallery_asset_picker/settings/slidable_panel_setting.dart';
@@ -20,6 +21,10 @@ class GallerySetting {
     this.onReachMaximum,
     this.closingDialogBuilder,
     this.theme,
+    this.overlayStyle = SystemUiOverlayStyle.light,
+    this.backgroundColor = Colors.black,
+    this.foregroundColor = Colors.black,
+    this.headerBackgroundColor = Colors.black,
   });
 
   ///
@@ -76,6 +81,24 @@ class GallerySetting {
   final ThemeData? theme;
 
   ///
+  /// Overlay Style
+  final SystemUiOverlayStyle overlayStyle;
+
+  /// Background color for header,
+  /// Default: [Colors.black]
+  final Color headerBackgroundColor;
+
+  /// Background color for panel,
+  /// Default: [Colors.black]
+  final Color foregroundColor;
+
+  /// If [headerBackgroundColor] is missing [backgroundColor] will be applied
+  /// If [foregroundColor] is missing [backgroundColor] will be applied
+  ///
+  /// Default: [Colors.black]
+  final Color backgroundColor;
+
+  ///
   /// Helper function to copy its properties
   GallerySetting copyWith({
     List<GalleryAsset>? selectedAssets,
@@ -91,6 +114,10 @@ class GallerySetting {
     Function()? onReachMaximum,
     Widget Function()? closingDialogBuilder,
     ThemeData? theme,
+    SystemUiOverlayStyle? overlayStyle,
+    Color? headerBackgroundColor,
+    Color? foregroundColor,
+    Color? backgroundColor,
   }) {
     return GallerySetting(
       selectedAssets: selectedAssets ?? this.selectedAssets,
@@ -106,6 +133,10 @@ class GallerySetting {
       onReachMaximum: onReachMaximum ?? this.onReachMaximum,
       closingDialogBuilder: closingDialogBuilder ?? this.closingDialogBuilder,
       theme: theme ?? this.theme,
+      overlayStyle: overlayStyle ?? this.overlayStyle,
+      headerBackgroundColor: headerBackgroundColor ?? this.headerBackgroundColor,
+      foregroundColor: foregroundColor ?? this.foregroundColor,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
     );
   }
 }

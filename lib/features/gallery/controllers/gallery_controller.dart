@@ -80,19 +80,10 @@ class GalleryController extends ValueNotifier<GalleryValue> {
           .then((value) => SystemUtils.showStatusBar());
     } else {
       FocusScope.of(context).unfocus();
-      await Future.delayed(const Duration(milliseconds: 50));
       slidablePanelController.open();
     }
 
     return _selectionTask.future;
-  }
-
-  void close(BuildContext context) {
-    if (isFullScreenMode) {
-      NavigatorUtils.of(context).pop();
-    } else {
-      slidablePanelController.close();
-    }
   }
 
   Future<GalleryAsset?> openCamera(BuildContext context) async {

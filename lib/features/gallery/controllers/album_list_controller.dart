@@ -9,8 +9,6 @@ import 'package:photo_manager/photo_manager.dart';
 class AlbumListController extends ValueNotifier<AlbumListValue> {
   AlbumListController() : super(AlbumListValue.none());
 
-  final currentAlbumController = ValueNotifier(AlbumController());
-
   Future<List<GalleryAsset>> recentAssets({
     int count = 20,
     RequestType? requestType,
@@ -39,13 +37,17 @@ class AlbumListController extends ValueNotifier<AlbumListValue> {
     if (state == PermissionState.authorized) {
       try {
         final albums = await PhotoManager.getAssetPathList(type: requestType);
-        // Update album list
         final albumControllers = List.generate(albums.length, (index) {
-          final albumController = AlbumController(album: AlbumValue(assetPathEntity: albums[index]));
-          if (index == 0) changeCurrentAlbumController(albumController);
-          return albumController;
+          return AlbumController(value: AlbumValue(assetPathEntity: albums[index]));
         });
-        value = value.copyWith(fetchStatus: FetchStatus.completed, albumControllers: albumControllers);
+        value = value.copyWith(
+          fetchStatus: FetchStatus.completed,
+          albumControllers: albumControllers,
+          currentAlbumController: albumControllers.isNotEmpty ? albumControllers.first : null,
+        );
+        if (value.currentAlbumController != null) {
+          value.currentAlbumController?.fetchAssets();
+        }
         return albumControllers;
       } catch (e) {
         debugPrint('Exception fetching albums => $e');
@@ -54,19 +56,16 @@ class AlbumListController extends ValueNotifier<AlbumListValue> {
       }
     } else {
       value = value.copyWith(fetchStatus: FetchStatus.unauthorised);
-      currentAlbumController.value = AlbumController(album: const AlbumValue(fetchStatus: FetchStatus.unauthorised));
+      changeCurrentAlbumController(
+        AlbumController(value: const AlbumValue(fetchStatus: FetchStatus.unauthorised)),
+        fetchAssets: false,
+      );
       return [];
     }
   }
 
-  void changeCurrentAlbumController(AlbumController albumController) {
-    currentAlbumController.value = albumController;
-    albumController.fetchAssets();
-  }
-
-  @override
-  void dispose() {
-    currentAlbumController.dispose();
-    super.dispose();
+  void changeCurrentAlbumController(AlbumController albumController, {bool fetchAssets = true}) {
+    value = value.copyWith(currentAlbumController: albumController);
+    if (fetchAssets) albumController.fetchAssets();
   }
 }

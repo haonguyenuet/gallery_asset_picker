@@ -4,7 +4,7 @@ import 'package:gallery_asset_picker/features/gallery/values/album_value.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class AlbumController extends ValueNotifier<AlbumValue> {
-  AlbumController({AlbumValue? album}) : super(album ?? AlbumValue.none());
+  AlbumController({AlbumValue? value}) : super(value ?? AlbumValue.none());
 
   int _currentPage = 0;
 

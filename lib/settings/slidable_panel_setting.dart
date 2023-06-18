@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class SlidablePanelSetting {
   const SlidablePanelSetting({
@@ -8,10 +7,6 @@ class SlidablePanelSetting {
     this.toolbarHeight = 48,
     this.handleBarHeight = 20.0,
     this.snapingPoint = 0.4,
-    this.headerBackground = Colors.black,
-    this.foregroundColor = Colors.black,
-    this.backgroundColor = Colors.black,
-    this.overlayStyle = SystemUiOverlayStyle.light,
   }) : assert(
           snapingPoint >= 0.0 && snapingPoint <= 1.0,
           '[snapingPoint] value must be between 1.0 and 0.0',
@@ -43,22 +38,6 @@ class SlidablePanelSetting {
   /// Default: 0.4
   final double snapingPoint;
 
-  /// Background color for panel header,
-  /// Default: [Colors.black]
-  final Color headerBackground;
-
-  /// Background color for panel,
-  /// Default: [Colors.black]
-  final Color foregroundColor;
-
-  /// If [headerBackground] is missing [backgroundColor] will be applied
-  /// If [foregroundColor] is missing [backgroundColor] will be applied
-  ///
-  /// Default: [Colors.black]
-  final Color backgroundColor;
-
-  final SystemUiOverlayStyle overlayStyle;
-
   /// Header  height
   double get headerHeight => handleBarHeight + toolbarHeight;
 
@@ -74,7 +53,6 @@ class SlidablePanelSetting {
     Color? headerBackground,
     Color? foregroundColor,
     Color? backgroundColor,
-    SystemUiOverlayStyle? overlayStyle,
   }) {
     return SlidablePanelSetting(
       maxHeight: maxHeight ?? this.maxHeight,
@@ -82,10 +60,6 @@ class SlidablePanelSetting {
       toolbarHeight: toolbarHeight ?? this.toolbarHeight,
       handleBarHeight: handleBarHeight ?? this.handleBarHeight,
       snapingPoint: snapingPoint ?? this.snapingPoint,
-      headerBackground: headerBackground ?? this.headerBackground,
-      foregroundColor: foregroundColor ?? this.foregroundColor,
-      backgroundColor: backgroundColor ?? this.backgroundColor,
-      overlayStyle: overlayStyle ?? this.overlayStyle,
     );
   }
 }
