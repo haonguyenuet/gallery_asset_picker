@@ -149,27 +149,26 @@ class _SelectionCount extends StatelessWidget {
         final singleSelection = galleryController.singleSelection;
         final isSelected = gallery.selectedAssets.contains(asset);
         final index = gallery.selectedAssets.indexOf(asset.toGalleryAsset);
-        final counterRaito = 3 / galleryController.setting.crossAxisCount;
+        final ratio = 3 / galleryController.setting.crossAxisCount;
 
         Widget counter = const SizedBox();
         if (isSelected) {
           counter = CircleAvatar(
             backgroundColor: Colors.blue.shade700,
-            radius: 14 * counterRaito,
+            radius: 14 * ratio,
             child: singleSelection
-                ? Icon(CupertinoIcons.checkmark_alt, color: Colors.white, size: 24 * counterRaito)
+                ? Icon(CupertinoIcons.checkmark_alt, color: Colors.white, size: 24 * ratio)
                 : Text('${index + 1}',
-                    style: TextStyle(color: Colors.white, fontSize: 14 * counterRaito, fontWeight: FontWeight.w500)),
+                    style: TextStyle(color: Colors.white, fontSize: 14 * ratio, fontWeight: FontWeight.w500)),
           );
         }
         if (!singleSelection) {
           counter = Container(
-            height: 24 * counterRaito,
-            width: 24 * counterRaito,
+            height: 20 * ratio,
+            width: 20 * ratio,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              // borderRadius: BorderRadius.all(Radius.circular(20)),
-              border: Border.all(color: Colors.white, width: 2, strokeAlign: 0),
+              border: Border.all(color: Colors.white70, width: 2, strokeAlign: 0),
             ),
             child: isSelected ? counter : const SizedBox(),
           );

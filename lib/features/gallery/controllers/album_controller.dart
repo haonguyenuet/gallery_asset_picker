@@ -6,16 +6,19 @@ import 'package:photo_manager/photo_manager.dart';
 class AlbumController extends ValueNotifier<AlbumValue> {
   AlbumController({AlbumValue? value}) : super(value ?? AlbumValue.none());
 
-  int _currentPage = 0;
+  final int _pageSize = 30;
+  int _pageIndex = 0;
 
   /// Get assets for the current album
-  Future<List<AssetEntity>> fetchAssets() async {
+  Future<List<AssetEntity>> fetchAssets({bool refresh = false}) async {
+    if (refresh) _pageIndex = 0;
+
     final state = await PhotoManager.requestPermissionExtend();
     if (state == PermissionState.authorized) {
       try {
-        final assets = (await value.assetPathEntity?.getAssetListPaged(page: _currentPage, size: 30)) ?? [];
-        final updatedAssets = [...value.assets, ...assets];
-        ++_currentPage;
+        final assets = (await value.assetPathEntity?.getAssetListPaged(page: _pageIndex, size: _pageSize)) ?? [];
+        final updatedAssets = refresh ? [...assets] : [...value.assets, ...assets];
+        ++_pageIndex;
         value = value.copyWith(fetchStatus: FetchStatus.completed, assets: updatedAssets);
       } catch (e) {
         debugPrint('Exception fetching assets => $e');

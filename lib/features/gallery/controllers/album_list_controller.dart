@@ -68,4 +68,8 @@ class AlbumListController extends ValueNotifier<AlbumListValue> {
     value = value.copyWith(currentAlbumController: albumController);
     if (fetchAssets) albumController.fetchAssets();
   }
+
+  void refreshCurrentAlbum() {
+    value.currentAlbumController?.fetchAssets(refresh: true);
+  }
 }

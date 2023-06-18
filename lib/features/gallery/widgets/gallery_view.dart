@@ -18,7 +18,7 @@ class GalleryView extends StatefulWidget {
   State<GalleryView> createState() => _GalleryViewState();
 }
 
-class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStateMixin {
+class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late final GalleryController _galleryController;
   late final AnimationController _animationController;
   late final Animation<double> _animation;
@@ -31,6 +31,7 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _galleryController = widget.controller..updateSettings(_gallarySetting);
     _albumListController.fetchAlbums(_gallarySetting.requestType);
 
@@ -51,7 +52,15 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _albumListController.refreshCurrentAlbum();
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _animationController.dispose();
     super.dispose();
   }
