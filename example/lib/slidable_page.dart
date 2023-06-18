@@ -21,7 +21,7 @@ class _SlidablePageState extends State<SlidablePage> {
       settings: GallerySetting(
         enableCamera: true,
         crossAxisCount: 3,
-        maxCount: 5,
+        maxCount: 3,
         requestType: RequestType.image,
         onReachMaximum: () {
           Fluttertoast.showToast(
@@ -49,31 +49,39 @@ class _SlidablePageState extends State<SlidablePage> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
+          backgroundColor: Colors.white,
           elevation: 0,
-          title: const Text('Slidable Page'),
+          iconTheme: const IconThemeData(color: Colors.black),
+          centerTitle: true,
+          title: const Text(
+            'Slidable Gallery Demo',
+            style: TextStyle(color: Colors.black, fontSize: 16),
+          ),
         ),
         body: Column(
           children: [
             Expanded(
-              child: GridView.builder(
-                padding: const EdgeInsets.all(4.0),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 1.0,
-                  mainAxisSpacing: 1.0,
-                ),
-                itemCount: selectedAssets.length,
-                itemBuilder: (context, index) {
-                  final asset = selectedAssets[index];
-                  return AssetThumbnail(asset: asset);
-                },
-              ),
+              child: selectedAssets.isEmpty
+                  ? const Center(child: Text('Choose some images'))
+                  : GridView.builder(
+                      padding: const EdgeInsets.all(4.0),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 1.0,
+                        mainAxisSpacing: 1.0,
+                      ),
+                      itemCount: selectedAssets.length,
+                      itemBuilder: (context, index) {
+                        final asset = selectedAssets[index];
+                        return AssetThumbnail(asset: asset);
+                      },
+                    ),
             ),
             SlidablePanelValueBuilder(
               controller: galleryController.slidablePanelController,
               builder: (context, value) {
                 return Padding(
-                  padding: EdgeInsets.only(bottom: value.visible ? 16 : 16 + MediaQuery.of(context).padding.bottom),
+                  padding: EdgeInsets.only(bottom: value.visible ? 8 : 8 + MediaQuery.of(context).padding.bottom),
                   child: Row(
                     children: [
                       const SizedBox(width: 16),

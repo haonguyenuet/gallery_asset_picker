@@ -47,26 +47,34 @@ class _FullScreenPageState extends State<FullScreenPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text('Full Screen Page'),
+        iconTheme: const IconThemeData(color: Colors.black),
+        centerTitle: true,
+        title: const Text(
+          'Full Screen Gallery Demo',
+          style: TextStyle(color: Colors.black, fontSize: 16),
+        ),
       ),
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
-              child: GridView.builder(
-                padding: const EdgeInsets.all(4.0),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 1.0,
-                  mainAxisSpacing: 1.0,
-                ),
-                itemCount: selectedAssets.length,
-                itemBuilder: (context, index) {
-                  final asset = selectedAssets[index];
-                  return AssetThumbnail(asset: asset);
-                },
-              ),
+              child: selectedAssets.isEmpty
+                  ? const Center(child: Text('Do something'))
+                  : GridView.builder(
+                      padding: const EdgeInsets.all(4.0),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 1.0,
+                        mainAxisSpacing: 1.0,
+                      ),
+                      itemCount: selectedAssets.length,
+                      itemBuilder: (context, index) {
+                        final asset = selectedAssets[index];
+                        return AssetThumbnail(asset: asset);
+                      },
+                    ),
             ),
             CupertinoButton.filled(
               onPressed: () async {
@@ -80,6 +88,7 @@ class _FullScreenPageState extends State<FullScreenPage> {
               },
               child: const Text('Pick Image'),
             ),
+            const SizedBox(height: 16),
           ],
           // ),
         ),

@@ -77,8 +77,7 @@ class GalleryAssetsGridView extends StatelessWidget {
                     final asset = galleryController.albumListController.value.fetchStatus == FetchStatus.fetching
                         ? null
                         : assets[i];
-
-                    if (asset == null) return const SizedBox();
+                    if (asset == null) return Container(color: Colors.grey.shade800);
                     return _AssetTile(key: ValueKey(asset.id), asset: asset);
                   },
                 ),

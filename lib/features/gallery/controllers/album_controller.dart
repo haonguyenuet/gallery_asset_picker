@@ -17,7 +17,7 @@ class AlbumController extends ValueNotifier<AlbumValue> {
     if (state == PermissionState.authorized) {
       try {
         final assets = (await value.assetPathEntity?.getAssetListPaged(page: _pageIndex, size: _pageSize)) ?? [];
-        final updatedAssets = refresh ? [...assets] : [...value.assets, ...assets];
+        final updatedAssets = refresh ? assets : [...value.assets, ...assets];
         ++_pageIndex;
         value = value.copyWith(fetchStatus: FetchStatus.completed, assets: updatedAssets);
       } catch (e) {
