@@ -98,7 +98,7 @@ Add following content to `info.plist`.
 
 ## Usage
 
-- 1. To make the gallery view sliding, use the `SlidableGalleryOverlay`; otherwise, ignore it
+- To make the gallery view sliding, use the `SlidableGalleryOverlay`; otherwise, ignore it
 
 ```dart
 class SlidableGalleryDemo extends StatelessWidget {
@@ -118,7 +118,7 @@ class SlidableGalleryDemo extends StatelessWidget {
 }
 ```
 
-- 2. `GallerySetting` can be used for more customization while selection, pass it to the controller
+- `GallerySetting` can be used for more customization while selection, pass it to the controller
 
 ```dart
   @override
@@ -136,7 +136,7 @@ class SlidableGalleryDemo extends StatelessWidget {
   }
 ```
 
-- 3. Using `open()` function on the controller to pick assets
+- Using `open()` function on the controller to pick assets
 
 ```dart
   ...
@@ -146,7 +146,7 @@ class SlidableGalleryDemo extends StatelessWidget {
   ...
 ```
 
-- 4. You can use other widgets included in the package, and for a more thorough implementation and modification, browse the example app
+- You can use other widgets included in the package, and for a more thorough implementation and modification, browse the example app
 
 ---
 
