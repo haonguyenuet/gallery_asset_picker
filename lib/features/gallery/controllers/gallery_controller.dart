@@ -103,15 +103,10 @@ class GalleryController extends ValueNotifier<GalleryValue> {
     final assets = await navigator.push(cameraRoute);
     await SystemUtils.showStatusBar();
 
-    if (assets?.isNotEmpty ?? false) {
+    if (assets?.isNotEmpty == true) {
       final asset = assets!.first;
-      setting.onChanged?.call(asset, removed: false);
-
-      if (isFullScreenMode) {
-      } else {
-        if (singleSelection) {
-        } else {}
-      }
+      select(asset);
+      return asset;
     }
     return null;
   }

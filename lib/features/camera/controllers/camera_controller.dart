@@ -21,7 +21,7 @@ class XCameraController extends ValueNotifier<XCameraValue> {
 
   bool get _hasCamera {
     if (!isInitialized) {
-      final exception = CameraException('CAMERA_UNVAILABLE', "Couldn't find the camera!");
+      final exception = CameraExceptions.unvailable;
       value = value.copyWith(error: exception);
       return false;
     }
@@ -63,12 +63,13 @@ class XCameraController extends ValueNotifier<XCameraValue> {
     );
     _cameraController!.addListener(() {
       if (_cameraController?.value.hasError == true) {
-        value = value.copyWith(error: CameraExeptions.createCamera);
+        value = value.copyWith(error: CameraExceptions.createCamera);
         return;
       }
     });
 
     return await _safeCall(
+      checkHasCamera: false,
       callback: () async {
         await _cameraController!.initialize();
         value = value.copyWith(cameraDescription: cameraDescription, cameras: cameras);
@@ -76,7 +77,7 @@ class XCameraController extends ValueNotifier<XCameraValue> {
           unawaited(_cameraController!.setFlashMode(value.flashMode));
         }
       },
-      customException: CameraExeptions.createCamera,
+      customException: CameraExceptions.createCamera,
     );
   }
 
@@ -107,14 +108,14 @@ class XCameraController extends ValueNotifier<XCameraValue> {
             return galleryAsset;
           }
         } else {
-          final exception = CameraExeptions.takePicture;
+          final exception = CameraExceptions.takePicture;
           value = value.copyWith(isTakingPicture: false, error: exception);
         }
       },
       onError: () {
         value = value.copyWith(isTakingPicture: false);
       },
-      customException: CameraExeptions.takePicture,
+      customException: CameraExceptions.takePicture,
     );
   }
 
@@ -125,7 +126,7 @@ class XCameraController extends ValueNotifier<XCameraValue> {
         value = value.copyWith(flashMode: mode);
         await _cameraController!.setFlashMode(mode);
       },
-      customException: CameraExeptions.flaseMode,
+      customException: CameraExceptions.flaseMode,
     );
   }
 
@@ -133,19 +134,20 @@ class XCameraController extends ValueNotifier<XCameraValue> {
     required Future<dynamic> Function() callback,
     CameraException? customException,
     Function()? onError,
+    bool checkHasCamera = true,
   }) async {
-    if (!_hasCamera) return;
+    if (checkHasCamera && !_hasCamera) return;
 
     try {
       return await callback();
     } on CameraException catch (e) {
       onError?.call();
-      debugPrint(e.description);
+      debugPrint('FUCK BUG:  ${e.description}');
       value = value.copyWith(error: e);
       return;
     } catch (e) {
       onError?.call();
-      debugPrint(customException?.description);
+      debugPrint('FUCK BUG: ${customException?.description}');
       value = value.copyWith(error: customException);
       return;
     }
