@@ -16,9 +16,9 @@ A gallery picker and camera in one package. The Gallery and Camera views can bot
 
 ## Screenshot
 
-Collapse Mode                                      |Expand Mode                                        | Album List
-:-------------------------------------------------:|:-------------------------------------------------:|:-------------------------------------------------:
-![image1](screenshots/Screenshot_1687092172.png)  |  ![image2](screenshots/Screenshot_1687092370.png) |  ![image3](screenshots/Screenshot_1687092410.png)
+|                  Collapse Mode                   |                   Expand Mode                    |                    Album List                    |
+| :----------------------------------------------: | :----------------------------------------------: | :----------------------------------------------: |
+| ![image1](screenshots/Screenshot_1687092172.png) | ![image2](screenshots/Screenshot_1687092370.png) | ![image3](screenshots/Screenshot_1687092410.png) |
 
 ---
 
@@ -98,27 +98,27 @@ Add following content to `info.plist`.
 
 ## Usage
 
-### 1. To make the gallery view sliding, use the `SlidableGalleryOverlay`; otherwise, ignore it
+- 1. To make the gallery view sliding, use the `SlidableGalleryOverlay`; otherwise, ignore it
 
- ```dart
+```dart
 class SlidableGalleryDemo extends StatelessWidget {
-  late final GalleryController galleryController;
-  
-  ...
+ late final GalleryController galleryController;
 
-  @override
-  Widget build(BuildContext context) {
-    return SlidableGalleryOverlay(
-      controller: galleryController,
-      child: Scaffold(
-        body: ...
-      ),
-    );
-  }
+ ...
+
+ @override
+ Widget build(BuildContext context) {
+   return SlidableGalleryOverlay(
+     controller: galleryController,
+     child: Scaffold(
+       body: ...
+     ),
+   );
+ }
 }
 ```
 
-### 2. `GallerySetting` can be used for more customization while selection, pass it to the controller
+- 2. `GallerySetting` can be used for more customization while selection, pass it to the controller
 
 ```dart
   @override
@@ -136,7 +136,7 @@ class SlidableGalleryDemo extends StatelessWidget {
   }
 ```
 
-### 3. Using `open()` function on the controller to pick assets
+- 3. Using `open()` function on the controller to pick assets
 
 ```dart
   ...
@@ -146,7 +146,7 @@ class SlidableGalleryDemo extends StatelessWidget {
   ...
 ```
 
-### 4. You can use other widgets included in the package, and for a more thorough implementation and modification, browse the example app
+- 4. You can use other widgets included in the package, and for a more thorough implementation and modification, browse the example app
 
 ---
 
