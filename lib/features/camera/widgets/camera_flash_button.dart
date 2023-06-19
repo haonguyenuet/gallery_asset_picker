@@ -22,6 +22,7 @@ class CameraFlashButton extends StatelessWidget {
             height: 40,
             width: 40,
             decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.black26),
+            alignment: Alignment.center,
             child: Padding(
               padding: EdgeInsets.only(left: isOn ? 8.0 : 0.0),
               child: Icon(

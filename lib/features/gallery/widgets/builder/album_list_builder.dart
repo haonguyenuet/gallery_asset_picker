@@ -36,11 +36,11 @@ class AlbumListBuilder extends StatelessWidget {
 
         // No data
         if (value.fetchStatus == FetchStatus.completed && value.albumControllers.isEmpty) {
-          return const Center(
+          return Center(
             child: Text(
               StringConst.NO_ALBUM_AVAILABLE,
               style: TextStyle(
-                color: Colors.white,
+                color: galleryController.setting.colorScheme?.onBackground ?? Colors.white,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -48,11 +48,11 @@ class AlbumListBuilder extends StatelessWidget {
         }
 
         if (value.fetchStatus == FetchStatus.error) {
-          return const Center(
+          return Center(
             child: Text(
               StringConst.SOMETHING_WRONG,
               style: TextStyle(
-                color: Colors.white,
+                color: galleryController.setting.colorScheme?.onBackground ?? Colors.white,
                 fontWeight: FontWeight.w700,
               ),
             ),

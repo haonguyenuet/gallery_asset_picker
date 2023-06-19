@@ -16,9 +16,9 @@ A gallery picker and camera in one package. The Gallery and Camera views can bot
 
 ## Screenshot
 
-|                  Collapse Mode                   |                   Expand Mode                    |                    Album List                    |
-| :----------------------------------------------: | :----------------------------------------------: | :----------------------------------------------: |
-| ![image1](screenshots/Screenshot_1687092172.png) | ![image2](screenshots/Screenshot_1687092370.png) | ![image3](screenshots/Screenshot_1687092410.png) |
+|                  Collapse Mode                   |                   Expand Mode                    
+| :----------------------------------------------: | :----------------------------------------------:
+| ![image1](screenshots/Screenshot1_20230619.png) | ![image2](screenshots/Screenshot2_20230619.png) 
 
 ---
 

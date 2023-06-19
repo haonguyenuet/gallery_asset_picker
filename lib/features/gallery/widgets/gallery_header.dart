@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_asset_picker/features/gallery/gallery.dart';
+import 'package:gallery_asset_picker/widgets/slidable_panel/builder/slidable_panel_value_builder.dart';
+import 'package:gallery_asset_picker/widgets/widgets.dart';
 
 class GalleryHeader extends StatelessWidget {
   const GalleryHeader({
@@ -16,33 +18,45 @@ class GalleryHeader extends StatelessWidget {
   final Function() onAlbumListToggle;
   final GalleryController galleryController;
 
+  ColorScheme? get colorScheme => galleryController.setting.colorScheme;
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      height: galleryController.slidablePanelSetting.headerHeight,
-      color: galleryController.setting.headerBackgroundColor,
-      child: Column(
-        children: [
-          Flexible(child: _buildHandleBar()),
-          Flexible(
-            child: Row(
-              children: [
-                Expanded(child: _buildCloseButton()),
-                FittedBox(
-                  child: Row(
-                    children: [
-                      _buildAlbumInfo(),
-                      _buildAnimatedDropdownButton(),
-                    ],
-                  ),
-                ),
-                Expanded(child: _buildClearButton()),
-              ],
-            ),
+    return SlidablePanelValueBuilder(
+      controller: galleryController.slidablePanelController,
+      builder: (context, value) {
+        return Container(
+          width: MediaQuery.of(context).size.width,
+          height: galleryController.slidablePanelSetting.headerHeight,
+          decoration: BoxDecoration(
+            color: colorScheme?.surface ?? Colors.black,
+            boxShadow: value.status == SlidablePanelStatus.expanded || galleryController.isFullScreenMode
+                ? []
+                : [BoxShadow(offset: const Offset(0, -1), color: Colors.grey.shade100, blurRadius: 1, spreadRadius: 1)],
           ),
-        ],
-      ),
+          child: Column(
+            children: [
+              Flexible(child: _buildHandleBar()),
+              Flexible(
+                child: Row(
+                  children: [
+                    Expanded(child: _buildCloseButton()),
+                    FittedBox(
+                      child: Row(
+                        children: [
+                          _buildAlbumInfo(),
+                          _buildAnimatedDropdownButton(),
+                        ],
+                      ),
+                    ),
+                    Expanded(child: _buildClearButton()),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -71,11 +85,7 @@ class GalleryHeader extends StatelessWidget {
       child: CupertinoButton(
         padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
         minSize: 0,
-        child: Text(
-          'Cancel',
-          style: galleryController.setting.theme?.textTheme.titleSmall?.copyWith(color: Colors.grey.shade700) ??
-              TextStyle(fontSize: 16, color: Colors.blue.shade400),
-        ),
+        child: Text('Cancel', style: TextStyle(fontSize: 16, color: Colors.blue.shade400)),
         onPressed: onClose,
       ),
     );
@@ -91,11 +101,7 @@ class GalleryHeader extends StatelessWidget {
           return CupertinoButton(
             padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
             minSize: 0,
-            child: Text(
-              'Clear',
-              style: galleryController.setting.theme?.textTheme.titleSmall?.copyWith(color: Colors.grey.shade700) ??
-                  TextStyle(fontSize: 16, color: Colors.red.shade400),
-            ),
+            child: Text('Clear', style: TextStyle(fontSize: 16, color: Colors.red.shade400)),
             onPressed: galleryController.clearSelection,
           );
         },
@@ -111,8 +117,11 @@ class GalleryHeader extends StatelessWidget {
           final accessCount = gallery.selectedAssets.length;
           return Text(
             '$accessCount Selected',
-            style: galleryController.setting.theme?.textTheme.titleMedium?.copyWith(color: Colors.white) ??
-                const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
+            style: TextStyle(
+              color: colorScheme?.onSurface ?? Colors.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
           );
         }
 
@@ -128,8 +137,11 @@ class GalleryHeader extends StatelessWidget {
                   : isAll
                       ? galleryController.setting.albumTitle
                       : currentAlbumController?.value.assetPathEntity?.name ?? 'Unknown',
-              style: galleryController.setting.theme?.textTheme.titleMedium?.copyWith(color: Colors.white) ??
-                  const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
+              style: TextStyle(
+                color: colorScheme?.onSurface ?? Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
             );
           },
         );
@@ -153,7 +165,11 @@ class GalleryHeader extends StatelessWidget {
             child: CupertinoButton(
               minSize: 0,
               padding: const EdgeInsets.all(4),
-              child: Icon(CupertinoIcons.chevron_down, size: 20, color: Colors.grey.shade700),
+              child: Icon(
+                CupertinoIcons.chevron_down,
+                size: 20,
+                color: colorScheme?.onSurface ?? Colors.grey.shade700,
+              ),
               onPressed: onAlbumListToggle,
             ),
           ),

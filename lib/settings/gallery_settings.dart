@@ -20,11 +20,8 @@ class GallerySetting {
     this.onChanged,
     this.onReachMaximum,
     this.closingDialogBuilder,
-    this.theme,
+    this.colorScheme,
     this.overlayStyle = SystemUiOverlayStyle.light,
-    this.backgroundColor = Colors.black,
-    this.foregroundColor = Colors.black,
-    this.headerBackgroundColor = Colors.black,
   });
 
   ///
@@ -77,26 +74,12 @@ class GallerySetting {
   final Widget Function()? closingDialogBuilder;
 
   ///
-  /// Button Style
-  final ThemeData? theme;
+  /// Color Scheme
+  final ColorScheme? colorScheme;
 
   ///
   /// Overlay Style
   final SystemUiOverlayStyle overlayStyle;
-
-  /// Background color for header,
-  /// Default: [Colors.black]
-  final Color headerBackgroundColor;
-
-  /// Background color for panel,
-  /// Default: [Colors.black]
-  final Color foregroundColor;
-
-  /// If [headerBackgroundColor] is missing [backgroundColor] will be applied
-  /// If [foregroundColor] is missing [backgroundColor] will be applied
-  ///
-  /// Default: [Colors.black]
-  final Color backgroundColor;
 
   ///
   /// Helper function to copy its properties
@@ -113,11 +96,8 @@ class GallerySetting {
     Function(GalleryAsset asset, {bool removed})? onChanged,
     Function()? onReachMaximum,
     Widget Function()? closingDialogBuilder,
-    ThemeData? theme,
+    ColorScheme? colorScheme,
     SystemUiOverlayStyle? overlayStyle,
-    Color? headerBackgroundColor,
-    Color? foregroundColor,
-    Color? backgroundColor,
   }) {
     return GallerySetting(
       selectedAssets: selectedAssets ?? this.selectedAssets,
@@ -132,11 +112,8 @@ class GallerySetting {
       onChanged: onChanged ?? this.onChanged,
       onReachMaximum: onReachMaximum ?? this.onReachMaximum,
       closingDialogBuilder: closingDialogBuilder ?? this.closingDialogBuilder,
-      theme: theme ?? this.theme,
+      colorScheme: colorScheme ?? this.colorScheme,
       overlayStyle: overlayStyle ?? this.overlayStyle,
-      headerBackgroundColor: headerBackgroundColor ?? this.headerBackgroundColor,
-      foregroundColor: foregroundColor ?? this.foregroundColor,
-      backgroundColor: backgroundColor ?? this.backgroundColor,
     );
   }
 }

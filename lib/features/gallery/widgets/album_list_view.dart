@@ -13,17 +13,18 @@ class AlbumListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final galleryController = context.galleryController;
+    final colorScheme = galleryController.setting.colorScheme;
     return ColoredBox(
-      color: Colors.black,
+      color: colorScheme?.background ?? Colors.black,
       child: AlbumListBuilder(
         controller: galleryController.albumListController,
         hidePermissionView: true,
         builder: (context, albumList) {
           if (albumList.albumControllers.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
                 StringConst.NO_ALBUM_AVAILABLE,
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: colorScheme?.onBackground ?? Colors.white),
               ),
             );
           }
@@ -71,6 +72,7 @@ class _AlbumTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isAll = album.assetPathEntity?.isAll ?? true;
+    final colorScheme = context.galleryController.setting.colorScheme;
 
     return GestureDetector(
       onTap: () => onPressed?.call(albumController),
@@ -81,7 +83,7 @@ class _AlbumTile extends StatelessWidget {
             Container(
               height: _imageSize.toDouble(),
               width: _imageSize.toDouble(),
-              color: Colors.grey.shade700,
+              color: colorScheme?.brightness == Brightness.light ? Colors.grey.shade300 : Colors.grey.shade700,
               child: FutureBuilder<AssetEntity?>(
                 future: firstAsset,
                 builder: (context, snapshot) {
@@ -100,8 +102,8 @@ class _AlbumTile extends StatelessWidget {
                 children: [
                   Text(
                     isAll ? StringConst.ALL_PHOTOS : album.assetPathEntity?.name ?? '',
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: colorScheme?.onBackground ?? Colors.white,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -126,7 +128,7 @@ class _AlbumTile extends StatelessWidget {
               const SizedBox(width: 16),
               Icon(
                 CupertinoIcons.checkmark_alt,
-                color: Colors.grey.shade200,
+                color: colorScheme?.onBackground ?? Colors.grey.shade200,
               ),
             ]
           ],

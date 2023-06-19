@@ -13,8 +13,9 @@ class GalleryAssetsGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final galleryController = context.galleryController;
+    final colorScheme = galleryController.setting.colorScheme;
     return ColoredBox(
-      color: Colors.black,
+      color: colorScheme?.background ?? Colors.black,
       child: AlbumListBuilder(
         controller: galleryController.albumListController,
         builder: (context, albumList) {
@@ -35,14 +36,20 @@ class GalleryAssetsGridView extends StatelessWidget {
               }
 
               if (currentAlbum.fetchStatus == FetchStatus.completed && currentAlbum.assets.isEmpty) {
-                return const Center(
-                  child: Text(StringConst.NO_MEDIA_AVAILABLE, style: TextStyle(color: Colors.white)),
+                return Center(
+                  child: Text(
+                    StringConst.NO_MEDIA_AVAILABLE,
+                    style: TextStyle(color: colorScheme?.onBackground ?? Colors.white),
+                  ),
                 );
               }
 
               if (currentAlbum.fetchStatus == FetchStatus.error) {
-                return const Center(
-                  child: Text(StringConst.SOMETHING_WRONG, style: TextStyle(color: Colors.white)),
+                return Center(
+                  child: Text(
+                    StringConst.SOMETHING_WRONG,
+                    style: TextStyle(color: colorScheme?.onBackground ?? Colors.white),
+                  ),
                 );
               }
 
@@ -77,7 +84,13 @@ class GalleryAssetsGridView extends StatelessWidget {
                     final asset = galleryController.albumListController.value.fetchStatus == FetchStatus.fetching
                         ? null
                         : assets[i];
-                    if (asset == null) return Container(color: Colors.grey.shade800);
+                    if (asset == null) {
+                      return Container(
+                          color: colorScheme?.brightness == Brightness.light
+                              ? Colors.grey.shade200
+                              : Colors.grey.shade800);
+                    }
+
                     return _AssetTile(key: ValueKey(asset.id), asset: asset);
                   },
                 ),
@@ -98,12 +111,15 @@ class _CameraTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final galleryController = context.galleryController;
-    return InkWell(
-      onTap: () async {
-        final asset = await galleryController.openCamera(context);
-        if (asset != null) albumController.insert(asset);
-      },
-      child: const Icon(CupertinoIcons.camera, color: Colors.white, size: 24),
+    return Container(
+      color: Colors.black,
+      child: InkWell(
+        child: const Icon(CupertinoIcons.camera, color: Colors.white, size: 24),
+        onTap: () async {
+          final asset = await galleryController.openCamera(context);
+          if (asset != null) albumController.insert(asset);
+        },
+      ),
     );
   }
 }
@@ -153,7 +169,7 @@ class _SelectionCount extends StatelessWidget {
         Widget counter = const SizedBox();
         if (isSelected) {
           counter = CircleAvatar(
-            backgroundColor: Colors.blue.shade700,
+            backgroundColor: galleryController.setting.colorScheme?.primary ?? Colors.blue.shade600,
             radius: 14 * ratio,
             child: singleSelection
                 ? Icon(CupertinoIcons.checkmark_alt, color: Colors.white, size: 24 * ratio)
@@ -163,8 +179,8 @@ class _SelectionCount extends StatelessWidget {
         }
         if (!singleSelection) {
           counter = Container(
-            height: 20 * ratio,
-            width: 20 * ratio,
+            height: 22 * ratio,
+            width: 22 * ratio,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(color: Colors.white70, width: 2, strokeAlign: 0),

@@ -48,6 +48,7 @@ class GallerySelectButtonState extends State<GallerySelectButton> with TickerPro
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = _galleryController.setting.colorScheme ?? Theme.of(context).colorScheme;
     return GalleryBuilder(
       controller: _galleryController,
       builder: (context, gallery) {
@@ -62,7 +63,7 @@ class GallerySelectButtonState extends State<GallerySelectButton> with TickerPro
             child: CommonButton(
               label: StringConst.SELECT,
               width: MediaQuery.of(context).size.width,
-              backgroundColor: _galleryController.setting.theme?.primaryColor,
+              backgroundColor: colorScheme.primary,
               onPressed: (context) {
                 _galleryController.completeSelection();
                 if (_galleryController.isFullScreenMode) {

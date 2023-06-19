@@ -50,7 +50,6 @@ class SlidablePanelSetting {
     double? toolbarHeight,
     double? handleBarHeight,
     double? snapingPoint,
-    Color? headerBackground,
     Color? foregroundColor,
     Color? backgroundColor,
   }) {

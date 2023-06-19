@@ -32,7 +32,7 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _galleryController = widget.controller..updateSettings(_gallarySetting);
+    _galleryController = widget.controller..updateSetting(_gallarySetting);
     _albumListController.fetchAlbums(_gallarySetting.requestType);
 
     _animationController = AnimationController(
@@ -123,7 +123,7 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
           ? WillPopScope(
               onWillPop: _onWillClose,
               child: Scaffold(
-                backgroundColor: Colors.black,
+                backgroundColor: _gallarySetting.colorScheme?.background ?? Colors.black,
                 body: Padding(
                   padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
                   child: galleryStack,

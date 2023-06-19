@@ -7,7 +7,7 @@ import 'package:gallery_asset_picker/widgets/widgets.dart';
 
 class GalleryController extends ValueNotifier<GalleryValue> {
   GalleryController({GallerySetting? settings}) : super(GalleryValue.none()) {
-    updateSettings(settings);
+    updateSetting(settings);
   }
 
   late Completer<List<GalleryAsset>> _selectionTask;
@@ -22,7 +22,7 @@ class GalleryController extends ValueNotifier<GalleryValue> {
   bool get reachedMaximumLimit => value.selectedAssets.length == setting.maxCount;
   bool get singleSelection => setting.maxCount == 1;
 
-  void updateSettings(GallerySetting? setting) {
+  void updateSetting(GallerySetting? setting) {
     _setting = setting ?? const GallerySetting();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (this.setting.selectedAssets.isNotEmpty) {
