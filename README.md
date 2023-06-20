@@ -16,9 +16,9 @@ A gallery picker and camera in one package. The Gallery and Camera views can bot
 
 ## Screenshot
 
-|                  Collapse Mode                   |                   Expand Mode                    
+|                  Collapse Mode                   |                   Expand Mode
 | :----------------------------------------------: | :----------------------------------------------:
-| ![image1](screenshots/Screenshot1_20230619.png) | ![image2](screenshots/Screenshot2_20230619.png) 
+| ![image1](screenshots/Screenshot1_20230619.png) | ![image2](screenshots/Screenshot2_20230619.png)
 
 ---
 
@@ -98,6 +98,30 @@ Add following content to `info.plist`.
 
 ## Usage
 
+- Use `GalleryAssetPicker.initialize` to config for the gallery
+
+```dart
+GalleryAssetPicker.initialize(GalleryConfig(
+    enableCamera: true,
+    crossAxisCount: 3,
+    colorScheme: const ColorScheme.light(primary: Colors.blue),
+    onReachMaximum: () {
+      Fluttertoast.showToast(
+        msg: "You have reached the allowed number of images",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    },
+    textTheme: const TextTheme(
+      bodyMedium: TextStyle(fontSize: 16),
+      titleMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+      titleSmall: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+    ),
+));
+```
+
 - To make the gallery view sliding, use the `SlidableGalleryOverlay`; otherwise, ignore it
 
 ```dart
@@ -118,30 +142,16 @@ class SlidableGalleryDemo extends StatelessWidget {
 }
 ```
 
-- `GallerySetting` can be used for more customization while selection, pass it to the controller
-
-```dart
-  @override
-  void initState() {
-    super.initState();
-    galleryController = GalleryController(
-      settings: GallerySetting(
-        enableCamera: true,
-        crossAxisCount: 3,
-        maxCount: 3,
-        requestType: RequestType.image,
-        onReachMaximum: () {},
-      ),
-    );
-  }
-```
-
-- Using `open()` function on the controller to pick assets
+- Using `GalleryAssetPicker.pick()` to pick assets
 
 ```dart
   ...
   onPressed : () async {
-     final selectedAssets = await galleryController.open(context);
+    final _selectedAssets = await GalleryAssetPicker.pick(
+      context,
+      maxCount: 5,
+      requestType: RequestType.image,
+    );
   }
   ...
 ```
