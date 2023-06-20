@@ -31,7 +31,7 @@ class DemoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    GalleryAssetPicker.configure(GalleryConfig(
+    GalleryAssetPicker.initialize(GalleryConfig(
       enableCamera: true,
       crossAxisCount: 3,
       colorScheme: const ColorScheme.light(primary: Colors.blue),

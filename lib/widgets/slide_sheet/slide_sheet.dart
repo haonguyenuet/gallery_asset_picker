@@ -31,7 +31,7 @@ class _SlideSheetState extends State<SlideSheet> with TickerProviderStateMixin {
   late double _minHeight;
   late double _maxHeight;
   late double _remainingHeight;
-  late SlideSheetConfig _option;
+  late SlideSheetConfig _config;
   late SlideSheetController _controller;
   late ScrollController _scrollController;
   late AnimationController _animationController;
@@ -52,12 +52,12 @@ class _SlideSheetState extends State<SlideSheet> with TickerProviderStateMixin {
   bool _scrollToTop = false;
 
   // true, if pointer is above halfway of the screen, false otherwise.
-  bool get _aboveHalfWay => _controller.value.factor > (_option.snapingPoint);
+  bool get _aboveHalfWay => _controller.value.factor > (_config.snapingPoint);
 
   @override
   void initState() {
     super.initState();
-    _option = widget.config ?? const SlideSheetConfig();
+    _config = widget.config ?? const SlideSheetConfig();
     _controller = widget.controller.._init(this);
     _scrollController = _controller.scrollController;
     _animationController = AnimationController(
@@ -73,7 +73,7 @@ class _SlideSheetState extends State<SlideSheet> with TickerProviderStateMixin {
   void didUpdateWidget(covariant SlideSheet oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.config != widget.config) {
-      _option = widget.config ?? const SlideSheetConfig();
+      _config = widget.config ?? const SlideSheetConfig();
     }
   }
 
@@ -123,7 +123,7 @@ class _SlideSheetState extends State<SlideSheet> with TickerProviderStateMixin {
       final atTopEdge = _scrollController.hasClients && _scrollController.offset == 0;
 
       final headerStartPosition = _size.height - _maxHeight;
-      final headerEndPosition = headerStartPosition + _option.headerHeight;
+      final headerEndPosition = headerStartPosition + _config.headerHeight;
       final isHandler = pointer.position.dy >= headerStartPosition && pointer.position.dy <= headerEndPosition;
       _scrollToBottom = isHandler || atTopEdge;
       if (_scrollToBottom) {
@@ -133,14 +133,14 @@ class _SlideSheetState extends State<SlideSheet> with TickerProviderStateMixin {
 
     if (_scrollToTop || _scrollToBottom) {
       final startingOffset =
-          pointer.position.dy - (_scrollToTop ? _option.handleBarHeight : _pointerPositionBeforeScrollToMin.dy);
+          pointer.position.dy - (_scrollToTop ? _config.handleBarHeight : _pointerPositionBeforeScrollToMin.dy);
       final num remainingOffset = (_remainingHeight - startingOffset).clamp(0.0, _remainingHeight);
       final num factor = (remainingOffset / _remainingHeight).clamp(0.0, 1.0);
       _snapWithPosition(factor as double, currStatus);
     }
 
     if (!_scrollToBottom && preStatus == SlideSheetStatus.collapsed && currStatus == SlideSheetStatus.reverse) {
-      if (pointer.position.dy - _pointerPositionInitial.dy > _option.headerHeight) {
+      if (pointer.position.dy - _pointerPositionInitial.dy > _config.headerHeight) {
         return _controller.close();
       }
     }
@@ -195,8 +195,8 @@ class _SlideSheetState extends State<SlideSheet> with TickerProviderStateMixin {
         final mediaQuery = MediaQuery.of(context);
 
         _size = constraints.biggest;
-        _maxHeight = _option.maxHeight ?? _size.height - mediaQuery.padding.top;
-        _minHeight = _option.minHeight ?? _maxHeight * 0.4;
+        _maxHeight = _config.maxHeight ?? _size.height - mediaQuery.padding.top;
+        _minHeight = _config.minHeight ?? _maxHeight * 0.4;
         _remainingHeight = _maxHeight - _minHeight;
 
         return SlideSheetValueBuilder(

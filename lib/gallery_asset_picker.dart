@@ -14,8 +14,13 @@ export 'package:gallery_asset_picker/features/features.dart';
 export 'package:photo_manager/photo_manager.dart';
 
 class GalleryAssetPicker {
-  static configure(GalleryConfig config) {
-    GalleryManager.updateConfig(config);
+  static bool _isInitialize = false;
+
+  static initialize(GalleryConfig config) {
+    if (!_isInitialize) {
+      _isInitialize = true;
+      GalleryManager.updateConfig(config);
+    }
   }
 
   static Future<List<GalleryAsset>> pick(BuildContext context, {int? maxCount, RequestType? requestType}) async {
