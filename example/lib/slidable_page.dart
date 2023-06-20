@@ -23,7 +23,9 @@ class _SlidablePageState extends State<SlidablePage> {
         crossAxisCount: 3,
         maxCount: 3,
         requestType: RequestType.image,
-        colorScheme: ColorScheme.dark(),
+        colorScheme: const ColorScheme.light(
+          primary: Colors.blue,
+        ),
         onReachMaximum: () {
           Fluttertoast.showToast(
             msg: "You have reached the allowed number of images",

@@ -23,6 +23,8 @@ class AlbumListBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final galleryController = context.galleryController;
+    final colorScheme = galleryController.setting.colorScheme;
+    final textTheme = galleryController.setting.textTheme;
     return ValueListenableBuilder<AlbumListValue>(
       valueListenable: controller,
       builder: (context, value, child) {
@@ -39,10 +41,7 @@ class AlbumListBuilder extends StatelessWidget {
           return Center(
             child: Text(
               StringConst.NO_ALBUM_AVAILABLE,
-              style: TextStyle(
-                color: galleryController.setting.colorScheme?.onBackground ?? Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
+              style: textTheme.bodyMedium?.copyWith(color: colorScheme.onBackground),
             ),
           );
         }
@@ -51,10 +50,7 @@ class AlbumListBuilder extends StatelessWidget {
           return Center(
             child: Text(
               StringConst.SOMETHING_WRONG,
-              style: TextStyle(
-                color: galleryController.setting.colorScheme?.onBackground ?? Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
+              style: textTheme.bodyMedium?.copyWith(color: colorScheme.onBackground),
             ),
           );
         }

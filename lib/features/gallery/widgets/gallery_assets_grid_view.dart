@@ -14,8 +14,9 @@ class GalleryAssetsGridView extends StatelessWidget {
   Widget build(BuildContext context) {
     final galleryController = context.galleryController;
     final colorScheme = galleryController.setting.colorScheme;
+    final textTheme = galleryController.setting.textTheme;
     return ColoredBox(
-      color: colorScheme?.background ?? Colors.black,
+      color: colorScheme.background,
       child: AlbumListBuilder(
         controller: galleryController.albumListController,
         builder: (context, albumList) {
@@ -39,7 +40,7 @@ class GalleryAssetsGridView extends StatelessWidget {
                 return Center(
                   child: Text(
                     StringConst.NO_MEDIA_AVAILABLE,
-                    style: TextStyle(color: colorScheme?.onBackground ?? Colors.white),
+                    style: textTheme.bodyMedium?.copyWith(color: colorScheme.onBackground),
                   ),
                 );
               }
@@ -48,7 +49,7 @@ class GalleryAssetsGridView extends StatelessWidget {
                 return Center(
                   child: Text(
                     StringConst.SOMETHING_WRONG,
-                    style: TextStyle(color: colorScheme?.onBackground ?? Colors.white),
+                    style: textTheme.bodyMedium?.copyWith(color: colorScheme.onBackground),
                   ),
                 );
               }
@@ -86,9 +87,8 @@ class GalleryAssetsGridView extends StatelessWidget {
                         : assets[i];
                     if (asset == null) {
                       return Container(
-                          color: colorScheme?.brightness == Brightness.light
-                              ? Colors.grey.shade200
-                              : Colors.grey.shade800);
+                          color:
+                              colorScheme.brightness == Brightness.light ? Colors.grey.shade200 : Colors.grey.shade800);
                     }
 
                     return _AssetTile(key: ValueKey(asset.id), asset: asset);
@@ -158,6 +158,9 @@ class _SelectionCount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final galleryController = context.galleryController;
+    final colorScheme = context.galleryController.setting.colorScheme;
+    final textTheme = context.galleryController.setting.textTheme;
+
     return GalleryBuilder(
       controller: galleryController,
       builder: (context, gallery) {
@@ -169,12 +172,14 @@ class _SelectionCount extends StatelessWidget {
         Widget counter = const SizedBox();
         if (isSelected) {
           counter = CircleAvatar(
-            backgroundColor: galleryController.setting.colorScheme?.primary ?? Colors.blue.shade600,
+            backgroundColor: colorScheme.primary,
             radius: 14 * ratio,
             child: singleSelection
                 ? Icon(CupertinoIcons.checkmark_alt, color: Colors.white, size: 24 * ratio)
-                : Text('${index + 1}',
-                    style: TextStyle(color: Colors.white, fontSize: 14 * ratio, fontWeight: FontWeight.w500)),
+                : Text(
+                    '${index + 1}',
+                    style: textTheme.titleSmall?.copyWith(color: Colors.white, fontSize: 14 * ratio),
+                  ),
           );
         }
         if (!singleSelection) {

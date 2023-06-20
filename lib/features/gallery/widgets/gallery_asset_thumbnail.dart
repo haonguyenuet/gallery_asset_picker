@@ -33,11 +33,11 @@ class AssetThumbnail extends StatelessWidget {
     }
 
     if (asset.type == AssetType.audio) {
-      child = Center(child: Icon(Icons.audiotrack, color: colorScheme?.onBackground ?? Colors.white));
+      child = Center(child: Icon(Icons.audiotrack, color: colorScheme.onBackground));
     }
 
     if (asset.type == AssetType.other) {
-      child = Center(child: Icon(Icons.file_copy, color: colorScheme?.onBackground ?? Colors.white));
+      child = Center(child: Icon(Icons.file_copy, color: colorScheme.onBackground));
     }
 
     if (asset.type == AssetType.video || asset.type == AssetType.audio) {
@@ -140,7 +140,7 @@ class _DurationView extends StatelessWidget {
           style: const TextStyle(
             fontSize: 12,
             color: Colors.white,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),

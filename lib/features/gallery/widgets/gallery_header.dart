@@ -19,6 +19,7 @@ class GalleryHeader extends StatelessWidget {
   final GalleryController galleryController;
 
   ColorScheme? get colorScheme => galleryController.setting.colorScheme;
+  TextTheme get textTheme => galleryController.setting.textTheme;
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +86,10 @@ class GalleryHeader extends StatelessWidget {
       child: CupertinoButton(
         padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
         minSize: 0,
-        child: Text('Cancel', style: TextStyle(fontSize: 16, color: Colors.blue.shade400)),
+        child: Text(
+          'Cancel',
+          style: textTheme.titleSmall?.copyWith(color: const Color(0xFF66768E)),
+        ),
         onPressed: onClose,
       ),
     );
@@ -101,7 +105,10 @@ class GalleryHeader extends StatelessWidget {
           return CupertinoButton(
             padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
             minSize: 0,
-            child: Text('Clear', style: TextStyle(fontSize: 16, color: Colors.red.shade400)),
+            child: Text(
+              'Clear',
+              style: textTheme.titleSmall?.copyWith(color: const Color(0xFFF43F5E)),
+            ),
             onPressed: galleryController.clearSelection,
           );
         },
@@ -117,11 +124,7 @@ class GalleryHeader extends StatelessWidget {
           final accessCount = gallery.selectedAssets.length;
           return Text(
             '$accessCount Selected',
-            style: TextStyle(
-              color: colorScheme?.onSurface ?? Colors.white,
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
-            ),
+            style: textTheme.titleMedium?.copyWith(color: colorScheme?.onSurface ?? Colors.white),
           );
         }
 
@@ -137,11 +140,7 @@ class GalleryHeader extends StatelessWidget {
                   : isAll
                       ? galleryController.setting.albumTitle
                       : currentAlbumController?.value.assetPathEntity?.name ?? 'Unknown',
-              style: TextStyle(
-                color: colorScheme?.onSurface ?? Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
+              style: textTheme.titleMedium?.copyWith(color: colorScheme?.onSurface ?? Colors.white),
             );
           },
         );
@@ -164,10 +163,10 @@ class GalleryHeader extends StatelessWidget {
             angle: pi * factor,
             child: CupertinoButton(
               minSize: 0,
-              padding: const EdgeInsets.all(4),
+              padding: const EdgeInsets.all(6),
               child: Icon(
                 CupertinoIcons.chevron_down,
-                size: 20,
+                size: 18,
                 color: colorScheme?.onSurface ?? Colors.grey.shade700,
               ),
               onPressed: onAlbumListToggle,

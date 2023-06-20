@@ -123,7 +123,7 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
           ? WillPopScope(
               onWillPop: _onWillClose,
               child: Scaffold(
-                backgroundColor: _gallarySetting.colorScheme?.background ?? Colors.black,
+                backgroundColor: _gallarySetting.colorScheme.background,
                 body: Padding(
                   padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
                   child: galleryStack,

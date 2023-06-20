@@ -48,7 +48,7 @@ class GallerySelectButtonState extends State<GallerySelectButton> with TickerPro
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = _galleryController.setting.colorScheme ?? Theme.of(context).colorScheme;
+    final colorScheme = _galleryController.setting.colorScheme;
     return GalleryBuilder(
       controller: _galleryController,
       builder: (context, gallery) {

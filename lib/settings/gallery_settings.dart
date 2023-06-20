@@ -20,7 +20,12 @@ class GallerySetting {
     this.onChanged,
     this.onReachMaximum,
     this.closingDialogBuilder,
-    this.colorScheme,
+    this.textTheme = const TextTheme(
+      bodyMedium: TextStyle(fontSize: 16),
+      titleMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+      titleSmall: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+    ),
+    this.colorScheme = const ColorScheme.light(),
     this.overlayStyle = SystemUiOverlayStyle.light,
   });
 
@@ -75,7 +80,11 @@ class GallerySetting {
 
   ///
   /// Color Scheme
-  final ColorScheme? colorScheme;
+  final TextTheme textTheme;
+
+  ///
+  /// Color Scheme
+  final ColorScheme colorScheme;
 
   ///
   /// Overlay Style
@@ -96,6 +105,7 @@ class GallerySetting {
     Function(GalleryAsset asset, {bool removed})? onChanged,
     Function()? onReachMaximum,
     Widget Function()? closingDialogBuilder,
+    TextTheme? textTheme,
     ColorScheme? colorScheme,
     SystemUiOverlayStyle? overlayStyle,
   }) {

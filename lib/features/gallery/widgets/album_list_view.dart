@@ -14,8 +14,10 @@ class AlbumListView extends StatelessWidget {
   Widget build(BuildContext context) {
     final galleryController = context.galleryController;
     final colorScheme = galleryController.setting.colorScheme;
+    final textTheme = galleryController.setting.textTheme;
+
     return ColoredBox(
-      color: colorScheme?.background ?? Colors.black,
+      color: colorScheme.background,
       child: AlbumListBuilder(
         controller: galleryController.albumListController,
         hidePermissionView: true,
@@ -24,7 +26,7 @@ class AlbumListView extends StatelessWidget {
             return Center(
               child: Text(
                 StringConst.NO_ALBUM_AVAILABLE,
-                style: TextStyle(color: colorScheme?.onBackground ?? Colors.white),
+                style: textTheme.bodyMedium?.copyWith(color: colorScheme.onBackground),
               ),
             );
           }
@@ -73,6 +75,7 @@ class _AlbumTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final isAll = album.assetPathEntity?.isAll ?? true;
     final colorScheme = context.galleryController.setting.colorScheme;
+    final textTheme = context.galleryController.setting.textTheme;
 
     return GestureDetector(
       onTap: () => onPressed?.call(albumController),
@@ -83,7 +86,7 @@ class _AlbumTile extends StatelessWidget {
             Container(
               height: _imageSize.toDouble(),
               width: _imageSize.toDouble(),
-              color: colorScheme?.brightness == Brightness.light ? Colors.grey.shade300 : Colors.grey.shade700,
+              color: colorScheme.brightness == Brightness.light ? Colors.grey.shade300 : Colors.grey.shade700,
               child: FutureBuilder<AssetEntity?>(
                 future: firstAsset,
                 builder: (context, snapshot) {
@@ -102,10 +105,7 @@ class _AlbumTile extends StatelessWidget {
                 children: [
                   Text(
                     isAll ? StringConst.ALL_PHOTOS : album.assetPathEntity?.name ?? '',
-                    style: TextStyle(
-                      color: colorScheme?.onBackground ?? Colors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: textTheme.titleMedium?.copyWith(color: colorScheme.onBackground),
                   ),
                   const SizedBox(height: 4),
                   FutureBuilder<int>(
@@ -126,10 +126,7 @@ class _AlbumTile extends StatelessWidget {
             ),
             if (isCurrent) ...[
               const SizedBox(width: 16),
-              Icon(
-                CupertinoIcons.checkmark_alt,
-                color: colorScheme?.onBackground ?? Colors.grey.shade200,
-              ),
+              Icon(CupertinoIcons.checkmark_alt, color: colorScheme.onBackground),
             ]
           ],
         ),
