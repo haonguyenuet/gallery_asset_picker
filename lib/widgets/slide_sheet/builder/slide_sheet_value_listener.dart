@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/widgets/slidable_panel/slidable_panel.dart';
+import 'package:gallery_asset_picker/widgets/slide_sheet/slide_sheet.dart';
 
-class SlidablePanelValueListener extends StatefulWidget {
-  const SlidablePanelValueListener({
+class SlideSheetValueListener extends StatefulWidget {
+  const SlideSheetValueListener({
     Key? key,
     required this.controller,
     required this.listener,
     required this.child,
   }) : super(key: key);
 
-  final SlidablePanelController controller;
-  final Function(BuildContext context, SlidablePanelValue value) listener;
+  final SlideSheetController controller;
+  final Function(BuildContext context, SlideSheetValue value) listener;
   final Widget child;
 
   @override
-  State<SlidablePanelValueListener> createState() => _SlidablePanelValueListenerState();
+  State<SlideSheetValueListener> createState() => _SlideSheetValueListenerState();
 }
 
-class _SlidablePanelValueListenerState extends State<SlidablePanelValueListener> {
+class _SlideSheetValueListenerState extends State<SlideSheetValueListener> {
   @override
   void initState() {
     super.initState();

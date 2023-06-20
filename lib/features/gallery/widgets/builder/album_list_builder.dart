@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/features/gallery/controllers/album_list_controller.dart';
-import 'package:gallery_asset_picker/features/gallery/enums/fetch_state.dart';
-import 'package:gallery_asset_picker/features/gallery/values/album_list_value.dart';
-import 'package:gallery_asset_picker/features/gallery/widgets/gallery_controller_provider.dart';
-import 'package:gallery_asset_picker/utils/const.dart';
+import 'package:gallery_asset_picker/features/gallery/gallery.dart';
+import 'package:gallery_asset_picker/utils/utils.dart';
 import 'package:gallery_asset_picker/widgets/gallery_permission_view.dart';
 
 typedef AlbumListWidgetBuilder = Widget Function(BuildContext context, AlbumListValue albums);
@@ -22,17 +19,14 @@ class AlbumListBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final galleryController = context.galleryController;
-    final colorScheme = galleryController.setting.colorScheme;
-    final textTheme = galleryController.setting.textTheme;
+    final colorScheme = GalleryManager.config.colorScheme;
+    final textTheme = GalleryManager.config.textTheme;
     return ValueListenableBuilder<AlbumListValue>(
       valueListenable: controller,
       builder: (context, value, child) {
         if (value.fetchStatus == FetchStatus.unauthorised && value.albumControllers.isEmpty && !hidePermissionView) {
           return GalleryPermissionView(
-            onRefresh: () {
-              controller.fetchAlbums(galleryController.setting.requestType);
-            },
+            onRefresh: GalleryManager.controller.fetchAlbums,
           );
         }
 

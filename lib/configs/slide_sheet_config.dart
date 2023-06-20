@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class SlidablePanelSetting {
-  const SlidablePanelSetting({
+class SlideSheetConfig {
+  const SlideSheetConfig({
     this.maxHeight,
     this.minHeight,
     this.toolbarHeight = 48,
@@ -41,16 +41,14 @@ class SlidablePanelSetting {
   /// Header  height
   double get headerHeight => handleBarHeight + toolbarHeight;
 
-  SlidablePanelSetting copyWith({
+  SlideSheetConfig copyWith({
     double? maxHeight,
     double? minHeight,
     double? toolbarHeight,
     double? handleBarHeight,
     double? snapingPoint,
-    Color? foregroundColor,
-    Color? backgroundColor,
   }) {
-    return SlidablePanelSetting(
+    return SlideSheetConfig(
       maxHeight: maxHeight ?? this.maxHeight,
       minHeight: minHeight ?? this.minHeight,
       toolbarHeight: toolbarHeight ?? this.toolbarHeight,

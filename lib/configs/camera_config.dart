@@ -1,7 +1,7 @@
 import 'package:camera/camera.dart';
 
-class CameraSetting {
-  const CameraSetting({
+class CameraConfig {
+  const CameraConfig({
     this.resolutionPreset = ResolutionPreset.high,
     this.imageFormatGroup = ImageFormatGroup.jpeg,
   });
@@ -12,11 +12,11 @@ class CameraSetting {
   /// Image format group. Default value is [ImageFormatGroup.jpeg]
   final ImageFormatGroup imageFormatGroup;
 
-  CameraSetting copyWith({
+  CameraConfig copyWith({
     ResolutionPreset? resolutionPreset,
     ImageFormatGroup? imageFormatGroup,
   }) {
-    return CameraSetting(
+    return CameraConfig(
       resolutionPreset: resolutionPreset ?? this.resolutionPreset,
       imageFormatGroup: imageFormatGroup ?? this.imageFormatGroup,
     );

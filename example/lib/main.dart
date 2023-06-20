@@ -2,6 +2,8 @@ import 'package:example/fullscreen_page.dart';
 import 'package:example/slidable_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:gallery_asset_picker/gallery_asset_picker.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +31,26 @@ class DemoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    GalleryAssetPicker.configure(GalleryConfig(
+      enableCamera: true,
+      crossAxisCount: 3,
+      colorScheme: const ColorScheme.light(primary: Colors.blue),
+      onReachMaximum: () {
+        Fluttertoast.showToast(
+          msg: "You have reached the allowed number of images",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      },
+      textTheme: const TextTheme(
+        bodyMedium: TextStyle(fontSize: 16),
+        titleMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+        titleSmall: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+      ),
+    ));
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),

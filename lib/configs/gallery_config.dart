@@ -1,23 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gallery_asset_picker/entities/gallery_asset.dart';
-import 'package:gallery_asset_picker/settings/camera_setting.dart';
-import 'package:gallery_asset_picker/settings/slidable_panel_setting.dart';
+import 'package:gallery_asset_picker/configs/camera_config.dart';
+import 'package:gallery_asset_picker/configs/slide_sheet_config.dart';
 import 'package:gallery_asset_picker/utils/const.dart';
-import 'package:photo_manager/photo_manager.dart';
 
-class GallerySetting {
-  const GallerySetting({
-    this.selectedAssets = const [],
-    this.requestType = RequestType.all,
-    this.maxCount,
+class GalleryConfig {
+  const GalleryConfig({
     this.albumTitle = StringConst.ALL_PHOTOS,
-    this.albumSubtitle = 'Select Media',
     this.enableCamera = true,
     this.crossAxisCount = 3,
-    this.slidablePanelSetting = const SlidablePanelSetting(),
-    this.cameraSetting = const CameraSetting(),
-    this.onChanged,
+    this.slideSheetConfig = const SlideSheetConfig(),
+    this.cameraConfig = const CameraConfig(),
     this.onReachMaximum,
     this.closingDialogBuilder,
     this.textTheme = const TextTheme(
@@ -30,25 +23,8 @@ class GallerySetting {
   });
 
   ///
-  /// Previously selected entities
-  final List<GalleryAsset> selectedAssets;
-
-  ///
-  /// Type of media e.g, image, video, audio, other
-  /// Default is [RequestType.all]
-  final RequestType requestType;
-
-  ///
-  /// Total media allowed to select. Default is null
-  final int? maxCount;
-
-  ///
   /// Album name for all photos, default is set to "All Photos"
   final String albumTitle;
-
-  ///
-  /// String displayed below album name. Default : 'Select media'
-  final String albumSubtitle;
 
   ///
   /// Set false to hide camera from gallery view
@@ -59,16 +35,12 @@ class GallerySetting {
   final int crossAxisCount;
 
   ///
-  /// Gallery slidable panel setting
-  final SlidablePanelSetting slidablePanelSetting;
+  /// Gallery slidable sheet config
+  final SlideSheetConfig slideSheetConfig;
 
   ///
-  /// Camera setting
-  final CameraSetting cameraSetting;
-
-  ///
-  /// On select or remove asset
-  final Function(GalleryAsset asset, {bool removed})? onChanged;
+  /// Camera config
+  final CameraConfig cameraConfig;
 
   ///
   /// On select maximum count
@@ -92,34 +64,24 @@ class GallerySetting {
 
   ///
   /// Helper function to copy its properties
-  GallerySetting copyWith({
-    List<GalleryAsset>? selectedAssets,
-    RequestType? requestType,
-    int? maximumCount,
+  GalleryConfig copyWith({
     String? albumTitle,
-    String? albumSubtitle,
     bool? enableCamera,
     int? crossAxisCount,
-    SlidablePanelSetting? slidablePanelSetting,
-    CameraSetting? cameraSetting,
-    Function(GalleryAsset asset, {bool removed})? onChanged,
+    SlideSheetConfig? slideSheetConfig,
+    CameraConfig? cameraConfig,
     Function()? onReachMaximum,
     Widget Function()? closingDialogBuilder,
     TextTheme? textTheme,
     ColorScheme? colorScheme,
     SystemUiOverlayStyle? overlayStyle,
   }) {
-    return GallerySetting(
-      selectedAssets: selectedAssets ?? this.selectedAssets,
-      requestType: requestType ?? this.requestType,
-      maxCount: maximumCount ?? this.maxCount,
+    return GalleryConfig(
       albumTitle: albumTitle ?? this.albumTitle,
-      albumSubtitle: albumSubtitle ?? this.albumSubtitle,
       enableCamera: enableCamera ?? this.enableCamera,
       crossAxisCount: crossAxisCount ?? this.crossAxisCount,
-      slidablePanelSetting: slidablePanelSetting ?? this.slidablePanelSetting,
-      cameraSetting: cameraSetting ?? this.cameraSetting,
-      onChanged: onChanged ?? this.onChanged,
+      slideSheetConfig: slideSheetConfig ?? this.slideSheetConfig,
+      cameraConfig: cameraConfig ?? this.cameraConfig,
       onReachMaximum: onReachMaximum ?? this.onReachMaximum,
       closingDialogBuilder: closingDialogBuilder ?? this.closingDialogBuilder,
       colorScheme: colorScheme ?? this.colorScheme,

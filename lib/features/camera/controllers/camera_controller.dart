@@ -4,18 +4,19 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:gallery_asset_picker/entities/gallery_asset.dart';
+import 'package:gallery_asset_picker/features/camera/camera.dart';
 import 'package:gallery_asset_picker/features/camera/exceptions/camera_exceptions.dart';
-import 'package:gallery_asset_picker/gallery_asset_picker.dart';
+import 'package:gallery_asset_picker/utils/utils.dart';
 import 'package:path/path.dart' as path;
+import 'package:photo_manager/photo_manager.dart';
 
 class XCameraController extends ValueNotifier<XCameraValue> {
   XCameraController() : super(const XCameraValue());
 
-  CameraSetting _setting = const CameraSetting();
   CameraController? _cameraController;
   bool _isDisposed = false;
 
-  CameraSetting get setting => _setting;
   CameraController? get cameraController => _cameraController;
   bool get isInitialized => _cameraController?.value.isInitialized ?? false;
 
@@ -26,10 +27,6 @@ class XCameraController extends ValueNotifier<XCameraValue> {
       return false;
     }
     return true;
-  }
-
-  void updateSetting({CameraSetting? setting}) {
-    _setting = setting ?? const CameraSetting();
   }
 
   Future<CameraController?> createCamera({CameraDescription? description}) async {
@@ -57,9 +54,9 @@ class XCameraController extends ValueNotifier<XCameraValue> {
     // create camera controller
     _cameraController = CameraController(
       cameraDescription,
-      setting.resolutionPreset,
+      GalleryManager.config.cameraConfig.resolutionPreset,
+      imageFormatGroup: GalleryManager.config.cameraConfig.imageFormatGroup,
       enableAudio: false,
-      imageFormatGroup: _setting.imageFormatGroup,
     );
     _cameraController!.addListener(() {
       if (_cameraController?.value.hasError == true) {

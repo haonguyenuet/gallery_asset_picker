@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_asset_picker/entities/gallery_asset.dart';
-import 'package:gallery_asset_picker/features/gallery/gallery.dart';
+import 'package:gallery_asset_picker/utils/utils.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 /// Widget to display [GalleryAsset] thumbnail
@@ -19,7 +19,7 @@ class AssetThumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = context.galleryController.setting.colorScheme;
+    final colorScheme = GalleryManager.config.colorScheme;
     Widget child = const SizedBox();
     if (asset.type == AssetType.image || asset.type == AssetType.video) {
       if (asset.pickedThumbData != null) {

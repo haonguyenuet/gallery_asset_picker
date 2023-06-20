@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/gallery_asset_picker.dart';
-import 'package:gallery_asset_picker/utils/const.dart';
+import 'package:gallery_asset_picker/entities/gallery_asset.dart';
+import 'package:gallery_asset_picker/features/gallery/gallery.dart';
+import 'package:gallery_asset_picker/utils/utils.dart';
+import 'package:photo_manager/photo_manager.dart';
 
 const _imageSize = 48;
 
@@ -12,14 +14,13 @@ class AlbumListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final galleryController = context.galleryController;
-    final colorScheme = galleryController.setting.colorScheme;
-    final textTheme = galleryController.setting.textTheme;
+    final colorScheme = GalleryManager.config.colorScheme;
+    final textTheme = GalleryManager.config.textTheme;
 
     return ColoredBox(
       color: colorScheme.background,
       child: AlbumListBuilder(
-        controller: galleryController.albumListController,
+        controller: GalleryManager.controller.albumListController,
         hidePermissionView: true,
         builder: (context, albumList) {
           if (albumList.albumControllers.isEmpty) {
@@ -74,8 +75,8 @@ class _AlbumTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isAll = album.assetPathEntity?.isAll ?? true;
-    final colorScheme = context.galleryController.setting.colorScheme;
-    final textTheme = context.galleryController.setting.textTheme;
+    final colorScheme = GalleryManager.config.colorScheme;
+    final textTheme = GalleryManager.config.textTheme;
 
     return GestureDetector(
       onTap: () => onPressed?.call(albumController),

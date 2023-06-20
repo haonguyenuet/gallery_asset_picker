@@ -1,67 +1,32 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/gallery_asset_picker.dart';
+import 'package:gallery_asset_picker/entities/gallery_asset.dart';
+import 'package:gallery_asset_picker/features/gallery/controllers/controllers.dart';
+import 'package:gallery_asset_picker/features/gallery/values/values.dart';
 import 'package:gallery_asset_picker/utils/utils.dart';
 import 'package:gallery_asset_picker/widgets/widgets.dart';
+import 'package:photo_manager/photo_manager.dart';
 
 class GalleryController extends ValueNotifier<GalleryValue> {
-  GalleryController({GallerySetting? settings}) : super(GalleryValue.none()) {
-    updateSetting(settings);
-  }
+  GalleryController() : super(GalleryValue.none());
 
+  int? _maxCount;
+  RequestType _requestType = RequestType.image;
   late Completer<List<GalleryAsset>> _selectionTask;
-  final GlobalKey slidablePanelKey = GlobalKey();
-  final SlidablePanelController slidablePanelController = SlidablePanelController();
+  final GlobalKey slideSheetKey = GlobalKey();
+  final SlideSheetController slideSheetController = SlideSheetController();
   final AlbumListController albumListController = AlbumListController();
-  GallerySetting _setting = const GallerySetting();
 
-  GallerySetting get setting => _setting;
-  SlidablePanelSetting get slidablePanelSetting => setting.slidablePanelSetting;
-  bool get isFullScreenMode => slidablePanelKey.currentState == null;
-  bool get reachedMaximumLimit => value.selectedAssets.length == setting.maxCount;
-  bool get singleSelection => setting.maxCount == 1;
+  bool get isFullScreenMode => slideSheetKey.currentState == null;
+  bool get reachedMaximumLimit => value.selectedAssets.length == _maxCount;
+  bool get singleSelection => _maxCount == 1;
 
-  void updateSetting(GallerySetting? setting) {
-    _setting = setting ?? const GallerySetting();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (this.setting.selectedAssets.isNotEmpty) {
-        value = value.copyWith(selectedAssets: this.setting.selectedAssets);
-      }
-    });
-  }
-
-  void toggleAlbumListVisibility() {
-    value = value.copyWith(isAlbumVisible: !value.isAlbumVisible);
-    slidablePanelController.gestureEnabled = !value.isAlbumVisible;
-  }
-
-  void select(GalleryAsset asset) {
-    if (singleSelection) {
-      setting.onChanged?.call(asset, removed: false);
-      value = value.copyWith(selectedAssets: [asset]);
-      return;
-    }
-
-    final assets = List.of(value.selectedAssets);
-    final isSelected = assets.contains(asset);
-    if (isSelected) {
-      assets.remove(asset);
-      setting.onChanged?.call(asset, removed: isSelected);
-      value = value.copyWith(selectedAssets: assets);
-    } else if (!reachedMaximumLimit) {
-      assets.add(asset);
-      setting.onChanged?.call(asset, removed: isSelected);
-      value = value.copyWith(selectedAssets: assets);
-    }
-
-    if (reachedMaximumLimit) {
-      return setting.onReachMaximum?.call();
-    }
-  }
-
-  void clearSelection() {
-    value = value.copyWith(selectedAssets: []);
+  Future<List<GalleryAsset>> startSelection({required int? maxCount, required RequestType? requestType}) async {
+    this._maxCount = maxCount;
+    this._requestType = requestType ?? RequestType.image;
+    _selectionTask = Completer<List<GalleryAsset>>();
+    return _selectionTask.future;
   }
 
   List<GalleryAsset> completeSelection() {
@@ -71,50 +36,44 @@ class GalleryController extends ValueNotifier<GalleryValue> {
     return assets;
   }
 
-  Future<List<GalleryAsset>> open(BuildContext context) async {
-    _selectionTask = Completer<List<GalleryAsset>>();
-
-    if (isFullScreenMode) {
-      NavigatorUtils.of(context)
-          .push(SlidingPageRoute(child: GalleryPage(controller: this)))
-          .then((value) => SystemUtils.showStatusBar());
-    } else {
-      FocusScope.of(context).unfocus();
-      slidablePanelController.open();
-    }
-
-    return _selectionTask.future;
+  void clearSelection() {
+    value = value.copyWith(selectedAssets: []);
   }
 
-  Future<GalleryAsset?> openCamera(BuildContext context) async {
-    final navigator = NavigatorUtils.of(context);
+  void toggleAlbumListVisibility() {
+    value = value.copyWith(isAlbumVisible: !value.isAlbumVisible);
+    slideSheetController.gestureEnabled = !value.isAlbumVisible;
+  }
 
-    final cameraRoute = SlidingPageRoute<List<GalleryAsset>>(
-      child: CameraPage(
-        controller: XCameraController(),
-        setting: setting.cameraSetting,
-      ),
-      setting: const SlidingRouteSettings(
-        start: TransitionFrom.bottomToTop,
-        reverse: TransitionFrom.topToBottom,
-      ),
-    );
+  void fetchAlbums() {
+    albumListController.fetchAlbums(_requestType);
+  }
 
-    final assets = await navigator.push(cameraRoute);
-    await SystemUtils.showStatusBar();
-
-    if (assets?.isNotEmpty == true) {
-      final asset = assets!.first;
-      select(asset);
-      return asset;
+  void select(GalleryAsset asset) {
+    if (singleSelection) {
+      value = value.copyWith(selectedAssets: [asset]);
+      return;
     }
-    return null;
+
+    final assets = List.of(value.selectedAssets);
+    final isSelected = assets.contains(asset);
+    if (isSelected) {
+      assets.remove(asset);
+      value = value.copyWith(selectedAssets: assets);
+    } else if (!reachedMaximumLimit) {
+      assets.add(asset);
+      value = value.copyWith(selectedAssets: assets);
+    }
+
+    if (reachedMaximumLimit) {
+      return GalleryManager.config.onReachMaximum?.call();
+    }
   }
 
   @override
   void dispose() {
-    albumListController.dispose();
-    slidablePanelController.dispose();
     super.dispose();
+    albumListController.dispose();
+    slideSheetController.dispose();
   }
 }

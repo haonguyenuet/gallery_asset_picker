@@ -1,38 +1,38 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
-import 'package:gallery_asset_picker/settings/slidable_panel_setting.dart';
-import 'package:gallery_asset_picker/widgets/slidable_panel/builder/slidable_panel_value_builder.dart';
+import 'package:gallery_asset_picker/configs/slide_sheet_config.dart';
+import 'package:gallery_asset_picker/widgets/slide_sheet/builder/slide_sheet_value_builder.dart';
 
-part 'slidable_panel_controller.dart';
-part 'slidable_panel_status.dart';
-part 'slidable_panel_value.dart';
+part 'slide_sheet_controller.dart';
+part 'slide_sheet_status.dart';
+part 'slide_sheet_value.dart';
 
-class SlidablePanel extends StatefulWidget {
-  const SlidablePanel({
+class SlideSheet extends StatefulWidget {
+  const SlideSheet({
     Key? key,
-    this.setting,
+    this.config,
     this.listener,
     required this.controller,
     required this.child,
   }) : super(key: key);
 
   final Widget child;
-  final SlidablePanelController controller;
-  final SlidablePanelSetting? setting;
-  final Function(BuildContext context, SlidablePanelValue value)? listener;
+  final SlideSheetController controller;
+  final SlideSheetConfig? config;
+  final Function(BuildContext context, SlideSheetValue value)? listener;
 
   @override
-  _SlidablePanelState createState() => _SlidablePanelState();
+  _SlideSheetState createState() => _SlideSheetState();
 }
 
-class _SlidablePanelState extends State<SlidablePanel> with TickerProviderStateMixin {
+class _SlideSheetState extends State<SlideSheet> with TickerProviderStateMixin {
   late Size _size;
   late double _minHeight;
   late double _maxHeight;
   late double _remainingHeight;
-  late SlidablePanelSetting _setting;
-  late SlidablePanelController _controller;
+  late SlideSheetConfig _option;
+  late SlideSheetController _controller;
   late ScrollController _scrollController;
   late AnimationController _animationController;
 
@@ -52,12 +52,12 @@ class _SlidablePanelState extends State<SlidablePanel> with TickerProviderStateM
   bool _scrollToTop = false;
 
   // true, if pointer is above halfway of the screen, false otherwise.
-  bool get _aboveHalfWay => _controller.value.factor > (_setting.snapingPoint);
+  bool get _aboveHalfWay => _controller.value.factor > (_option.snapingPoint);
 
   @override
   void initState() {
     super.initState();
-    _setting = widget.setting ?? const SlidablePanelSetting();
+    _option = widget.config ?? const SlideSheetConfig();
     _controller = widget.controller.._init(this);
     _scrollController = _controller.scrollController;
     _animationController = AnimationController(
@@ -70,10 +70,10 @@ class _SlidablePanelState extends State<SlidablePanel> with TickerProviderStateM
   }
 
   @override
-  void didUpdateWidget(covariant SlidablePanel oldWidget) {
+  void didUpdateWidget(covariant SlideSheet oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.setting != widget.setting) {
-      _setting = widget.setting ?? const SlidablePanelSetting();
+    if (oldWidget.config != widget.config) {
+      _option = widget.config ?? const SlideSheetConfig();
     }
   }
 
@@ -94,9 +94,9 @@ class _SlidablePanelState extends State<SlidablePanel> with TickerProviderStateM
 
   void _animationListener() {
     _controller.updateValue(
-      SlidablePanelValue(
+      SlideSheetValue(
         factor: _animationController.value,
-        status: _aboveHalfWay ? SlidablePanelStatus.expanded : SlidablePanelStatus.collapsed,
+        status: _aboveHalfWay ? SlideSheetStatus.expanded : SlideSheetStatus.collapsed,
       ),
     );
   }
@@ -111,20 +111,19 @@ class _SlidablePanelState extends State<SlidablePanel> with TickerProviderStateM
 
     _velocityTracker?.addPosition(pointer.timeStamp, pointer.position);
 
-    final currStatus = _pointerPositionInitial.dy - pointer.position.dy < 0.0
-        ? SlidablePanelStatus.reverse
-        : SlidablePanelStatus.forward;
+    final currStatus =
+        _pointerPositionInitial.dy - pointer.position.dy < 0.0 ? SlideSheetStatus.reverse : SlideSheetStatus.forward;
     final preStatus = _controller.value.status;
 
-    if (!_scrollToTop && preStatus == SlidablePanelStatus.collapsed && currStatus == SlidablePanelStatus.forward) {
+    if (!_scrollToTop && preStatus == SlideSheetStatus.collapsed && currStatus == SlideSheetStatus.forward) {
       _scrollToTop = (_size.height - pointer.position.dy) < _minHeight;
     }
 
-    if (!_scrollToBottom && preStatus == SlidablePanelStatus.expanded && currStatus == SlidablePanelStatus.reverse) {
+    if (!_scrollToBottom && preStatus == SlideSheetStatus.expanded && currStatus == SlideSheetStatus.reverse) {
       final atTopEdge = _scrollController.hasClients && _scrollController.offset == 0;
 
       final headerStartPosition = _size.height - _maxHeight;
-      final headerEndPosition = headerStartPosition + _setting.headerHeight;
+      final headerEndPosition = headerStartPosition + _option.headerHeight;
       final isHandler = pointer.position.dy >= headerStartPosition && pointer.position.dy <= headerEndPosition;
       _scrollToBottom = isHandler || atTopEdge;
       if (_scrollToBottom) {
@@ -134,14 +133,14 @@ class _SlidablePanelState extends State<SlidablePanel> with TickerProviderStateM
 
     if (_scrollToTop || _scrollToBottom) {
       final startingOffset =
-          pointer.position.dy - (_scrollToTop ? _setting.handleBarHeight : _pointerPositionBeforeScrollToMin.dy);
+          pointer.position.dy - (_scrollToTop ? _option.handleBarHeight : _pointerPositionBeforeScrollToMin.dy);
       final num remainingOffset = (_remainingHeight - startingOffset).clamp(0.0, _remainingHeight);
       final num factor = (remainingOffset / _remainingHeight).clamp(0.0, 1.0);
       _snapWithPosition(factor as double, currStatus);
     }
 
-    if (!_scrollToBottom && preStatus == SlidablePanelStatus.collapsed && currStatus == SlidablePanelStatus.reverse) {
-      if (pointer.position.dy - _pointerPositionInitial.dy > _setting.headerHeight) {
+    if (!_scrollToBottom && preStatus == SlideSheetStatus.collapsed && currStatus == SlideSheetStatus.reverse) {
+      if (pointer.position.dy - _pointerPositionInitial.dy > _option.headerHeight) {
         return _controller.close();
       }
     }
@@ -170,9 +169,9 @@ class _SlidablePanelState extends State<SlidablePanel> with TickerProviderStateM
     return (dyCurrent.abs() - _pointerPositionInitial.dy.abs()).abs() > 2.0;
   }
 
-  void _snapWithPosition(double factor, SlidablePanelStatus state) {
+  void _snapWithPosition(double factor, SlideSheetStatus state) {
     _controller.updateValue(
-      SlidablePanelValue(
+      SlideSheetValue(
         factor: factor,
         status: state,
       ),
@@ -196,11 +195,11 @@ class _SlidablePanelState extends State<SlidablePanel> with TickerProviderStateM
         final mediaQuery = MediaQuery.of(context);
 
         _size = constraints.biggest;
-        _maxHeight = _setting.maxHeight ?? _size.height - mediaQuery.padding.top;
-        _minHeight = _setting.minHeight ?? _maxHeight * 0.4;
+        _maxHeight = _option.maxHeight ?? _size.height - mediaQuery.padding.top;
+        _minHeight = _option.minHeight ?? _maxHeight * 0.4;
         _remainingHeight = _maxHeight - _minHeight;
 
-        return SlidablePanelValueBuilder(
+        return SlideSheetValueBuilder(
           controller: _controller,
           builder: (context, value) {
             return AnimatedSwitcher(

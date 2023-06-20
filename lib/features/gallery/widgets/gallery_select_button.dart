@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/gallery_asset_picker.dart';
+import 'package:gallery_asset_picker/features/gallery/gallery.dart';
 import 'package:gallery_asset_picker/utils/utils.dart';
-import 'package:gallery_asset_picker/widgets/common_button.dart';
+import 'package:gallery_asset_picker/widgets/widgets.dart';
 
 class GallerySelectButton extends StatefulWidget {
-  const GallerySelectButton({Key? key, required this.galleryController}) : super(key: key);
-
-  final GalleryController galleryController;
+  const GallerySelectButton({Key? key}) : super(key: key);
 
   @override
   GallerySelectButtonState createState() => GallerySelectButtonState();
@@ -21,7 +19,7 @@ class GallerySelectButtonState extends State<GallerySelectButton> with TickerPro
   void initState() {
     super.initState();
     const duration = Duration(milliseconds: 300);
-    _galleryController = widget.galleryController;
+    _galleryController = GalleryManager.controller;
     _galleryController.addListener(_galleryListener);
     _opacityController = AnimationController(vsync: this, duration: duration);
     _opacity = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _opacityController, curve: Curves.easeIn));
@@ -48,7 +46,7 @@ class GallerySelectButtonState extends State<GallerySelectButton> with TickerPro
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = _galleryController.setting.colorScheme;
+    final colorScheme = GalleryManager.config.colorScheme;
     return GalleryBuilder(
       controller: _galleryController,
       builder: (context, gallery) {
@@ -69,7 +67,7 @@ class GallerySelectButtonState extends State<GallerySelectButton> with TickerPro
                 if (_galleryController.isFullScreenMode) {
                   NavigatorUtils.of(context).pop();
                 } else {
-                  _galleryController.slidablePanelController.close();
+                  _galleryController.slideSheetController.close();
                 }
               },
             ),

@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_asset_picker/features/gallery/gallery.dart';
-import 'package:gallery_asset_picker/widgets/slidable_panel/builder/slidable_panel_value_builder.dart';
+import 'package:gallery_asset_picker/utils/utils.dart';
 import 'package:gallery_asset_picker/widgets/widgets.dart';
 
 class GalleryHeader extends StatelessWidget {
@@ -11,30 +11,29 @@ class GalleryHeader extends StatelessWidget {
     Key? key,
     required this.onClose,
     required this.onAlbumListToggle,
-    required this.galleryController,
   }) : super(key: key);
 
   final Function() onClose;
   final Function() onAlbumListToggle;
-  final GalleryController galleryController;
 
-  ColorScheme? get colorScheme => galleryController.setting.colorScheme;
-  TextTheme get textTheme => galleryController.setting.textTheme;
+  GalleryController get galleryController => GalleryManager.controller;
+  ColorScheme get colorScheme => GalleryManager.config.colorScheme;
+  TextTheme get textTheme => GalleryManager.config.textTheme;
 
   @override
   Widget build(BuildContext context) {
-    return SlidablePanelValueBuilder(
-      controller: galleryController.slidablePanelController,
+    return SlideSheetValueBuilder(
+      controller: galleryController.slideSheetController,
       builder: (context, value) {
         return Container(
           width: MediaQuery.of(context).size.width,
           constraints: BoxConstraints(
-            minHeight: galleryController.slidablePanelSetting.toolbarHeight,
-            maxHeight: galleryController.slidablePanelSetting.headerHeight,
+            minHeight: GalleryManager.config.slideSheetConfig.toolbarHeight,
+            maxHeight: GalleryManager.config.slideSheetConfig.headerHeight,
           ),
           decoration: BoxDecoration(
-            color: colorScheme?.surface ?? Colors.black,
-            boxShadow: value.status == SlidablePanelStatus.expanded || galleryController.isFullScreenMode
+            color: colorScheme.surface,
+            boxShadow: value.status == SlideSheetStatus.expanded || galleryController.isFullScreenMode
                 ? []
                 : [BoxShadow(offset: const Offset(0, -1), color: Colors.grey.shade100, blurRadius: 1, spreadRadius: 1)],
           ),
@@ -67,7 +66,7 @@ class GalleryHeader extends StatelessWidget {
   Widget _buildHandleBar() {
     if (galleryController.isFullScreenMode) return const SizedBox();
     return SizedBox(
-      height: galleryController.slidablePanelSetting.handleBarHeight,
+      height: GalleryManager.config.slideSheetConfig.handleBarHeight,
       child: Center(
         child: ClipRRect(
           borderRadius: BorderRadius.circular(4),
@@ -125,7 +124,7 @@ class GalleryHeader extends StatelessWidget {
           final accessCount = gallery.selectedAssets.length;
           return Text(
             '$accessCount Selected',
-            style: textTheme.titleMedium?.copyWith(color: colorScheme?.onSurface ?? Colors.white),
+            style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface),
           );
         }
 
@@ -139,9 +138,9 @@ class GalleryHeader extends StatelessWidget {
               isAlbumVisible
                   ? 'Select album'
                   : isAll
-                      ? galleryController.setting.albumTitle
+                      ? GalleryManager.config.albumTitle
                       : currentAlbumController?.value.assetPathEntity?.name ?? 'Unknown',
-              style: textTheme.titleMedium?.copyWith(color: colorScheme?.onSurface ?? Colors.white),
+              style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface),
             );
           },
         );
@@ -165,11 +164,7 @@ class GalleryHeader extends StatelessWidget {
             child: CupertinoButton(
               minSize: 0,
               padding: const EdgeInsets.all(6),
-              child: Icon(
-                CupertinoIcons.chevron_down,
-                size: 18,
-                color: colorScheme?.onSurface ?? Colors.grey.shade700,
-              ),
+              child: Icon(CupertinoIcons.chevron_down, size: 18, color: colorScheme.onSurface),
               onPressed: onAlbumListToggle,
             ),
           ),

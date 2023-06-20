@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gallery_asset_picker/gallery_asset_picker.dart';
-import 'package:gallery_asset_picker/widgets/slidable_panel/builder/slidable_panel_value_builder.dart';
+import 'package:gallery_asset_picker/widgets/slide_sheet/builder/slide_sheet_value_builder.dart';
 
 class SlidablePage extends StatefulWidget {
   const SlidablePage({Key? key}) : super(key: key);
@@ -11,33 +10,8 @@ class SlidablePage extends StatefulWidget {
 }
 
 class _SlidablePageState extends State<SlidablePage> {
-  late final GalleryController galleryController;
+  late final GalleryController galleryController = GalleryController();
   List<GalleryAsset> selectedAssets = [];
-
-  @override
-  void initState() {
-    super.initState();
-    galleryController = GalleryController(
-      settings: GallerySetting(
-        enableCamera: true,
-        crossAxisCount: 3,
-        maxCount: 3,
-        requestType: RequestType.image,
-        colorScheme: const ColorScheme.light(
-          primary: Colors.blue,
-        ),
-        onReachMaximum: () {
-          Fluttertoast.showToast(
-            msg: "You have reached the allowed number of images",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            textColor: Colors.white,
-            fontSize: 16.0,
-          );
-        },
-      ),
-    );
-  }
 
   @override
   void dispose() {
@@ -80,8 +54,8 @@ class _SlidablePageState extends State<SlidablePage> {
                       },
                     ),
             ),
-            SlidablePanelValueBuilder(
-              controller: galleryController.slidablePanelController,
+            SlideSheetValueBuilder(
+              controller: galleryController.slideSheetController,
               builder: (context, value) {
                 return Padding(
                   padding: EdgeInsets.only(bottom: value.visible ? 8 : 8 + MediaQuery.of(context).padding.bottom),
@@ -91,7 +65,11 @@ class _SlidablePageState extends State<SlidablePage> {
                       InkWell(
                         onTap: () async {
                           // ignore: no_leading_underscores_for_local_identifiers
-                          final _selectedAssets = await galleryController.open(context);
+                          final _selectedAssets = await GalleryAssetPicker.pick(
+                            context,
+                            maxCount: 5,
+                            requestType: RequestType.image,
+                          );
                           if (_selectedAssets.isNotEmpty) {
                             setState(() {
                               selectedAssets = _selectedAssets;

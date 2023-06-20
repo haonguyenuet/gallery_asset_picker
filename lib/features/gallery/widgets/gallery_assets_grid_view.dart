@@ -2,19 +2,21 @@ import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/features/gallery/enums/fetch_state.dart';
-import 'package:gallery_asset_picker/gallery_asset_picker.dart';
-import 'package:gallery_asset_picker/utils/const.dart';
+import 'package:gallery_asset_picker/entities/gallery_asset.dart';
+import 'package:gallery_asset_picker/features/camera/camera.dart';
+import 'package:gallery_asset_picker/features/gallery/gallery.dart';
+import 'package:gallery_asset_picker/utils/utils.dart';
 import 'package:gallery_asset_picker/widgets/widgets.dart';
+import 'package:photo_manager/photo_manager.dart';
 
 class GalleryAssetsGridView extends StatelessWidget {
   const GalleryAssetsGridView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final galleryController = context.galleryController;
-    final colorScheme = galleryController.setting.colorScheme;
-    final textTheme = galleryController.setting.textTheme;
+    final galleryController = GalleryManager.controller;
+    final colorScheme = GalleryManager.config.colorScheme;
+    final textTheme = GalleryManager.config.textTheme;
     return ColoredBox(
       color: colorScheme.background,
       child: AlbumListBuilder(
@@ -28,7 +30,7 @@ class GalleryAssetsGridView extends StatelessWidget {
                 return GalleryPermissionView(
                   onRefresh: () {
                     if (currentAlbum.assetPathEntity == null) {
-                      galleryController.albumListController.fetchAlbums(galleryController.setting.requestType);
+                      galleryController.fetchAlbums();
                     } else {
                       albumList.currentAlbumController!.fetchAssets();
                     }
@@ -55,7 +57,7 @@ class GalleryAssetsGridView extends StatelessWidget {
               }
 
               final assets = currentAlbum.assets;
-              final enableCamera = galleryController.setting.enableCamera;
+              final enableCamera = GalleryManager.config.enableCamera;
 
               final itemCount = galleryController.albumListController.value.fetchStatus == FetchStatus.fetching
                   ? 20
@@ -68,9 +70,9 @@ class GalleryAssetsGridView extends StatelessWidget {
                 scrollOffset: MediaQuery.of(context).size.height * 0.4,
                 child: GridView.builder(
                   physics: const ClampingScrollPhysics(),
-                  controller: galleryController.slidablePanelController.scrollController,
+                  controller: galleryController.slideSheetController.scrollController,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: galleryController.setting.crossAxisCount,
+                    crossAxisCount: GalleryManager.config.crossAxisCount,
                     crossAxisSpacing: 1,
                     mainAxisSpacing: 1,
                   ),
@@ -110,17 +112,33 @@ class _CameraTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final galleryController = context.galleryController;
     return Container(
       color: Colors.black,
       child: InkWell(
         child: const Icon(CupertinoIcons.camera, color: Colors.white, size: 24),
         onTap: () async {
-          final asset = await galleryController.openCamera(context);
+          final asset = await openCamera(context);
           if (asset != null) albumController.insert(asset);
         },
       ),
     );
+  }
+
+  Future<GalleryAsset?> openCamera(BuildContext context) async {
+    final cameraRoute = SlidingPageRoute<List<GalleryAsset>>(
+      child: CameraPage(controller: XCameraController()),
+      setting: const SlidingRouteSettings(start: TransitionFrom.bottomToTop, reverse: TransitionFrom.topToBottom),
+    );
+
+    final assets = await NavigatorUtils.of(context).push(cameraRoute);
+    await SystemUtils.showStatusBar();
+
+    if (assets?.isNotEmpty == true) {
+      final asset = assets!.first;
+      GalleryManager.controller.select(asset);
+      return asset;
+    }
+    return null;
   }
 }
 
@@ -132,12 +150,11 @@ class _AssetTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final galleryController = context.galleryController;
     Uint8List? bytes;
     return InkWell(
       onTap: () {
         final pickedAsset = asset.toGalleryAsset.copyWith(pickedThumbData: bytes);
-        galleryController.select(pickedAsset);
+        GalleryManager.controller.select(pickedAsset);
       },
       child: Stack(
         fit: StackFit.expand,
@@ -157,9 +174,9 @@ class _SelectionCount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final galleryController = context.galleryController;
-    final colorScheme = context.galleryController.setting.colorScheme;
-    final textTheme = context.galleryController.setting.textTheme;
+    final galleryController = GalleryManager.controller;
+    final colorScheme = GalleryManager.config.colorScheme;
+    final textTheme = GalleryManager.config.textTheme;
 
     return GalleryBuilder(
       controller: galleryController,
@@ -167,7 +184,7 @@ class _SelectionCount extends StatelessWidget {
         final singleSelection = galleryController.singleSelection;
         final isSelected = gallery.selectedAssets.contains(asset);
         final index = gallery.selectedAssets.indexOf(asset.toGalleryAsset);
-        final ratio = 3 / galleryController.setting.crossAxisCount;
+        final ratio = 3 / GalleryManager.config.crossAxisCount;
 
         Widget counter = const SizedBox();
         if (isSelected) {

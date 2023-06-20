@@ -8,3 +8,4 @@ export 'gallery_controller_provider.dart';
 export 'gallery_header.dart';
 export 'gallery_select_button.dart';
 export 'gallery_view.dart';
+export 'slidable_gallery_overlay.dart';

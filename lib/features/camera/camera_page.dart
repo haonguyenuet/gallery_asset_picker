@@ -9,17 +9,15 @@ import 'package:gallery_asset_picker/features/camera/widgets/camera_flash_button
 import 'package:gallery_asset_picker/features/camera/widgets/camera_rotate_button.dart';
 import 'package:gallery_asset_picker/features/camera/widgets/camera_shutter_button.dart';
 import 'package:gallery_asset_picker/features/camera/widgets/raw_camera_view.dart';
-import 'package:gallery_asset_picker/settings/camera_setting.dart';
 import 'package:gallery_asset_picker/utils/system_utils.dart';
 import 'package:gallery_asset_picker/widgets/gallery_permission_view.dart';
 
 const Duration _kRouteDuration = Duration(milliseconds: 300);
 
 class CameraPage extends StatefulWidget {
-  const CameraPage({Key? key, required this.controller, required this.setting}) : super(key: key);
+  const CameraPage({Key? key, required this.controller}) : super(key: key);
 
   final XCameraController controller;
-  final CameraSetting setting;
 
   @override
   State<CameraPage> createState() => _CameraPageState();
@@ -33,16 +31,16 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver, Ti
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     SystemUtils.hideStatusBar();
-    _controller = widget.controller..updateSetting(setting: widget.setting);
+    _controller = widget.controller;
     Future.delayed(_kRouteDuration, _controller.createCamera);
   }
 
   @override
   void didUpdateWidget(covariant CameraPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.controller != widget.controller && oldWidget.setting != widget.setting) {
+    if (oldWidget.controller != widget.controller) {
       SystemUtils.hideStatusBar();
-      _controller = widget.controller..updateSetting(setting: widget.setting);
+      _controller = widget.controller;
       _controller.createCamera();
     }
   }

@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:gallery_asset_picker/settings/slidable_panel_setting.dart';
+import 'package:gallery_asset_picker/configs/configs.dart';
 
-class SlidablePanelSafeBuilder extends StatefulWidget {
-  const SlidablePanelSafeBuilder({
+class SlideSheetSafeSize extends StatefulWidget {
+  const SlideSheetSafeSize({
     Key? key,
-    required this.setting,
+    required this.config,
     required this.builder,
   }) : super(key: key);
 
-  final SlidablePanelSetting? setting;
-  final Widget Function(SlidablePanelSetting panelSetting) builder;
+  final SlideSheetConfig? config;
+  final Widget Function(SlideSheetConfig safeConfig) builder;
 
   @override
-  State<SlidablePanelSafeBuilder> createState() => _SlidablePanelSafeBuilderState();
+  State<SlideSheetSafeSize> createState() => _SlideSheetSafeSizeState();
 }
 
-class _SlidablePanelSafeBuilderState extends State<SlidablePanelSafeBuilder> {
+class _SlideSheetSafeSizeState extends State<SlideSheetSafeSize> {
   double _keyboardHeight = 0;
   double _lastBottomInset = 0;
 
@@ -26,16 +26,13 @@ class _SlidablePanelSafeBuilderState extends State<SlidablePanelSafeBuilder> {
         final mediaQuery = MediaQuery.of(context);
         final size = constraints.biggest;
         final isFullScreen = size.height == mediaQuery.size.height;
-        final panelSetting = widget.setting ?? const SlidablePanelSetting();
+        final panelConfig = widget.config ?? const SlideSheetConfig();
         _calcKeyboardHeight();
 
-        final _maxHeight = panelSetting.maxHeight ?? size.height - (isFullScreen ? mediaQuery.padding.top : 0);
+        final _maxHeight = panelConfig.maxHeight ?? size.height - (isFullScreen ? mediaQuery.padding.top : 0);
         final _minHeight = _keyboardHeight > 0 ? _keyboardHeight : _maxHeight * 0.4;
-        final _setting = panelSetting.copyWith(
-          maxHeight: _maxHeight,
-          minHeight: _minHeight,
-        );
-        return widget.builder(_setting);
+        final _config = panelConfig.copyWith(maxHeight: _maxHeight, minHeight: _minHeight);
+        return widget.builder(_config);
       },
     );
   }

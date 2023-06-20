@@ -2,17 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gallery_asset_picker/gallery_asset_picker.dart';
+import 'package:gallery_asset_picker/features/gallery/gallery.dart';
 import 'package:gallery_asset_picker/utils/utils.dart';
-import 'package:gallery_asset_picker/widgets/slidable_panel/builder/slidable_panel_value_builder.dart';
 import 'package:gallery_asset_picker/widgets/widgets.dart';
 
 /// [GalleryView] is main ui of package
 class GalleryView extends StatefulWidget {
-  const GalleryView({Key? key, required this.controller, required this.setting}) : super(key: key);
-
-  final GalleryController controller;
-  final GallerySetting setting;
+  const GalleryView({Key? key}) : super(key: key);
 
   @override
   State<GalleryView> createState() => _GalleryViewState();
@@ -23,18 +19,11 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
   late final AnimationController _animationController;
   late final Animation<double> _animation;
 
-  SlidablePanelSetting get _slidablePanelSetting => _gallarySetting.slidablePanelSetting;
-  GallerySetting get _gallarySetting => widget.setting;
-  SlidablePanelController get _slidablePanelController => _galleryController.slidablePanelController;
-  AlbumListController get _albumListController => _galleryController.albumListController;
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _galleryController = widget.controller..updateSetting(_gallarySetting);
-    _albumListController.fetchAlbums(_gallarySetting.requestType);
-
+    _galleryController = GalleryManager.controller..fetchAlbums();
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
@@ -54,7 +43,7 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      _albumListController.refreshCurrentAlbum();
+      _galleryController.albumListController.refreshCurrentAlbum();
     }
   }
 
@@ -62,6 +51,7 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _animationController.dispose();
+    if (_galleryController.isFullScreenMode) _galleryController.dispose();
     super.dispose();
   }
 
@@ -77,7 +67,7 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
 
   void _onAlbumChange(AlbumController albumController) {
     if (_animationController.isAnimating) return;
-    _albumListController.changeCurrentAlbumController(albumController);
+    _galleryController.albumListController.changeCurrentAlbumController(albumController);
     _toggleAlbumList();
   }
 
@@ -87,20 +77,20 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
       _toggleAlbumList();
       return false;
     }
-    if (_galleryController.value.selectedAssets.isNotEmpty && _gallarySetting.closingDialogBuilder != null) {
+    if (_galleryController.value.selectedAssets.isNotEmpty && GalleryManager.config.closingDialogBuilder != null) {
       showDialog(
         context: context,
-        builder: (context) => _gallarySetting.closingDialogBuilder!.call(),
+        builder: (context) => GalleryManager.config.closingDialogBuilder!.call(),
       );
       return false;
     }
     if (_galleryController.isFullScreenMode) {
       NavigatorUtils.of(context).pop();
     } else {
-      if (_slidablePanelController.panelStatus == SlidablePanelStatus.expanded) {
-        _slidablePanelController.collapse();
+      if (_galleryController.slideSheetController.panelStatus == SlideSheetStatus.expanded) {
+        _galleryController.slideSheetController.collapse();
       } else {
-        _slidablePanelController.close();
+        _galleryController.slideSheetController.close();
       }
     }
     return true;
@@ -118,12 +108,12 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
       ],
     );
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: _gallarySetting.overlayStyle,
+      value: GalleryManager.config.overlayStyle,
       child: _galleryController.isFullScreenMode
           ? WillPopScope(
               onWillPop: _onWillClose,
               child: Scaffold(
-                backgroundColor: _gallarySetting.colorScheme.background,
+                backgroundColor: GalleryManager.config.colorScheme.background,
                 body: Padding(
                   padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
                   child: galleryStack,
@@ -137,23 +127,20 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
   Widget _buildHeader() {
     return Align(
       alignment: Alignment.topCenter,
-      child: GalleryHeader(
-        onClose: _onWillClose,
-        onAlbumListToggle: _toggleAlbumList,
-        galleryController: _galleryController,
-      ),
+      child: GalleryHeader(onClose: _onWillClose, onAlbumListToggle: _toggleAlbumList),
     );
   }
 
   Widget _buildAssets() {
-    return SlidablePanelValueBuilder(
-      controller: _slidablePanelController,
+    return SlideSheetValueBuilder(
+      controller: _galleryController.slideSheetController,
       builder: (context, value) {
         // Space to reveal the header in below
         final headerSpace = _galleryController.isFullScreenMode
-            ? _slidablePanelSetting.toolbarHeight
-            : (_slidablePanelSetting.headerHeight * value.factor)
-                .clamp(_slidablePanelSetting.handleBarHeight, _slidablePanelSetting.headerHeight);
+            ? GalleryManager.config.slideSheetConfig.toolbarHeight
+            : (GalleryManager.config.slideSheetConfig.headerHeight * value.factor).clamp(
+                GalleryManager.config.slideSheetConfig.handleBarHeight,
+                GalleryManager.config.slideSheetConfig.headerHeight);
 
         return Padding(
           padding: EdgeInsets.only(top: headerSpace),
@@ -164,9 +151,9 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
   }
 
   Widget _buildSelectButton() {
-    return Align(
+    return const Align(
       alignment: Alignment.bottomCenter,
-      child: GallerySelectButton(galleryController: _galleryController),
+      child: GallerySelectButton(),
     );
   }
 
@@ -174,10 +161,13 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {
+        final maxHeight = _galleryController.isFullScreenMode
+            ? MediaQuery.of(context).size.height
+            : GalleryManager.config.slideSheetConfig.maxHeight!;
         final headerHeight = _galleryController.isFullScreenMode
-            ? _slidablePanelSetting.toolbarHeight
-            : _slidablePanelSetting.headerHeight;
-        final albumHeight = _slidablePanelSetting.maxHeight! - headerHeight;
+            ? GalleryManager.config.slideSheetConfig.toolbarHeight
+            : GalleryManager.config.slideSheetConfig.headerHeight;
+        final albumHeight = maxHeight - headerHeight;
         final offsetY = headerHeight + albumHeight * (1 - _animation.value);
         return Visibility(
           visible: _animation.value > 0.0,
