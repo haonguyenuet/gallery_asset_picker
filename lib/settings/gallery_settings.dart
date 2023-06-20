@@ -26,7 +26,7 @@ class GallerySetting {
       titleSmall: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
     ),
     this.colorScheme = const ColorScheme.light(),
-    this.overlayStyle = SystemUiOverlayStyle.light,
+    this.overlayStyle = SystemUiOverlayStyle.dark,
   });
 
   ///

@@ -28,7 +28,10 @@ class GalleryHeader extends StatelessWidget {
       builder: (context, value) {
         return Container(
           width: MediaQuery.of(context).size.width,
-          height: galleryController.slidablePanelSetting.headerHeight,
+          constraints: BoxConstraints(
+            minHeight: galleryController.slidablePanelSetting.toolbarHeight,
+            maxHeight: galleryController.slidablePanelSetting.headerHeight,
+          ),
           decoration: BoxDecoration(
             color: colorScheme?.surface ?? Colors.black,
             boxShadow: value.status == SlidablePanelStatus.expanded || galleryController.isFullScreenMode
@@ -62,9 +65,7 @@ class GalleryHeader extends StatelessWidget {
   }
 
   Widget _buildHandleBar() {
-    if (galleryController.isFullScreenMode) {
-      return SizedBox(height: galleryController.slidablePanelSetting.handleBarHeight);
-    }
+    if (galleryController.isFullScreenMode) return const SizedBox();
     return SizedBox(
       height: galleryController.slidablePanelSetting.handleBarHeight,
       child: Center(

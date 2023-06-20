@@ -151,7 +151,7 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
       builder: (context, value) {
         // Space to reveal the header in below
         final headerSpace = _galleryController.isFullScreenMode
-            ? _slidablePanelSetting.headerHeight
+            ? _slidablePanelSetting.toolbarHeight
             : (_slidablePanelSetting.headerHeight * value.factor)
                 .clamp(_slidablePanelSetting.handleBarHeight, _slidablePanelSetting.headerHeight);
 
@@ -174,7 +174,11 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {
-        final offsetY = _slidablePanelSetting.headerHeight + _slidablePanelSetting.albumHeight * (1 - _animation.value);
+        final headerHeight = _galleryController.isFullScreenMode
+            ? _slidablePanelSetting.toolbarHeight
+            : _slidablePanelSetting.headerHeight;
+        final albumHeight = _slidablePanelSetting.maxHeight! - headerHeight;
+        final offsetY = headerHeight + albumHeight * (1 - _animation.value);
         return Visibility(
           visible: _animation.value > 0.0,
           child: Transform.translate(
