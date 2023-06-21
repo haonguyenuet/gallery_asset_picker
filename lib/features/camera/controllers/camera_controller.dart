@@ -54,8 +54,8 @@ class XCameraController extends ValueNotifier<XCameraValue> {
     // create camera controller
     _cameraController = CameraController(
       cameraDescription,
-      GalleryManager.config.cameraConfig.resolutionPreset,
-      imageFormatGroup: GalleryManager.config.cameraConfig.imageFormatGroup,
+      GAPManager.cameraConfig.resolutionPreset,
+      imageFormatGroup: GAPManager.cameraConfig.imageFormatGroup,
       enableAudio: false,
     );
     _cameraController!.addListener(() {

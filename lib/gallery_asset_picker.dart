@@ -20,22 +20,22 @@ class GalleryAssetPicker {
   static initialize(GalleryConfig config) {
     if (!_isInitialize) {
       _isInitialize = true;
-      GalleryManager.updateConfig(config);
+      GAPManager.updateConfig(config);
     }
   }
 
   static Future<List<GalleryAsset>> pick(BuildContext context, {int? maxCount, RequestType? requestType}) async {
-    if (GalleryManager.controller.isFullScreenMode) {
+    if (GAPManager.isFullScreenMode) {
       final controller = GalleryController();
-      GalleryManager.updateController(controller);
+      GAPManager.updateController(controller);
       NavigatorUtils.of(context)
           .push(SlidingPageRoute(child: GalleryFullScreenPage(controller: controller)))
           .then((value) => SystemUtils.showStatusBar());
     } else {
       FocusScope.of(context).unfocus();
-      GalleryManager.controller.slideSheetController.open();
+      GAPManager.controller.slideSheetController.open();
     }
 
-    return GalleryManager.controller.startSelection(maxCount: maxCount, requestType: requestType);
+    return GAPManager.controller.startSelection(maxCount: maxCount, requestType: requestType);
   }
 }

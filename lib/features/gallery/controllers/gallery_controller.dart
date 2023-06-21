@@ -18,7 +18,6 @@ class GalleryController extends ValueNotifier<GalleryValue> {
   final SlideSheetController slideSheetController = SlideSheetController();
   final AlbumListController albumListController = AlbumListController();
 
-  bool get isFullScreenMode => slideSheetKey.currentState == null;
   bool get reachedMaximumLimit => value.selectedAssets.length == _maxCount;
   bool get singleSelection => _maxCount == 1;
 
@@ -66,7 +65,7 @@ class GalleryController extends ValueNotifier<GalleryValue> {
     }
 
     if (reachedMaximumLimit) {
-      return GalleryManager.config.onReachMaximum?.call();
+      return GAPManager.config.onReachMaximum?.call();
     }
   }
 

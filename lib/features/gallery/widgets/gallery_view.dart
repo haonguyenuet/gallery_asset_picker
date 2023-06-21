@@ -15,14 +15,12 @@ class GalleryView extends StatefulWidget {
 }
 
 class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStateMixin {
-  late final GalleryController _galleryController;
   late final AnimationController _animationController;
   late final Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
-    _galleryController = GalleryManager.controller;
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
@@ -47,7 +45,7 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
 
   void _toggleAlbumList() {
     if (_animationController.isAnimating) return;
-    _galleryController.toggleAlbumListVisibility();
+    GAPManager.controller.toggleAlbumListVisibility();
     if (_animationController.value == 1.0) {
       _animationController.reverse();
     } else {
@@ -57,30 +55,31 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
 
   void _onAlbumChange(AlbumController albumController) {
     if (_animationController.isAnimating) return;
-    _galleryController.albumListController.changeCurrentAlbumController(albumController);
+    GAPManager.albumListController.changeCurrentAlbumController(albumController);
     _toggleAlbumList();
   }
 
   Future<bool> _onWillClose() async {
     if (_animationController.isAnimating) return false;
-    if (_galleryController.value.isAlbumVisible) {
+    if (GAPManager.controller.value.isAlbumVisible) {
       _toggleAlbumList();
       return false;
     }
-    if (_galleryController.value.selectedAssets.isNotEmpty && GalleryManager.config.closingDialogBuilder != null) {
+    if (GAPManager.controller.value.selectedAssets.isNotEmpty &&
+        GAPManager.config.closingDialogBuilder != null) {
       showDialog(
         context: context,
-        builder: (context) => GalleryManager.config.closingDialogBuilder!.call(),
+        builder: (context) => GAPManager.config.closingDialogBuilder!.call(),
       );
       return false;
     }
-    if (_galleryController.isFullScreenMode) {
+    if (GAPManager.isFullScreenMode) {
       NavigatorUtils.of(context).pop();
     } else {
-      if (_galleryController.slideSheetController.panelStatus == SlideSheetStatus.expanded) {
-        _galleryController.slideSheetController.collapse();
+      if (GAPManager.slideSheetController.panelStatus == SlideSheetStatus.expanded) {
+        GAPManager.slideSheetController.collapse();
       } else {
-        _galleryController.slideSheetController.close();
+        GAPManager.slideSheetController.close();
       }
     }
     return true;
@@ -98,12 +97,12 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
       ],
     );
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: GalleryManager.config.overlayStyle,
-      child: _galleryController.isFullScreenMode
+      value: GAPManager.config.overlayStyle,
+      child: GAPManager.isFullScreenMode
           ? WillPopScope(
               onWillPop: _onWillClose,
               child: Scaffold(
-                backgroundColor: GalleryManager.config.colorScheme.background,
+                backgroundColor: GAPManager.colorScheme.background,
                 body: Padding(
                   padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
                   child: galleryStack,
@@ -123,14 +122,13 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
 
   Widget _buildAssets() {
     return SlideSheetValueBuilder(
-      controller: _galleryController.slideSheetController,
+      controller: GAPManager.slideSheetController,
       builder: (context, value) {
         // Space to reveal the header in below
-        final headerSpace = _galleryController.isFullScreenMode
-            ? GalleryManager.config.slideSheetConfig.toolbarHeight
-            : (GalleryManager.config.slideSheetConfig.headerHeight * value.factor).clamp(
-                GalleryManager.config.slideSheetConfig.handleBarHeight,
-                GalleryManager.config.slideSheetConfig.headerHeight);
+        final headerSpace = GAPManager.isFullScreenMode
+            ? GAPManager.slideSheetConfig.toolbarHeight
+            : (GAPManager.slideSheetConfig.headerHeight * value.factor)
+                .clamp(GAPManager.slideSheetConfig.handleBarHeight, GAPManager.slideSheetConfig.headerHeight);
 
         return Padding(
           padding: EdgeInsets.only(top: headerSpace),
@@ -151,12 +149,12 @@ class _GalleryViewState extends State<GalleryView> with SingleTickerProviderStat
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {
-        final maxHeight = _galleryController.isFullScreenMode
+        final maxHeight = GAPManager.isFullScreenMode
             ? MediaQuery.of(context).size.height
-            : GalleryManager.config.slideSheetConfig.maxHeight!;
-        final headerHeight = _galleryController.isFullScreenMode
-            ? GalleryManager.config.slideSheetConfig.toolbarHeight
-            : GalleryManager.config.slideSheetConfig.headerHeight;
+            : GAPManager.slideSheetConfig.maxHeight!;
+        final headerHeight = GAPManager.isFullScreenMode
+            ? GAPManager.slideSheetConfig.toolbarHeight
+            : GAPManager.slideSheetConfig.headerHeight;
         final albumHeight = maxHeight - headerHeight;
         final offsetY = headerHeight + albumHeight * (1 - _animation.value);
         return Visibility(
