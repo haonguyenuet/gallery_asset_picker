@@ -4,7 +4,7 @@ import 'package:gallery_asset_picker/utils/gallery_manager.dart';
 import 'package:gallery_asset_picker/widgets/widgets.dart';
 
 /// [SlidableGalleryOverlay] will wrap around your page and be slideable
-class SlidableGalleryOverlay extends StatelessWidget {
+class SlidableGalleryOverlay extends StatefulWidget {
   SlidableGalleryOverlay({Key? key, required this.child, required this.controller}) : super(key: key) {
     GalleryManager.updateController(controller);
   }
@@ -13,11 +13,39 @@ class SlidableGalleryOverlay extends StatelessWidget {
   final Widget child;
 
   @override
+  State<SlidableGalleryOverlay> createState() => _SlidableGalleryOverlayState();
+}
+
+class _SlidableGalleryOverlayState extends State<SlidableGalleryOverlay> with WidgetsBindingObserver {
+  late final GalleryController _galleryController;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _galleryController = widget.controller;
+    _galleryController.fetchAlbums();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _galleryController.fetchAlbums();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Material(
-      key: controller.slideSheetKey,
+      key: _galleryController.slideSheetKey,
       child: GalleryControllerProvider(
-        controller: controller,
+        controller: _galleryController,
         child: SlideSheetSafeSize(
           config: GalleryManager.config.slideSheetConfig,
           builder: (safeConfig) {
@@ -41,7 +69,7 @@ class SlidableGalleryOverlay extends StatelessWidget {
     return KeyboardVisibility(
       onVisibleChanged: (isKeyboardVisible) {
         if (isKeyboardVisible) {
-          controller.slideSheetController.close();
+          _galleryController.slideSheetController.close();
         }
       },
       child: Column(
@@ -50,15 +78,16 @@ class SlidableGalleryOverlay extends StatelessWidget {
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () {
-                FocusManager.instance.primaryFocus?.unfocus();
-                controller.slideSheetController.close();
+                final focusScope = FocusScope.of(context);
+                if (focusScope.hasFocus) focusScope.unfocus();
+                _galleryController.slideSheetController.close();
               },
-              child: child,
+              child: widget.child,
             ),
           ),
           // White space for panel min height
           SlideSheetValueBuilder(
-            controller: controller.slideSheetController,
+            controller: _galleryController.slideSheetController,
             builder: (context, value) {
               return SizedBox(
                 height: value.visible
@@ -75,9 +104,9 @@ class SlidableGalleryOverlay extends StatelessWidget {
   Widget _buildGalleryView() {
     return SlideSheet(
       config: GalleryManager.config.slideSheetConfig,
-      controller: controller.slideSheetController,
+      controller: _galleryController.slideSheetController,
       listener: (context, value) {
-        if (!value.visible) controller.clearSelection();
+        if (!value.visible) _galleryController.clearSelection();
       },
       child: const GalleryView(),
     );

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gallery_asset_picker/configs/configs.dart';
 import 'package:gallery_asset_picker/entities/gallery_asset.dart';
 import 'package:gallery_asset_picker/features/features.dart';
+import 'package:gallery_asset_picker/features/gallery/widgets/gallery_full_screen_page.dart';
 import 'package:gallery_asset_picker/utils/utils.dart';
 import 'package:gallery_asset_picker/widgets/widgets.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -25,9 +26,10 @@ class GalleryAssetPicker {
 
   static Future<List<GalleryAsset>> pick(BuildContext context, {int? maxCount, RequestType? requestType}) async {
     if (GalleryManager.controller.isFullScreenMode) {
-      GalleryManager.updateController(GalleryController());
+      final controller = GalleryController();
+      GalleryManager.updateController(controller);
       NavigatorUtils.of(context)
-          .push(SlidingPageRoute(child: const GalleryView()))
+          .push(SlidingPageRoute(child: GalleryFullScreenPage(controller: controller)))
           .then((value) => SystemUtils.showStatusBar());
     } else {
       FocusScope.of(context).unfocus();

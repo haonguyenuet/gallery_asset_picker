@@ -73,7 +73,7 @@ class GalleryHeader extends StatelessWidget {
           child: Container(
             width: 36,
             height: 4,
-            color: Colors.grey.shade700,
+            color: const Color(0xFFCBCBCB),
           ),
         ),
       ),
