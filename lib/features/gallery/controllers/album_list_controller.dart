@@ -9,7 +9,7 @@ import 'package:photo_manager/photo_manager.dart';
 class AlbumListController extends ValueNotifier<AlbumListValue> {
   AlbumListController() : super(AlbumListValue.none());
 
-  Future<List<GalleryAsset>> recentAssets({
+  Future<List<GalleryAsset>> fetchRecentAssets({
     int count = 20,
     RequestType? requestType,
     ValueSetter<Exception>? onException,
@@ -17,9 +17,9 @@ class AlbumListController extends ValueNotifier<AlbumListValue> {
     final state = await PhotoManager.requestPermissionExtend();
     if (state == PermissionState.authorized) {
       try {
-        final albums = await PhotoManager.getAssetPathList(type: requestType ?? RequestType.all);
-        if (albums.isEmpty) return [];
-        final assets = await albums.singleWhere((album) => album.isAll).getAssetListPaged(page: 0, size: count);
+        final albumPaths = await PhotoManager.getAssetPathList(type: requestType ?? RequestType.all);
+        if (albumPaths.isEmpty) return [];
+        final assets = await albumPaths.singleWhere((album) => album.isAll).getAssetListPaged(page: 0, size: count);
         return assets.map((e) => e.toGalleryAsset).toList();
       } catch (e) {
         debugPrint('Exception fetching recent entities => $e');
@@ -36,10 +36,15 @@ class AlbumListController extends ValueNotifier<AlbumListValue> {
     final state = await PhotoManager.requestPermissionExtend();
     if (state == PermissionState.authorized) {
       try {
-        final albums = await PhotoManager.getAssetPathList(type: requestType);
-        final albumControllers = List.generate(albums.length, (index) {
-          return AlbumController(value: AlbumValue(assetPathEntity: albums[index]));
-        });
+        final albumPaths = await PhotoManager.getAssetPathList(type: requestType);
+        final albumControllers = <AlbumController>[];
+        for (final albumPath in albumPaths) {
+          final assetCount = await albumPath.assetCountAsync;
+          final firstAsset = await albumPath.firstAsset;
+          albumControllers.add(AlbumController(
+            value: AlbumValue(path: albumPath, assetCount: assetCount, firstAsset: firstAsset),
+          ));
+        }
         value = value.copyWith(
           fetchStatus: FetchStatus.completed,
           albumControllers: albumControllers,
@@ -71,5 +76,13 @@ class AlbumListController extends ValueNotifier<AlbumListValue> {
 
   void refreshCurrentAlbum() {
     value.currentAlbumController?.fetchAssets(refresh: true);
+  }
+}
+
+extension AssetPathEntityExt on AssetPathEntity {
+  Future<AssetEntity?> get firstAsset async {
+    final assets = await this.getAssetListPaged(page: 0, size: 1);
+    if (assets.isEmpty) return null;
+    return assets.first;
   }
 }

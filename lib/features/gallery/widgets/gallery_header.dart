@@ -133,13 +133,13 @@ class GalleryHeader extends StatelessWidget {
           controller: galleryController.albumListController,
           builder: (context, albumList) {
             final currentAlbumController = albumList.currentAlbumController;
-            final isAll = currentAlbumController?.value.assetPathEntity?.isAll ?? true;
+            final isAll = currentAlbumController?.value.path?.isAll ?? true;
             return Text(
               isAlbumVisible
                   ? 'Select album'
                   : isAll
                       ? GalleryManager.config.albumTitle
-                      : currentAlbumController?.value.assetPathEntity?.name ?? 'Unknown',
+                      : currentAlbumController?.value.path?.name ?? 'Unknown',
               style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface),
             );
           },

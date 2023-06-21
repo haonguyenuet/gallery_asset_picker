@@ -9,14 +9,13 @@ class AlbumController extends ValueNotifier<AlbumValue> {
   final int _pageSize = 30;
   int _pageIndex = 0;
 
-  /// Get assets for the current album
   Future<List<AssetEntity>> fetchAssets({bool refresh = false}) async {
     if (refresh) _pageIndex = 0;
 
     final state = await PhotoManager.requestPermissionExtend();
     if (state == PermissionState.authorized) {
       try {
-        final assets = (await value.assetPathEntity?.getAssetListPaged(page: _pageIndex, size: _pageSize)) ?? [];
+        final assets = (await value.path?.getAssetListPaged(page: _pageIndex, size: _pageSize)) ?? [];
         final updatedAssets = refresh ? assets : [...value.assets, ...assets];
         ++_pageIndex;
         value = value.copyWith(fetchStatus: FetchStatus.completed, assets: updatedAssets);
@@ -30,7 +29,7 @@ class AlbumController extends ValueNotifier<AlbumValue> {
     return value.assets;
   }
 
-  /// Insert asset into album
+
   void insert(AssetEntity asset) {
     if (value.assets.isEmpty) return;
     value = value.copyWith(assets: [asset, ...value.assets]);
