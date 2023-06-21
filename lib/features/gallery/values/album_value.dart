@@ -3,26 +3,34 @@ import 'package:photo_manager/photo_manager.dart';
 
 class AlbumValue {
   const AlbumValue({
-    this.assetPathEntity,
+    this.path,
+    this.firstAsset,
     this.assets = const <AssetEntity>[],
+    this.assetCount = 0,
     this.fetchStatus = FetchStatus.fetching,
     this.error,
   });
 
-  final AssetPathEntity? assetPathEntity;
+  final AssetPathEntity? path;
+  final AssetEntity? firstAsset;
   final List<AssetEntity> assets;
+  final int assetCount;
   final FetchStatus fetchStatus;
   final String? error;
 
   AlbumValue copyWith({
-    AssetPathEntity? assetPathEntity,
+    AssetPathEntity? path,
+    AssetEntity? firstAsset,
     List<AssetEntity>? assets,
+    int? assetCount,
     String? error,
     FetchStatus? fetchStatus,
   }) {
     return AlbumValue(
-      assetPathEntity: assetPathEntity ?? this.assetPathEntity,
+      path: path ?? this.path,
+      firstAsset: firstAsset ?? this.firstAsset,
       assets: assets ?? this.assets,
+      assetCount: assetCount ?? this.assetCount,
       error: error ?? this.error,
       fetchStatus: fetchStatus ?? this.fetchStatus,
     );

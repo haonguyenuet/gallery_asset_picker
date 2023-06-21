@@ -29,7 +29,7 @@ class GalleryAssetsGridView extends StatelessWidget {
               if (currentAlbum.fetchStatus == FetchStatus.unauthorised && currentAlbum.assets.isEmpty) {
                 return GalleryPermissionView(
                   onRefresh: () {
-                    if (currentAlbum.assetPathEntity == null) {
+                    if (currentAlbum.path == null) {
                       galleryController.fetchAlbums();
                     } else {
                       albumList.currentAlbumController!.fetchAssets();
