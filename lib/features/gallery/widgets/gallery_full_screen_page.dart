@@ -11,24 +11,27 @@ class GalleryFullScreenPage extends StatefulWidget {
 }
 
 class _GalleryFullScreenPageState extends State<GalleryFullScreenPage> with WidgetsBindingObserver {
+  late final GalleryController _galleryController;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    widget.controller.fetchAlbums();
+    _galleryController = widget.controller;
+    _galleryController.fetchAlbums();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      widget.controller.fetchAlbums();
+      _galleryController.fetchAlbums();
     }
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    widget.controller.dispose();
+    _galleryController.dispose();
     super.dispose();
   }
 

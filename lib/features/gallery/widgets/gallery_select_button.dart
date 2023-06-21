@@ -11,7 +11,6 @@ class GallerySelectButton extends StatefulWidget {
 }
 
 class GallerySelectButtonState extends State<GallerySelectButton> with TickerProviderStateMixin {
-  late final GalleryController _galleryController;
   late final AnimationController _opacityController;
   late final Animation<double> _opacity;
 
@@ -19,22 +18,21 @@ class GallerySelectButtonState extends State<GallerySelectButton> with TickerPro
   void initState() {
     super.initState();
     const duration = Duration(milliseconds: 300);
-    _galleryController = GalleryManager.controller;
-    _galleryController.addListener(_galleryListener);
+    GAPManager.controller.addListener(_galleryListener);
     _opacityController = AnimationController(vsync: this, duration: duration);
     _opacity = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _opacityController, curve: Curves.easeIn));
   }
 
   @override
   void dispose() {
-    _galleryController.removeListener(_galleryListener);
+    GAPManager.controller.removeListener(_galleryListener);
     _opacityController.dispose();
     super.dispose();
   }
 
   void _galleryListener() {
     if (mounted) {
-      final assets = _galleryController.value.selectedAssets;
+      final assets = GAPManager.controller.value.selectedAssets;
       if (assets.isEmpty) {
         _opacityController.reverse();
       }
@@ -46,9 +44,8 @@ class GallerySelectButtonState extends State<GallerySelectButton> with TickerPro
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = GalleryManager.config.colorScheme;
     return GalleryBuilder(
-      controller: _galleryController,
+      controller: GAPManager.controller,
       builder: (context, gallery) {
         return AnimatedBuilder(
           animation: _opacity,
@@ -61,13 +58,13 @@ class GallerySelectButtonState extends State<GallerySelectButton> with TickerPro
             child: CommonButton(
               label: StringConst.SELECT,
               width: MediaQuery.of(context).size.width,
-              backgroundColor: colorScheme.primary,
+              backgroundColor: GAPManager.colorScheme.primary,
               onPressed: (context) {
-                _galleryController.completeSelection();
-                if (_galleryController.isFullScreenMode) {
+                GAPManager.controller.completeSelection();
+                if (GAPManager.isFullScreenMode) {
                   NavigatorUtils.of(context).pop();
                 } else {
-                  _galleryController.slideSheetController.close();
+                  GAPManager.controller.slideSheetController.close();
                 }
               },
             ),

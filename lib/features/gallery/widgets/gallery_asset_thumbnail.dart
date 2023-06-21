@@ -19,7 +19,6 @@ class AssetThumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = GalleryManager.config.colorScheme;
     Widget child = const SizedBox();
     if (asset.type == AssetType.image || asset.type == AssetType.video) {
       if (asset.pickedThumbData != null) {
@@ -33,11 +32,11 @@ class AssetThumbnail extends StatelessWidget {
     }
 
     if (asset.type == AssetType.audio) {
-      child = Center(child: Icon(Icons.audiotrack, color: colorScheme.onBackground));
+      child = Center(child: Icon(Icons.audiotrack, color: GAPManager.colorScheme.onBackground));
     }
 
     if (asset.type == AssetType.other) {
-      child = Center(child: Icon(Icons.file_copy, color: colorScheme.onBackground));
+      child = Center(child: Icon(Icons.file_copy, color: GAPManager.colorScheme.onBackground));
     }
 
     if (asset.type == AssetType.video || asset.type == AssetType.audio) {

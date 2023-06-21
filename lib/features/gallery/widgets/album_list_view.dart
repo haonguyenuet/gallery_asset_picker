@@ -13,20 +13,17 @@ class AlbumListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = GalleryManager.config.colorScheme;
-    final textTheme = GalleryManager.config.textTheme;
-
     return ColoredBox(
-      color: colorScheme.background,
+      color: GAPManager.colorScheme.background,
       child: AlbumListBuilder(
-        controller: GalleryManager.controller.albumListController,
+        controller: GAPManager.albumListController,
         hidePermissionView: true,
         builder: (context, albumList) {
           if (albumList.albumControllers.isEmpty) {
             return Center(
               child: Text(
                 StringConst.NO_ALBUM_AVAILABLE,
-                style: textTheme.bodyMedium?.copyWith(color: colorScheme.onBackground),
+                style: GAPManager.textTheme.bodyMedium?.copyWith(color: GAPManager.colorScheme.onBackground),
               ),
             );
           }
@@ -65,51 +62,50 @@ class _AlbumTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isAll = album.path?.isAll ?? true;
-    final colorScheme = GalleryManager.config.colorScheme;
-    final textTheme = GalleryManager.config.textTheme;
-
     final assetCount = album.assetCount;
     final firstAsset = album.firstAsset;
     if (assetCount == 0) return const SizedBox();
-    return GestureDetector(
-      onTap: () => onPressed?.call(albumController),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 16, bottom: 20, right: 16),
-        child: Row(
-          children: [
-            Container(
-              height: _imageSize.toDouble(),
-              width: _imageSize.toDouble(),
-              color: colorScheme.brightness == Brightness.light ? Colors.grey.shade300 : Colors.grey.shade700,
-              child: firstAsset != null ? AssetThumbnail(asset: firstAsset.toGalleryAsset) : const SizedBox(),
+    return CupertinoButton(
+      minSize: 0,
+      padding: const EdgeInsets.only(left: 16, bottom: 20, right: 16),
+      pressedOpacity: 0.8,
+      child: Row(
+        children: [
+          Container(
+            height: _imageSize.toDouble(),
+            width: _imageSize.toDouble(),
+            color: GAPManager.colorScheme.brightness == Brightness.light ? Colors.grey.shade300 : Colors.grey.shade700,
+            child: firstAsset != null ? AssetThumbnail(asset: firstAsset.toGalleryAsset) : const SizedBox(),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isAll ? StringConst.ALL_PHOTOS : album.path?.name ?? '',
+                  style: GAPManager.textTheme.titleMedium?.copyWith(color: GAPManager.colorScheme.onBackground),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  assetCount.toString(),
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: GAPManager.colorScheme.brightness == Brightness.light
+                        ? Colors.grey.shade400
+                        : Colors.grey.shade600,
+                  ),
+                ),
+              ],
             ),
+          ),
+          if (isCurrent) ...[
             const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    isAll ? StringConst.ALL_PHOTOS : album.path?.name ?? '',
-                    style: textTheme.titleMedium?.copyWith(color: colorScheme.onBackground),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    assetCount.toString(),
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: colorScheme.brightness == Brightness.light ? Colors.grey.shade400 : Colors.grey.shade600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (isCurrent) ...[
-              const SizedBox(width: 16),
-              Icon(CupertinoIcons.checkmark_alt, color: colorScheme.onBackground),
-            ]
-          ],
-        ),
+            Icon(CupertinoIcons.checkmark_alt, color: GAPManager.colorScheme.onBackground),
+          ]
+        ],
       ),
+      onPressed: () => onPressed?.call(albumController),
     );
   }
 }

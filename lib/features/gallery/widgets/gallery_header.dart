@@ -16,24 +16,20 @@ class GalleryHeader extends StatelessWidget {
   final Function() onClose;
   final Function() onAlbumListToggle;
 
-  GalleryController get galleryController => GalleryManager.controller;
-  ColorScheme get colorScheme => GalleryManager.config.colorScheme;
-  TextTheme get textTheme => GalleryManager.config.textTheme;
-
   @override
   Widget build(BuildContext context) {
     return SlideSheetValueBuilder(
-      controller: galleryController.slideSheetController,
+      controller: GAPManager.slideSheetController,
       builder: (context, value) {
         return Container(
           width: MediaQuery.of(context).size.width,
           constraints: BoxConstraints(
-            minHeight: GalleryManager.config.slideSheetConfig.toolbarHeight,
-            maxHeight: GalleryManager.config.slideSheetConfig.headerHeight,
+            minHeight: GAPManager.config.slideSheetConfig.toolbarHeight,
+            maxHeight: GAPManager.config.slideSheetConfig.headerHeight,
           ),
           decoration: BoxDecoration(
-            color: colorScheme.surface,
-            boxShadow: value.status == SlideSheetStatus.expanded || galleryController.isFullScreenMode
+            color: GAPManager.colorScheme.surface,
+            boxShadow: value.status == SlideSheetStatus.expanded || GAPManager.isFullScreenMode
                 ? []
                 : [BoxShadow(offset: const Offset(0, -1), color: Colors.grey.shade100, blurRadius: 1, spreadRadius: 1)],
           ),
@@ -64,9 +60,9 @@ class GalleryHeader extends StatelessWidget {
   }
 
   Widget _buildHandleBar() {
-    if (galleryController.isFullScreenMode) return const SizedBox();
+    if (GAPManager.isFullScreenMode) return const SizedBox();
     return SizedBox(
-      height: GalleryManager.config.slideSheetConfig.handleBarHeight,
+      height: GAPManager.slideSheetConfig.handleBarHeight,
       child: Center(
         child: ClipRRect(
           borderRadius: BorderRadius.circular(4),
@@ -88,7 +84,7 @@ class GalleryHeader extends StatelessWidget {
         minSize: 0,
         child: Text(
           'Cancel',
-          style: textTheme.titleSmall?.copyWith(color: const Color(0xFF66768E)),
+          style: GAPManager.textTheme.titleSmall?.copyWith(color: const Color(0xFF66768E)),
         ),
         onPressed: onClose,
       ),
@@ -99,7 +95,7 @@ class GalleryHeader extends StatelessWidget {
     return Align(
       alignment: Alignment.centerRight,
       child: GalleryBuilder(
-        controller: galleryController,
+        controller: GAPManager.controller,
         builder: (context, gallery) {
           if (gallery.selectedAssets.isEmpty) return const SizedBox();
           return CupertinoButton(
@@ -107,9 +103,9 @@ class GalleryHeader extends StatelessWidget {
             minSize: 0,
             child: Text(
               'Clear',
-              style: textTheme.titleSmall?.copyWith(color: const Color(0xFFF43F5E)),
+              style: GAPManager.textTheme.titleSmall?.copyWith(color: const Color(0xFFF43F5E)),
             ),
-            onPressed: galleryController.clearSelection,
+            onPressed: GAPManager.controller.clearSelection,
           );
         },
       ),
@@ -118,29 +114,29 @@ class GalleryHeader extends StatelessWidget {
 
   Widget _buildAlbumInfo() {
     return GalleryBuilder(
-      controller: galleryController,
+      controller: GAPManager.controller,
       builder: (context, gallery) {
         if (gallery.selectedAssets.isNotEmpty) {
           final accessCount = gallery.selectedAssets.length;
           return Text(
             '$accessCount Selected',
-            style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface),
+            style: GAPManager.textTheme.titleMedium?.copyWith(color: GAPManager.colorScheme.onSurface),
           );
         }
 
         final isAlbumVisible = gallery.isAlbumVisible;
-        return AlbumListBuilder(
-          controller: galleryController.albumListController,
-          builder: (context, albumList) {
+        return ValueListenableBuilder<AlbumListValue>(
+          valueListenable: GAPManager.albumListController,
+          builder: (context, albumList, child) {
             final currentAlbumController = albumList.currentAlbumController;
             final isAll = currentAlbumController?.value.path?.isAll ?? true;
             return Text(
               isAlbumVisible
                   ? 'Select album'
                   : isAll
-                      ? GalleryManager.config.albumTitle
+                      ? GAPManager.config.albumTitle
                       : currentAlbumController?.value.path?.name ?? 'Unknown',
-              style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface),
+              style: GAPManager.textTheme.titleMedium?.copyWith(color: GAPManager.colorScheme.onSurface),
             );
           },
         );
@@ -150,7 +146,7 @@ class GalleryHeader extends StatelessWidget {
 
   Widget _buildAnimatedDropdownButton() {
     return GalleryBuilder(
-      controller: galleryController,
+      controller: GAPManager.controller,
       builder: (context, gallery) {
         if (gallery.selectedAssets.isNotEmpty) return const SizedBox();
         return TweenAnimationBuilder<double>(
@@ -164,7 +160,7 @@ class GalleryHeader extends StatelessWidget {
             child: CupertinoButton(
               minSize: 0,
               padding: const EdgeInsets.all(6),
-              child: Icon(CupertinoIcons.chevron_down, size: 18, color: colorScheme.onSurface),
+              child: Icon(CupertinoIcons.chevron_down, size: 18, color: GAPManager.colorScheme.onSurface),
               onPressed: onAlbumListToggle,
             ),
           ),

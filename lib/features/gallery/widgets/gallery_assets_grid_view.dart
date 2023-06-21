@@ -14,13 +14,10 @@ class GalleryAssetsGridView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final galleryController = GalleryManager.controller;
-    final colorScheme = GalleryManager.config.colorScheme;
-    final textTheme = GalleryManager.config.textTheme;
     return ColoredBox(
-      color: colorScheme.background,
+      color: GAPManager.colorScheme.background,
       child: AlbumListBuilder(
-        controller: galleryController.albumListController,
+        controller: GAPManager.albumListController,
         builder: (context, albumList) {
           final currentAlbumController = albumList.currentAlbumController ?? AlbumController();
           return AlbumBuilder(
@@ -30,7 +27,7 @@ class GalleryAssetsGridView extends StatelessWidget {
                 return GalleryPermissionView(
                   onRefresh: () {
                     if (currentAlbum.path == null) {
-                      galleryController.fetchAlbums();
+                      GAPManager.controller.fetchAlbums();
                     } else {
                       albumList.currentAlbumController!.fetchAssets();
                     }
@@ -42,7 +39,7 @@ class GalleryAssetsGridView extends StatelessWidget {
                 return Center(
                   child: Text(
                     StringConst.NO_MEDIA_AVAILABLE,
-                    style: textTheme.bodyMedium?.copyWith(color: colorScheme.onBackground),
+                    style: GAPManager.textTheme.bodyMedium?.copyWith(color: GAPManager.colorScheme.onBackground),
                   ),
                 );
               }
@@ -51,15 +48,15 @@ class GalleryAssetsGridView extends StatelessWidget {
                 return Center(
                   child: Text(
                     StringConst.SOMETHING_WRONG,
-                    style: textTheme.bodyMedium?.copyWith(color: colorScheme.onBackground),
+                    style: GAPManager.textTheme.bodyMedium?.copyWith(color: GAPManager.colorScheme.onBackground),
                   ),
                 );
               }
 
               final assets = currentAlbum.assets;
-              final enableCamera = GalleryManager.config.enableCamera;
+              final enableCamera = GAPManager.config.enableCamera;
 
-              final itemCount = galleryController.albumListController.value.fetchStatus == FetchStatus.fetching
+              final itemCount = GAPManager.albumListController.value.fetchStatus == FetchStatus.fetching
                   ? 20
                   : enableCamera
                       ? assets.length + 1
@@ -70,9 +67,9 @@ class GalleryAssetsGridView extends StatelessWidget {
                 scrollOffset: MediaQuery.of(context).size.height * 0.4,
                 child: GridView.builder(
                   physics: const ClampingScrollPhysics(),
-                  controller: galleryController.slideSheetController.scrollController,
+                  controller: GAPManager.slideSheetController.scrollController,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: GalleryManager.config.crossAxisCount,
+                    crossAxisCount: GAPManager.config.crossAxisCount,
                     crossAxisSpacing: 1,
                     mainAxisSpacing: 1,
                   ),
@@ -84,13 +81,13 @@ class GalleryAssetsGridView extends StatelessWidget {
                     }
 
                     final i = enableCamera ? index - 1 : index;
-                    final asset = galleryController.albumListController.value.fetchStatus == FetchStatus.fetching
-                        ? null
-                        : assets[i];
+                    final asset =
+                        GAPManager.albumListController.value.fetchStatus == FetchStatus.fetching ? null : assets[i];
                     if (asset == null) {
                       return Container(
-                          color:
-                              colorScheme.brightness == Brightness.light ? Colors.grey.shade200 : Colors.grey.shade800);
+                          color: GAPManager.colorScheme.brightness == Brightness.light
+                              ? Colors.grey.shade200
+                              : Colors.grey.shade800);
                     }
 
                     return _AssetTile(key: ValueKey(asset.id), asset: asset);
@@ -118,7 +115,8 @@ class _CameraTile extends StatelessWidget {
         child: const Icon(CupertinoIcons.camera, color: Colors.white, size: 24),
         onTap: () async {
           final asset = await openCamera(context);
-          if (asset != null) albumController.insert(asset);
+          GAPManager.albumListController.changeCurrentAlbumControllerToAll();
+          if (asset != null) GAPManager.albumListController.value.currentAlbumController?.insert(asset);
         },
       ),
     );
@@ -135,7 +133,7 @@ class _CameraTile extends StatelessWidget {
 
     if (assets?.isNotEmpty == true) {
       final asset = assets!.first;
-      GalleryManager.controller.select(asset);
+      GAPManager.controller.select(asset);
       return asset;
     }
     return null;
@@ -154,7 +152,7 @@ class _AssetTile extends StatelessWidget {
     return InkWell(
       onTap: () {
         final pickedAsset = asset.toGalleryAsset.copyWith(pickedThumbData: bytes);
-        GalleryManager.controller.select(pickedAsset);
+        GAPManager.controller.select(pickedAsset);
       },
       child: Stack(
         fit: StackFit.expand,
@@ -174,28 +172,24 @@ class _SelectionCount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final galleryController = GalleryManager.controller;
-    final colorScheme = GalleryManager.config.colorScheme;
-    final textTheme = GalleryManager.config.textTheme;
-
     return GalleryBuilder(
-      controller: galleryController,
+      controller: GAPManager.controller,
       builder: (context, gallery) {
-        final singleSelection = galleryController.singleSelection;
+        final singleSelection = GAPManager.controller.singleSelection;
         final isSelected = gallery.selectedAssets.contains(asset);
         final index = gallery.selectedAssets.indexOf(asset.toGalleryAsset);
-        final ratio = 3 / GalleryManager.config.crossAxisCount;
+        final ratio = 3 / GAPManager.config.crossAxisCount;
 
         Widget counter = const SizedBox();
         if (isSelected) {
           counter = CircleAvatar(
-            backgroundColor: colorScheme.primary,
+            backgroundColor: GAPManager.colorScheme.primary,
             radius: 14 * ratio,
             child: singleSelection
                 ? Icon(CupertinoIcons.checkmark_alt, color: Colors.white, size: 24 * ratio)
                 : Text(
                     '${index + 1}',
-                    style: textTheme.titleSmall?.copyWith(color: Colors.white, fontSize: 14 * ratio),
+                    style: GAPManager.textTheme.titleSmall?.copyWith(color: Colors.white, fontSize: 14 * ratio),
                   ),
           );
         }

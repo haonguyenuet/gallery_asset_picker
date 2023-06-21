@@ -6,7 +6,7 @@ import 'package:gallery_asset_picker/widgets/widgets.dart';
 /// [SlidableGalleryOverlay] will wrap around your page and be slideable
 class SlidableGalleryOverlay extends StatefulWidget {
   SlidableGalleryOverlay({Key? key, required this.child, required this.controller}) : super(key: key) {
-    GalleryManager.updateController(controller);
+    GAPManager.updateController(controller);
   }
 
   final GalleryController controller;
@@ -47,9 +47,9 @@ class _SlidableGalleryOverlayState extends State<SlidableGalleryOverlay> with Wi
       child: GalleryControllerProvider(
         controller: _galleryController,
         child: SlideSheetSafeSize(
-          config: GalleryManager.config.slideSheetConfig,
+          config: GAPManager.config.slideSheetConfig,
           builder: (safeConfig) {
-            GalleryManager.updateConfig(GalleryManager.config.copyWith(slideSheetConfig: safeConfig));
+            GAPManager.updateConfig(GAPManager.config.copyWith(slideSheetConfig: safeConfig));
             return Stack(
               fit: StackFit.expand,
               children: [
@@ -65,7 +65,7 @@ class _SlidableGalleryOverlayState extends State<SlidableGalleryOverlay> with Wi
 
   Widget _buildMainView(BuildContext context) {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    final slideSheetConfig = GalleryManager.config.slideSheetConfig;
+    final slideSheetConfig = GAPManager.config.slideSheetConfig;
     return KeyboardVisibility(
       onVisibleChanged: (isKeyboardVisible) {
         if (isKeyboardVisible) {
@@ -103,7 +103,7 @@ class _SlidableGalleryOverlayState extends State<SlidableGalleryOverlay> with Wi
 
   Widget _buildGalleryView() {
     return SlideSheet(
-      config: GalleryManager.config.slideSheetConfig,
+      config: GAPManager.config.slideSheetConfig,
       controller: _galleryController.slideSheetController,
       listener: (context, value) {
         if (!value.visible) _galleryController.clearSelection();

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:gallery_asset_picker/entities/gallery_asset.dart';
 import 'package:gallery_asset_picker/features/gallery/controllers/album_controller.dart';
@@ -72,6 +73,13 @@ class AlbumListController extends ValueNotifier<AlbumListValue> {
   void changeCurrentAlbumController(AlbumController albumController, {bool fetchAssets = true}) {
     value = value.copyWith(currentAlbumController: albumController);
     if (fetchAssets) albumController.fetchAssets();
+  }
+
+  void changeCurrentAlbumControllerToAll() {
+    final allPhotoController = value.albumControllers.firstWhereOrNull((e) => e.value.path?.isAll == true);
+    if (allPhotoController != null) {
+      value = value.copyWith(currentAlbumController: allPhotoController);
+    }
   }
 
   void refreshCurrentAlbum() {

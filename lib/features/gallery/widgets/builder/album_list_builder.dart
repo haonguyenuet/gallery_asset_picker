@@ -19,14 +19,12 @@ class AlbumListBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = GalleryManager.config.colorScheme;
-    final textTheme = GalleryManager.config.textTheme;
     return ValueListenableBuilder<AlbumListValue>(
       valueListenable: controller,
       builder: (context, value, child) {
         if (value.fetchStatus == FetchStatus.unauthorised && value.albumControllers.isEmpty && !hidePermissionView) {
           return GalleryPermissionView(
-            onRefresh: GalleryManager.controller.fetchAlbums,
+            onRefresh: GAPManager.controller.fetchAlbums,
           );
         }
 
@@ -35,7 +33,7 @@ class AlbumListBuilder extends StatelessWidget {
           return Center(
             child: Text(
               StringConst.NO_ALBUM_AVAILABLE,
-              style: textTheme.bodyMedium?.copyWith(color: colorScheme.onBackground),
+              style: GAPManager.textTheme.bodyMedium?.copyWith(color: GAPManager.colorScheme.onBackground),
             ),
           );
         }
@@ -44,7 +42,7 @@ class AlbumListBuilder extends StatelessWidget {
           return Center(
             child: Text(
               StringConst.SOMETHING_WRONG,
-              style: textTheme.bodyMedium?.copyWith(color: colorScheme.onBackground),
+              style: GAPManager.textTheme.bodyMedium?.copyWith(color: GAPManager.colorScheme.onBackground),
             ),
           );
         }
