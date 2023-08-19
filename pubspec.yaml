@@ -16,6 +16,7 @@ dependencies:
   path: ^1.8.1
   photo_manager: ^2.6.0
   uuid: ^3.0.6
+  intl: ^0.18.1
 
 dev_dependencies:
   flutter_test:

@@ -8,8 +8,10 @@ import 'package:gallery_asset_picker/entities/gallery_asset.dart';
 import 'package:gallery_asset_picker/features/camera/camera.dart';
 import 'package:gallery_asset_picker/features/camera/exceptions/camera_exceptions.dart';
 import 'package:gallery_asset_picker/utils/utils.dart';
-import 'package:path/path.dart' as path;
+import 'package:intl/intl.dart';
 import 'package:photo_manager/photo_manager.dart';
+
+const datePattern = 'yyyyMMdd_HHmmss_MS';
 
 class XCameraController extends ValueNotifier<XCameraValue> {
   XCameraController() : super(const XCameraValue());
@@ -95,7 +97,9 @@ class XCameraController extends ValueNotifier<XCameraValue> {
         await _cameraController!.setFlashMode(FlashMode.off);
         final file = File(xFile.path);
         final bytes = await file.readAsBytes();
-        final asset = await PhotoManager.editor.saveImage(bytes, title: path.basename(file.path));
+        final now = DateTime.now();
+        final fileName = 'FILE_${DateFormat(datePattern).format(now)}';
+        final asset = await PhotoManager.editor.saveImage(bytes, title: fileName);
         if (file.existsSync()) file.deleteSync();
 
         if (asset != null) {
