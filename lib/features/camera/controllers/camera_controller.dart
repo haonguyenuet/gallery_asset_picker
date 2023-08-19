@@ -98,7 +98,7 @@ class XCameraController extends ValueNotifier<XCameraValue> {
         final file = File(xFile.path);
         final bytes = await file.readAsBytes();
         final now = DateTime.now();
-        final fileName = 'FILE_${DateFormat(datePattern).format(now)}';
+        final fileName = 'FILE_${DateFormat(datePattern).format(now)}.jpg';
         final asset = await PhotoManager.editor.saveImage(bytes, title: fileName);
         if (file.existsSync()) file.deleteSync();
 
@@ -113,7 +113,7 @@ class XCameraController extends ValueNotifier<XCameraValue> {
           value = value.copyWith(isTakingPicture: false, error: exception);
         }
       },
-      onError: () {
+      onError: () {  
         value = value.copyWith(isTakingPicture: false);
       },
       customException: CameraExceptions.takePicture,
