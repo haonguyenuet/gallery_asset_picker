@@ -1,28 +1,37 @@
+# Name and description of the Flutter package
 name: gallery_asset_picker
 description: Medias picker which is inspired by modern app.
+
+# Version number of the package
 version: 0.0.1
+
+# Homepage URL where users can find more information about the package
 homepage: https://github.com/haonguyenuet/gallery_asset_picker
 
+# Environment specifications for Flutter and Dart SDK versions
 environment:
   sdk: ">=3.0.0 <4.0.0"
   flutter: ">=1.17.0"
 
+# Dependencies required for the Flutter project
 dependencies:
   flutter:
     sdk: flutter
-  camera: ^0.10.5+2
-  collection: ^1.16.0
-  meta: ^1.7.0
-  path: ^1.8.1
-  photo_manager: ^2.6.0
-  uuid: ^3.0.6
-  intl: ^0.18.0
+  camera: ^0.10.5+2           # Plugin for interacting with the camera
+  collection: ^1.16.0         # Utility functions and classes for Dart collections
+  meta: ^1.7.0                # Metadata classes for Dart
+  path: ^1.8.1                # Library for working with file and directory paths
+  photo_manager: ^3.0.0-dev.5 # Plugin for working with device photos
+  uuid: ^3.0.6                # Library for generating UUIDs
+  intl: ^0.18.0               # Internationalization and localization support for Dart
 
+# Dev dependencies for testing and analysis
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
-  very_good_analysis: ^3.0.1
+  flutter_lints: ^2.0.0         # Linting rules for Flutter
+  very_good_analysis: ^3.0.1    # Analysis tools for Dart and Flutter
 
+# Flutter configuration
 flutter:
-  uses-material-design: true
+  uses-material-design: true    # Indicates the usage of material design

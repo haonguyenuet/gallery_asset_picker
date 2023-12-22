@@ -4,7 +4,6 @@ analyzer:
     missing_return: warning
     todo: ignore
     deprecated_member_use_from_same_package: ignore
-    sdk_version_async_exported_from_core: ignore
     unnecessary_null_comparison: ignore
   exclude:
     - "bin/cache/**"
@@ -65,11 +64,9 @@ linter:
     - exhaustive_cases
     - hash_and_equals
     - implementation_imports
-    - iterable_contains_unrelated_type
     - leading_newlines_in_multiline_strings
     - library_names
     - library_prefixes
-    - list_remove_unrelated_type
     - missing_whitespace_between_adjacent_strings
     - no_adjacent_strings_in_list
     - no_duplicate_case_values

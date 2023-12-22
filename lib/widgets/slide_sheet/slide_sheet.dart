@@ -82,9 +82,6 @@ class _SlideSheetState extends State<SlideSheet> with TickerProviderStateMixin {
     _animationController.removeListener(_animationListener);
     _animationController.dispose();
     _controller.removeListener(_listener);
-    if (widget.controller == null) {
-      _controller.dispose();
-    }
     super.dispose();
   }
 
