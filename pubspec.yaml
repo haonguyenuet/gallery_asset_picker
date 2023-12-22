@@ -3,7 +3,7 @@ name: gallery_asset_picker
 description: Medias picker which is inspired by modern app.
 
 # Version number of the package
-version: 0.0.1
+version: 0.0.4
 
 # Homepage URL where users can find more information about the package
 homepage: https://github.com/haonguyenuet/gallery_asset_picker
